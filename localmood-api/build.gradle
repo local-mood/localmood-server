@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.ceos'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+jar { enabled = false }
+
+dependencies {
+    implementation project(":localmood-domain")
+    implementation project(":localmood-core")
+
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+}
+
+test {
+    useJUnitPlatform()
+}

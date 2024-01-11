@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active:
+      - prods
+    group:
+      locals:
+        - local
+        - core
+      prods:
+        - prod
+        - core

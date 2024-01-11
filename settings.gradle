@@ -1,0 +1,6 @@
+rootProject.name = 'localmood'
+include (
+        'localmood-api',
+        'localmood-core',
+        'localmood-domain'
+)
