@@ -1,10 +1,10 @@
 spring:
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: # ENC()
-    username: # ENC()
-    password: # ENC()
+    driver-class-name: org.postgresql.Driver
+    url: ENC(6TVyYvZC9VjV36A0nIRRr6bi81LkIRL1Uy5gBxIqD4hldB2LfjIW/44XIu0VFLXXH5FYEmT8PrqQ4LPzYjZsRgmbWL0ViJPEvAwCNki+/npuooyV/eKzom5nowoz2B6HG7o3KV5C/6w=)
+    username: ENC(KAR1dpuSZ7Ucf8D3TfX11g7FPIelZ0yS)
+    password: ENC(JEFlteVuCW6ylc5lN/c/l8Cjeu4phffu)
 
   flyway:
     enabled: true
