@@ -1,7 +1,7 @@
 ---
 name: Bug/Error
 about: 버그/오류
-title: ''
+title: "[BUG] "
 labels: ''
 assignees: ''
 
