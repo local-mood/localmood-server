@@ -1,5 +1,7 @@
 package com.localmood.domain.curation.entity;
 
+import java.util.List;
+
 import com.localmood.common.entity.BaseTimeEntity;
 import com.localmood.domain.member.entity.Member;
 
@@ -35,13 +37,13 @@ public class Curation extends BaseTimeEntity {
 	private String title;
 
 	@Column
-	private String keyword;
+	private List<String> keyword;
 
 	@Column
 	private Boolean privacy;
 
 	@Builder
-	public Curation (Member member, String title, String keyword, Boolean privacy) {
+	public Curation (Member member, String title, List<String> keyword, Boolean privacy) {
 		this.member = member;
 		this.title = title;
 		this.keyword = keyword;
