@@ -34,7 +34,7 @@ public class CurationController {
 		return ResponseEntity.ok(CommonResponseDto.success());
 	}
 
-	@Operation(summary = "인기 큐레이션 조회 API", description = "랜덤으로 큐레이션 목록을 조회합니다.")
+	@Operation(summary = "랜덤 큐레이션 조회 API", description = "랜덤으로 큐레이션 목록을 조회합니다.")
 	@GetMapping("/random")
 	public ResponseEntity<List<CurationResponseDto>> getRandomCuration() {
 		List<CurationResponseDto> randomCurations = curationService.getRandomCurations();
