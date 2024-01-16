@@ -10,11 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.localmood.curation.request.CurationCreateDto;
 import com.localmood.curation.response.CurationResponseDto;
 import com.localmood.domain.curation.entity.Curation;
+import com.localmood.domain.curation.entity.CurationSpace;
 import com.localmood.domain.curation.repository.CurationRepository;
 import com.localmood.domain.curation.repository.CurationSpaceRepository;
 import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.member.repository.MemberRepository;
 import com.localmood.domain.review.repository.ReviewImgRepository;
+import com.localmood.domain.space.entity.Space;
+import com.localmood.domain.space.repository.SpaceRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +29,7 @@ public class CurationService {
 	private final MemberRepository memberRepository;
 	private final CurationSpaceRepository curationSpaceRepository;
 	private final ReviewImgRepository reviewImgRepository;
+	private final SpaceRepository spaceRepository;
 
 	// TODO
 	//   - AUTH 구현 후 로직 변경
@@ -75,4 +79,20 @@ public class CurationService {
 		return imageUrls.stream().limit(5).collect(Collectors.toList());
 	}
 
+	// TODO
+	//   - Custom 에러 처리
+	public void registerSpace(String curationId, String spaceId) {
+		Curation curation = curationRepository.findById(Long.parseLong(curationId))
+			.orElseThrow(() -> new RuntimeException("Curation not found"));
+
+		Space space = spaceRepository.findById(Long.parseLong(spaceId))
+			.orElseThrow(() -> new RuntimeException("Space not found"));
+
+		CurationSpace curationSpace = CurationSpace.builder()
+			.curation(curation)
+			.space(space)
+			.build();
+
+		curationSpaceRepository.save(curationSpace);
+	}
 }
