@@ -1,7 +1,7 @@
 USE localmood_db;
 
 CREATE TABLE `member` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `nickname` VARCHAR(50) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE `member` (
 );
 
 CREATE TABLE `curation` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `member_id` BIGINT NOT NULL,
 
     `title` VARCHAR(50) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE `curation` (
 );
 
 CREATE TABLE `scrap` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `member_id` BIGINT NOT NULL,
     `curation_id` BIGINT NOT NULL,
 
@@ -43,7 +43,7 @@ CREATE TABLE `scrap` (
 );
 
 CREATE TABLE `space` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `name` VARCHAR(255) NOT NULL,
     `address` VARCHAR(255) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE `space` (
 );
 
 CREATE TABLE `space_info` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `space_id` BIGINT NOT NULL,
 
     `purpose` VARCHAR(255) NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE `space_info` (
 );
 
 CREATE TABLE `space_menu` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `space_id` BIGINT NOT NULL,
 
     `dish` VARCHAR(50) NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE `space_menu` (
 );
 
 CREATE TABLE `curation_space` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `curation_id` BIGINT NOT NULL,
     `space_id` BIGINT NOT NULL,
 
@@ -102,7 +102,7 @@ CREATE TABLE `curation_space` (
 );
 
 CREATE TABLE `review` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `space_id` BIGINT NOT NULL,
     `member_id` BIGINT NOT NULL,
 
@@ -122,7 +122,7 @@ CREATE TABLE `review` (
 );
 
 CREATE TABLE `review_img` (
-    `id` BIGINT NOT NULL,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `review_id` BIGINT NOT NULL,
     `space_id` BIGINT NOT NULL,
     `member_id` BIGINT NOT NULL,
