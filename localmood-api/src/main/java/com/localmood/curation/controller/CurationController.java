@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,16 @@ public class CurationController {
 	public ResponseEntity<List<CurationResponseDto>> getRandomCuration() {
 		List<CurationResponseDto> randomCurations = curationService.getRandomCurations();
 		return ResponseEntity.ok(randomCurations);
+	}
+
+	@Operation(summary = "큐레이션 공간 등록 API", description = "큐레이션에 공간을 추가합니다.")
+	@PostMapping("space/{id}/{space_id}")
+	public ResponseEntity<CommonResponseDto> registerSpace(
+		@PathVariable("id") String curationId,
+		@PathVariable("space_id") String spaceId
+	) {
+		curationService.registerSpace(curationId, spaceId);
+		return ResponseEntity.ok(CommonResponseDto.success());
 	}
 
 }
