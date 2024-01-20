@@ -6,6 +6,8 @@ spring:
       locals:
         - local
         - core
+        - secret
       prods:
         - prod
         - core
+        - secret
