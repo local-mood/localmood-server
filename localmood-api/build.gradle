@@ -9,8 +9,6 @@ repositories {
     mavenCentral()
 }
 
-jar { enabled = false }
-
 dependencies {
     implementation project(":localmood-domain")
     implementation project(":localmood-core")
