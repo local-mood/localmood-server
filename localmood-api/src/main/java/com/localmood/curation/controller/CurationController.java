@@ -1,6 +1,9 @@
 package com.localmood.curation.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.localmood.common.response.CommonResponseDto;
 import com.localmood.curation.request.CurationCreateDto;
+import com.localmood.curation.response.CurationResponseDto;
 import com.localmood.curation.service.CurationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +32,13 @@ public class CurationController {
 	public ResponseEntity<CommonResponseDto> createCuration(@Valid @RequestBody CurationCreateDto curationCreateDto) {
 		curationService.createCuration(curationCreateDto);
 		return ResponseEntity.ok(CommonResponseDto.success());
+	}
+
+	@Operation(summary = "랜덤 큐레이션 조회 API", description = "랜덤으로 큐레이션 목록을 조회합니다.")
+	@GetMapping("/random")
+	public ResponseEntity<List<CurationResponseDto>> getRandomCuration() {
+		List<CurationResponseDto> randomCurations = curationService.getRandomCurations();
+		return ResponseEntity.ok(randomCurations);
 	}
 
 }
