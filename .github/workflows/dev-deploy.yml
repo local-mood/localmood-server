@@ -1,8 +1,8 @@
-name: Java CI with Gradle
+name: Deploy to Dev
 
 on:
   push:
-    tags: [ "v*.*.*" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read
@@ -49,3 +49,17 @@ jobs:
           docker login -u ${{ secrets.DOCKER_NAME }} -p ${{ secrets.DOCKER_PW }}
           docker build -f Dockerfile -t ${{ secrets.DOCKER_NAME }}/${{ secrets.DOCKER_REPO }} .
           docker push ${{ secrets.DOCKER_NAME }}/${{ secrets.DOCKER_REPO }}
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        id: deploy
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          envs: GITHUB_SHA
+          script: |
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{ secrets.DOCKER_NAME }}/${{ secrets.DOCKER_REPO }}
+            docker-compose up -d
+            docker image prune -f
