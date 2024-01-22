@@ -13,8 +13,6 @@ import com.localmood.domain.curation.entity.CurationSpace;
 public interface CurationSpaceRepository extends JpaRepository<CurationSpace, Long> {
 	int countByCurationId(Long curationId);
 
-	List<CurationSpace> findByCurationId(Long curationId);
-
 	// Curation ID에 속한 Space ID 가져오기
 	@Query("SELECT cs.space.id FROM CurationSpace cs WHERE cs.curation.id = :curationId")
 	List<Long> findSpaceIdsByCurationId(@Param("curationId") Long curationId);
