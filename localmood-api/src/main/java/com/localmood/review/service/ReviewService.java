@@ -3,7 +3,9 @@ package com.localmood.review.service;
 import static com.localmood.common.utils.RepositoryUtil.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -84,6 +86,47 @@ public class ReviewService {
 		return reviewImgRepository.findById(reviewId)
 			.map(ReviewImg::getImgUrl)
 			.orElse(null);
+	}
+
+	// 공간별 공간 기록 조회
+	public Map<String, List<ReviewResponseDto>> getSpaceReview(Long spaceId) {
+		// 해당 공간의 리뷰만 필터링
+		List<Review> spaceReviews = reviewRepository.findBySpaceId(spaceId);
+
+		// 방문 목적별로 그룹화하여 dto 생성
+		return spaceReviews
+			.stream()
+			.collect(Collectors.groupingBy(
+				review -> review.getPurpose().toString(),
+
+				Collectors.collectingAndThen(Collectors.toList(), purposeReviews -> {
+					int reviewCount = purposeReviews.size();
+
+					List<ReviewDetailResponseDto> reviewDetails = purposeReviews
+						.stream()
+						.map(this::mapToReviewDetailResponseDto)
+						.collect(Collectors.toList());
+
+					return Collections.singletonList(new ReviewResponseDto(reviewCount, reviewDetails));
+				})
+			));
+	}
+
+	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review) {
+
+		return new ReviewDetailResponseDto(
+			getReviewImageUrl(review.getId()),
+			review.getSpace().getName(),
+			review.getSpace().getType().toString(),
+			review.getSpace().getAddress(),
+			review.getMember().getNickname(),
+			review.getCreatedAt().toString(),
+			review.getInterior(),
+			review.getMood(),
+			review.getMusic(),
+			review.getPositive_eval(),
+			review.getNegative_eval()
+		);
 	}
 
 }
