@@ -1,5 +1,7 @@
 package com.localmood.curation.service;
 
+import static com.localmood.common.utils.RepositoryUtil.*;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.localmood.common.exception.ErrorCode;
 import com.localmood.curation.request.CurationCreateDto;
 import com.localmood.curation.response.CurationResponseDto;
 import com.localmood.domain.curation.entity.Curation;
@@ -32,12 +35,10 @@ public class CurationService {
 	private final SpaceRepository spaceRepository;
 
 	// TODO
-	//   - AUTH 구현 후 로직 변경
-	//   - Custom 에러 처리
+	//   - AUTH 구현 후 currentmember로 변경
 	@Transactional
 	public void createCuration(CurationCreateDto curationCreateDto) {
-		Member member = memberRepository.findById(curationCreateDto.getMemberId())
-			.orElseThrow(() -> new RuntimeException("Member not found"));
+		Member member = findByIdOrThrow(memberRepository, curationCreateDto.getMemberId(), ErrorCode.MEMBER_NOT_FOUND);
 
 		Curation curation = curationCreateDto.toEntity(member);
 
@@ -45,7 +46,8 @@ public class CurationService {
 	}
 
 	public void editCuration(String curationId, CurationCreateDto curationCreateDto) {
-		Curation curation = curationRepository.findById(Long.valueOf(curationId)).orElse(null);
+		Curation curation = findByIdOrThrow(curationRepository, Long.parseLong(curationId),
+			ErrorCode.CURATION_NOT_FOUND);
 
 		Curation updatedCuration = new Curation(
 			curation.getMember(),
@@ -58,7 +60,8 @@ public class CurationService {
 	}
 
 	public void deleteCuration(String curationId) {
-		Curation curation = curationRepository.findById(Long.valueOf(curationId)).orElse(null);
+		Curation curation = findByIdOrThrow(curationRepository, Long.parseLong(curationId),
+			ErrorCode.CURATION_NOT_FOUND);
 
 		curationRepository.delete(curation);
 	}
@@ -66,25 +69,22 @@ public class CurationService {
 	public List<CurationResponseDto> getRandomCurations() {
 		List<Long> randomCurationIds = curationRepository.findRandomCurationIds();
 
-		List<CurationResponseDto> randomCurations = randomCurationIds.stream()
-			.map(this::mapToCurationResponseDto)
+		return randomCurationIds.stream()
+			.map(id -> {
+				Curation curation = findByIdOrThrow(curationRepository, id, ErrorCode.CURATION_NOT_FOUND);
+				return mapToCurationResponseDto(curation);
+			})
 			.collect(Collectors.toList());
-
-		return randomCurations;
 	}
 
-	// TODO
-	//   - Custom 에러 처리
-	private CurationResponseDto mapToCurationResponseDto(Long curationId) {
-		Curation curation = curationRepository.findById(curationId).orElse(null);
-
+	private CurationResponseDto mapToCurationResponseDto(Curation curation) {
 		Member author = curation.getMember();
 		String authorName = author.getNickname();
 
-		List<String> image = getCurationImg(curationId);
+		List<String> image = getCurationImg(curation.getId());
 
 		String title = curation.getTitle();
-		int spaceCount = curationSpaceRepository.countByCurationId(curationId);
+		int spaceCount = curationSpaceRepository.countByCurationId(curation.getId());
 		List<String> keyword = Arrays.asList(curation.getKeyword().split(","));
 
 		return new CurationResponseDto(authorName, image, title, spaceCount, keyword);
@@ -98,14 +98,10 @@ public class CurationService {
 		return imageUrls.stream().limit(5).collect(Collectors.toList());
 	}
 
-	// TODO
-	//   - Custom 에러 처리
 	public void registerSpace(String curationId, String spaceId) {
-		Curation curation = curationRepository.findById(Long.parseLong(curationId))
-			.orElseThrow(() -> new RuntimeException("Curation not found"));
-
-		Space space = spaceRepository.findById(Long.parseLong(spaceId))
-			.orElseThrow(() -> new RuntimeException("Space not found"));
+		Curation curation = findByIdOrThrow(curationRepository, Long.parseLong(curationId),
+			ErrorCode.CURATION_NOT_FOUND);
+		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
 
 		CurationSpace curationSpace = CurationSpace.builder()
 			.curation(curation)
