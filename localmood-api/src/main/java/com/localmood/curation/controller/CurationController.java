@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.localmood.common.response.CommonResponseDto;
 import com.localmood.curation.request.CurationCreateDto;
+import com.localmood.curation.response.CurationDetailResponseDto;
 import com.localmood.curation.response.CurationResponseDto;
 import com.localmood.curation.service.CurationService;
 
@@ -34,6 +35,7 @@ public class CurationController {
 	@PostMapping("")
 	public ResponseEntity<CommonResponseDto> createCuration(@Valid @RequestBody CurationCreateDto curationCreateDto) {
 		curationService.createCuration(curationCreateDto);
+
 		return ResponseEntity.ok(CommonResponseDto.success());
 	}
 
@@ -59,6 +61,7 @@ public class CurationController {
 	@GetMapping("/random")
 	public ResponseEntity<List<CurationResponseDto>> getRandomCuration() {
 		List<CurationResponseDto> randomCurations = curationService.getRandomCurations();
+
 		return ResponseEntity.ok(randomCurations);
 	}
 
@@ -69,7 +72,22 @@ public class CurationController {
 		@PathVariable("space_id") String spaceId
 	) {
 		curationService.registerSpace(curationId, spaceId);
+
 		return ResponseEntity.ok(CommonResponseDto.success());
+	}
+
+	@Operation(summary = "큐레이션 상세 조회 API", description = "큐레이션 상세 정보를 조회합니다.")
+	@GetMapping("/{id}")
+	public ResponseEntity<CurationDetailResponseDto> getCurationDetail(@PathVariable("id") String curationId) {
+		CurationDetailResponseDto curationDetail = curationService.getCurationDetail(curationId);
+
+		return ResponseEntity.ok(curationDetail);
+	}
+
+	@Operation(summary = "사용자별 큐레이션 목록 조회 API", description = "사용자별 큐레이션 목록을 조회합니다.")
+	@GetMapping("/member/{id}")
+	public List<CurationResponseDto> getCurationsForMember(@PathVariable("id") Long memberId) {
+		return curationService.getCurationsForMember(memberId);
 	}
 
 }
