@@ -10,4 +10,8 @@ public class RepositoryUtil {
 		return repository.findById(id)
 			.orElseThrow(() -> new LocalmoodException(errorCode));
 	}
+
+	public static <T> T findByIdOrNull(JpaRepository<T, Long> repository, Long id) {
+		return repository.findById(id).orElse(null);
+	}
 }
