@@ -44,6 +44,19 @@ public class CurationService {
 		curationRepository.save(curation);
 	}
 
+	public void editCuration(String curationId, CurationCreateDto curationCreateDto) {
+		Curation curation = curationRepository.findById(Long.valueOf(curationId)).orElse(null);
+
+		Curation updatedCuration = new Curation(
+			curation.getMember(),
+			curationCreateDto.getTitle() != null ? curationCreateDto.getTitle() : curation.getTitle(),
+			curationCreateDto.getKeyword() != null ? curationCreateDto.getKeyword() : curation.getKeyword(),
+			curationCreateDto.isPrivacy() != curation.getPrivacy() ? curationCreateDto.isPrivacy() : curation.getPrivacy()
+		);
+
+		curationRepository.save(updatedCuration);
+	}
+
 	public List<CurationResponseDto> getRandomCurations() {
 		List<Long> randomCurationIds = curationRepository.findRandomCurationIds();
 

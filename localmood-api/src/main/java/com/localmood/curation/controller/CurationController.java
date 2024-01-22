@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,16 @@ public class CurationController {
 	@PostMapping("")
 	public ResponseEntity<CommonResponseDto> createCuration(@Valid @RequestBody CurationCreateDto curationCreateDto) {
 		curationService.createCuration(curationCreateDto);
+		return ResponseEntity.ok(CommonResponseDto.success());
+	}
+
+	@Operation(summary = "큐레이션 편집 API", description = "큐레이션을 편집합니다.")
+	@PatchMapping("/{id}")
+	public ResponseEntity<CommonResponseDto> editCuration(
+		@PathVariable("id") String curationId,
+		@RequestBody CurationCreateDto curationCreateDto) {
+		curationService.editCuration(curationId, curationCreateDto);
+
 		return ResponseEntity.ok(CommonResponseDto.success());
 	}
 
