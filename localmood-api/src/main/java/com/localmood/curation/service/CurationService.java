@@ -57,6 +57,12 @@ public class CurationService {
 		curationRepository.save(updatedCuration);
 	}
 
+	public void deleteCuration(String curationId) {
+		Curation curation = curationRepository.findById(Long.valueOf(curationId)).orElse(null);
+
+		curationRepository.delete(curation);
+	}
+
 	public List<CurationResponseDto> getRandomCurations() {
 		List<Long> randomCurationIds = curationRepository.findRandomCurationIds();
 

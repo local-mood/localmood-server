@@ -3,6 +3,7 @@ package com.localmood.curation.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,14 @@ public class CurationController {
 		@PathVariable("id") String curationId,
 		@RequestBody CurationCreateDto curationCreateDto) {
 		curationService.editCuration(curationId, curationCreateDto);
+
+		return ResponseEntity.ok(CommonResponseDto.success());
+	}
+
+	@Operation(summary = "큐레이션 삭제 API", description = "큐레이션을 삭제합니다.")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<CommonResponseDto> deleteCuration(@PathVariable("id") String curationId) {
+		curationService.deleteCuration(curationId);
 
 		return ResponseEntity.ok(CommonResponseDto.success());
 	}
