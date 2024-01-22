@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.localmood.common.exception.ErrorCode;
 import com.localmood.curation.request.CurationCreateDto;
+import com.localmood.curation.response.CurationDetailResponseDto;
 import com.localmood.curation.response.CurationResponseDto;
 import com.localmood.domain.curation.entity.Curation;
 import com.localmood.domain.curation.entity.CurationSpace;
@@ -20,19 +21,26 @@ import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.member.repository.MemberRepository;
 import com.localmood.domain.review.repository.ReviewImgRepository;
 import com.localmood.domain.space.entity.Space;
+import com.localmood.domain.space.entity.SpaceInfo;
+import com.localmood.domain.space.entity.SpaceMenu;
+import com.localmood.domain.space.entity.SpaceType;
+import com.localmood.domain.space.repository.SpaceInfoRepository;
+import com.localmood.domain.space.repository.SpaceMenuRepository;
 import com.localmood.domain.space.repository.SpaceRepository;
+import com.localmood.space.response.SpaceResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CurationService {
-
 	private final CurationRepository curationRepository;
 	private final MemberRepository memberRepository;
 	private final CurationSpaceRepository curationSpaceRepository;
 	private final ReviewImgRepository reviewImgRepository;
 	private final SpaceRepository spaceRepository;
+	private final SpaceInfoRepository spaceInfoRepository;
+	private final SpaceMenuRepository spaceMenuRepository;
 
 	// TODO
 	//   - AUTH 구현 후 currentmember로 변경
@@ -83,19 +91,20 @@ public class CurationService {
 
 		List<String> image = getCurationImg(curation.getId());
 
-		String title = curation.getTitle();
-		int spaceCount = curationSpaceRepository.countByCurationId(curation.getId());
-		List<String> keyword = Arrays.asList(curation.getKeyword().split(","));
-
-		return new CurationResponseDto(authorName, image, title, spaceCount, keyword);
+		return new CurationResponseDto(
+			authorName, image, curation.getTitle(),
+			curationSpaceRepository.countByCurationId(curation.getId()),
+			Arrays.asList(curation.getKeyword().split(","))
+		);
 	}
 
 	private List<String> getCurationImg(Long curationId) {
 		List<Long> spaceIds = curationSpaceRepository.findSpaceIdsByCurationId(curationId);
 
-		List<String> imageUrls = reviewImgRepository.findTop5ImageUrlsBySpaceIds(spaceIds);
-
-		return imageUrls.stream().limit(5).collect(Collectors.toList());
+		return reviewImgRepository.findTop5ImageUrlsBySpaceIds(spaceIds)
+			.stream()
+			.limit(5)
+			.collect(Collectors.toList());
 	}
 
 	public void registerSpace(String curationId, String spaceId) {
@@ -110,4 +119,61 @@ public class CurationService {
 
 		curationSpaceRepository.save(curationSpace);
 	}
+
+	public CurationDetailResponseDto getCurationDetail(String curationId) {
+		Curation curation = findByIdOrThrow(curationRepository, Long.parseLong(curationId),
+			ErrorCode.CURATION_NOT_FOUND);
+
+		String author = curation.getMember().getNickname();
+		String createdDate = String.valueOf(curation.getCreatedAt());
+
+		List<SpaceResponseDto> curationSpaceInfo = getCurationSpaceInfo(Long.valueOf(curationId));
+
+		return new CurationDetailResponseDto(
+			curation.getTitle(), curation.getKeyword(), curation.getPrivacy(),
+			author, createdDate, curationSpaceInfo);
+	}
+
+	private List<SpaceResponseDto> getCurationSpaceInfo(Long curationId) {
+		return curationSpaceRepository.findByCurationId(curationId)
+			.stream()
+			.map(this::mapToSpaceResponseDto)
+			.collect(Collectors.toList());
+	}
+
+	private SpaceResponseDto mapToSpaceResponseDto(CurationSpace curationSpace) {
+		Space space = curationSpace.getSpace();
+		Long spaceId = curationSpace.getSpace().getId();
+
+		List<String> imageUrls = getImageUrls(spaceId);
+
+		SpaceInfo spaceInfo = getSpaceInfo(spaceId);
+		SpaceMenu spaceMenu = getSpaceMenu(spaceId);
+
+		return new SpaceResponseDto(
+			space.getName(),
+			String.valueOf(space.getType()),
+			space.getAddress(),
+			imageUrls,
+			spaceInfo.getPurpose(),
+			spaceInfo.getMood(),
+			spaceInfo.getInterior(),
+			(space.getType() == SpaceType.RESTAURANT) ? spaceMenu.getDishDesc() : ""
+		);
+	}
+
+	private List<String> getImageUrls(Long spaceId) {
+		return reviewImgRepository.findImageUrlsBySpaceId(spaceId);
+	}
+
+	// TODO
+	//    - 이후 공통으로 사용 될 경우, 클래스로 분리
+	private SpaceInfo getSpaceInfo(Long spaceId) {
+		return findByIdOrNull(spaceInfoRepository, spaceId);
+	}
+
+	private SpaceMenu getSpaceMenu(Long spaceId) {
+		return findByIdOrNull(spaceMenuRepository, spaceId);
+	}
+
 }
