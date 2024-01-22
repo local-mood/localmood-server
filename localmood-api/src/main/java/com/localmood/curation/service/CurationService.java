@@ -101,6 +101,7 @@ public class CurationService {
 	private List<String> getCurationImg(Long curationId) {
 		List<Long> spaceIds = curationSpaceRepository.findSpaceIdsByCurationId(curationId);
 
+		// 공간 이미지 최대 5개 가져오기
 		return reviewImgRepository.findTop5ImageUrlsBySpaceIds(spaceIds)
 			.stream()
 			.limit(5)
@@ -118,6 +119,16 @@ public class CurationService {
 			.build();
 
 		curationSpaceRepository.save(curationSpace);
+	}
+
+	public List<CurationResponseDto> getCurationsForMember(Long memberId) {
+		// 최신순으로 정렬한 curation 가져오기
+		List<Curation> curation = curationRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+
+		return curation
+			.stream()
+			.map(this::mapToCurationResponseDto)
+			.collect(Collectors.toList());
 	}
 
 	public CurationDetailResponseDto getCurationDetail(String curationId) {

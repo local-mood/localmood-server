@@ -84,4 +84,10 @@ public class CurationController {
 		return ResponseEntity.ok(curationDetail);
 	}
 
+	@Operation(summary = "사용자별 큐레이션 목록 조회 API", description = "사용자별 큐레이션 목록을 조회합니다.")
+	@GetMapping("/member/{id}")
+	public List<CurationResponseDto> getCurationsForMember(@PathVariable("id") Long memberId) {
+		return curationService.getCurationsForMember(memberId);
+	}
+
 }
