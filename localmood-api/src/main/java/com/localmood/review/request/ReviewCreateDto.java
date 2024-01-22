@@ -21,13 +21,13 @@ public class ReviewCreateDto {
 	@Schema(description = "배경음악")
 	private String music;
 
-	@Schema(description = "인테리어")
+	@Schema(description = "인테리어", nullable = true)
 	private String interior;
 
-	@Schema(description = "좋았던 점")
+	@Schema(description = "좋았던 점", nullable = true)
 	private String positiveEval;
 
-	@Schema(description = "아쉬워던 점")
+	@Schema(description = "아쉬워던 점", nullable = true)
 	private String negativeEval;
 
 	@Schema(description = "이미지")

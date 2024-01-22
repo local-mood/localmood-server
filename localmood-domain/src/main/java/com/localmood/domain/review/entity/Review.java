@@ -45,13 +45,13 @@ public class Review extends BaseTimeEntity {
 	@Column
 	private String music;
 
-	@Column
+	@Column(nullable = true)
 	private String interior;
 
-	@Column
+	@Column(nullable = true)
 	private String positive_eval;
 
-	@Column
+	@Column(nullable = true)
 	private String negative_eval;
 
 	@Builder
