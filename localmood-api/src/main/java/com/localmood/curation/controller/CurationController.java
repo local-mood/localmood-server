@@ -1,6 +1,7 @@
 package com.localmood.curation.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -86,7 +87,7 @@ public class CurationController {
 
 	@Operation(summary = "사용자별 큐레이션 목록 조회 API", description = "사용자별 큐레이션 목록을 조회합니다.")
 	@GetMapping("/member/{id}")
-	public List<CurationResponseDto> getCurationsForMember(@PathVariable("id") Long memberId) {
+	public Map<String, Object> getCurationsForMember(@PathVariable("id") Long memberId) {
 		return curationService.getCurationsForMember(memberId);
 	}
 

@@ -3,7 +3,9 @@ package com.localmood.curation.service;
 import static com.localmood.common.utils.RepositoryUtil.*;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -92,7 +94,7 @@ public class CurationService {
 		List<String> image = getCurationImg(curation.getId());
 
 		return new CurationResponseDto(
-			authorName, image, curation.getTitle(),
+			curation.getId(), authorName, image, curation.getTitle(),
 			curationSpaceRepository.countByCurationId(curation.getId()),
 			Arrays.asList(curation.getKeyword().split(","))
 		);
@@ -121,14 +123,22 @@ public class CurationService {
 		curationSpaceRepository.save(curationSpace);
 	}
 
-	public List<CurationResponseDto> getCurationsForMember(Long memberId) {
-		// 최신순으로 정렬한 curation 가져오기
-		List<Curation> curation = curationRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+	public Map<String, Object> getCurationsForMember(Long memberId) {
+		Map<String, Object> response = new LinkedHashMap<>();
 
-		return curation
+		// 최신순으로 정렬한 curation 가져오기
+		List<Curation> curations = curationRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+
+		List<Map<String, Object>> curationList = curations
 			.stream()
 			.map(this::mapToCurationResponseDto)
+			.map(CurationResponseDto::toMap)
 			.collect(Collectors.toList());
+
+		response.put("curationCount", curationList.size());
+		response.put("curation", curationList);
+
+		return response;
 	}
 
 	public CurationDetailResponseDto getCurationDetail(String curationId) {
