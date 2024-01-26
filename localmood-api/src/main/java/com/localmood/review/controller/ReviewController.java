@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.localmood.common.response.CommonResponseDto;
 import com.localmood.review.request.ReviewCreateDto;
 import com.localmood.review.response.ReviewResponseDto;
-import com.localmood.review.response.SpaceReviewDto;
 import com.localmood.review.service.ReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
