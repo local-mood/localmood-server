@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.localmood.common.response.CommonResponseDto;
+import com.localmood.common.dto.SuccessResponse;
 import com.localmood.curation.request.CurationCreateDto;
 import com.localmood.curation.response.CurationDetailResponseDto;
 import com.localmood.curation.response.CurationResponseDto;
@@ -32,63 +32,73 @@ public class CurationController {
 
 	private final CurationService curationService;
 
+	// TODO
+	// 	- DTO 설정 필요
 	@Operation(summary = "큐레이션 생성 API", description = "새로운 큐레이션을 생성합니다.")
 	@PostMapping("")
-	public ResponseEntity<CommonResponseDto> createCuration(@Valid @RequestBody CurationCreateDto curationCreateDto) {
+	public ResponseEntity<?> createCuration(
+			@Valid @RequestBody CurationCreateDto curationCreateDto
+	) {
 		curationService.createCuration(curationCreateDto);
-
-		return ResponseEntity.ok(CommonResponseDto.success());
+		return SuccessResponse.created("SUCCESS");
 	}
 
+	// TODO
+	// 	- DTO 설정 필요
 	@Operation(summary = "큐레이션 편집 API", description = "큐레이션을 편집합니다.")
-	@PatchMapping("/{id}")
-	public ResponseEntity<CommonResponseDto> editCuration(
-		@PathVariable("id") String curationId,
-		@RequestBody CurationCreateDto curationCreateDto) {
+	@PatchMapping("/{curationId}")
+	public ResponseEntity<?> editCuration(
+			@PathVariable("curationId") String curationId,
+			@RequestBody CurationCreateDto curationCreateDto
+	) {
 		curationService.editCuration(curationId, curationCreateDto);
-
-		return ResponseEntity.ok(CommonResponseDto.success());
+		return SuccessResponse.ok("SUCCESS");
 	}
 
 	@Operation(summary = "큐레이션 삭제 API", description = "큐레이션을 삭제합니다.")
-	@DeleteMapping("/{id}")
-	public ResponseEntity<CommonResponseDto> deleteCuration(@PathVariable("id") String curationId) {
+	@DeleteMapping("/{curationId}")
+	public ResponseEntity<?> deleteCuration(
+			@PathVariable("curationId") String curationId
+	) {
 		curationService.deleteCuration(curationId);
-
-		return ResponseEntity.ok(CommonResponseDto.success());
+		return SuccessResponse.noContent();
 	}
 
 	@Operation(summary = "랜덤 큐레이션 조회 API", description = "랜덤으로 큐레이션 목록을 조회합니다.")
 	@GetMapping("/random")
 	public ResponseEntity<List<CurationResponseDto>> getRandomCuration() {
-		List<CurationResponseDto> randomCurations = curationService.getRandomCurations();
-
-		return ResponseEntity.ok(randomCurations);
+		var res = curationService.getRandomCurations();
+		return SuccessResponse.ok(res);
 	}
 
+	// TODO
+	// 	- DTO 설정 필요
 	@Operation(summary = "큐레이션 공간 등록 API", description = "큐레이션에 공간을 추가합니다.")
-	@PostMapping("space/{id}/{space_id}")
-	public ResponseEntity<CommonResponseDto> registerSpace(
-		@PathVariable("id") String curationId,
-		@PathVariable("space_id") String spaceId
+	@PostMapping("/{curationId}/space/{spaceId}")
+	public ResponseEntity<?> registerSpace(
+			@PathVariable("curationId") String curationId,
+			@PathVariable("spaceId") String spaceId
 	) {
 		curationService.registerSpace(curationId, spaceId);
-
-		return ResponseEntity.ok(CommonResponseDto.success());
+		return SuccessResponse.created("SUCCESS");
 	}
 
 	@Operation(summary = "큐레이션 상세 조회 API", description = "큐레이션 상세 정보를 조회합니다.")
-	@GetMapping("/{id}")
-	public ResponseEntity<CurationDetailResponseDto> getCurationDetail(@PathVariable("id") String curationId) {
-		CurationDetailResponseDto curationDetail = curationService.getCurationDetail(curationId);
-
-		return ResponseEntity.ok(curationDetail);
+	@GetMapping("/{curationId}")
+	public ResponseEntity<CurationDetailResponseDto> getCurationDetail(
+			@PathVariable("curationId") String curationId
+	) {
+		var res = curationService.getCurationDetail(curationId);
+		return SuccessResponse.ok(res);
 	}
 
 	@Operation(summary = "사용자별 큐레이션 목록 조회 API", description = "사용자별 큐레이션 목록을 조회합니다.")
 	@GetMapping("/member/{id}")
-	public Map<String, Object> getCurationsForMember(@PathVariable("id") Long memberId) {
-		return curationService.getCurationsForMember(memberId);
+	public ResponseEntity<Map<String, Object>> getCurationsForMember(
+			@PathVariable("id") Long memberId
+	) {
+		var res = curationService.getCurationsForMember(memberId);
+		return SuccessResponse.ok(res);
 	}
 
 }
