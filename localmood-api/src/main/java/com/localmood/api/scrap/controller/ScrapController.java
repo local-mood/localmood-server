@@ -40,4 +40,24 @@ public class ScrapController {
 		return SuccessResponse.noContent();
 	}
 
+	@PostMapping("curations/{curationId}")
+	public ResponseEntity<?> scrapCuration(
+			@PathVariable(value = "curationId") Long curationId
+	){
+		Long memberId = Long.valueOf(1);
+
+		var res = scrapService.scrapCuration(curationId, memberId);
+		return SuccessResponse.created(res);
+	}
+
+	@DeleteMapping("{scrapId}/curations")
+	public ResponseEntity<?> unscrapCuration(
+			@PathVariable(value = "scrapId") Long scrapId
+	){
+		Long memberId = Long.valueOf(1);
+
+		scrapService.unscrapCuration(scrapId, memberId);
+		return SuccessResponse.noContent();
+	}
+
 }

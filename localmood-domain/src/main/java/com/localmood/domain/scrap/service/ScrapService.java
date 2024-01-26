@@ -49,4 +49,25 @@ public class ScrapService {
 		scrapSpaceRepository.delete(scrapSpace);
 	}
 
+	@Transactional
+	public ScrapCuration scrapCuration(Long curationId, Long memberId){
+		Curation curation = curationRepository.findById(curationId).orElseThrow();
+		Member member = memberRepository.findById(memberId).orElseThrow();
+
+		return scrapCurationRepository.save(
+				ScrapCuration
+						.builder()
+						.curation(curation)
+						.member(member)
+						.build()
+		);
+	}
+
+	@Transactional
+	public void unscrapCuration(Long scrapId, Long memberId){
+		ScrapCuration scrapCuration = scrapCurationRepository.findById(scrapId).orElseThrow();
+
+		scrapCurationRepository.delete(scrapCuration);
+	}
+
 }
