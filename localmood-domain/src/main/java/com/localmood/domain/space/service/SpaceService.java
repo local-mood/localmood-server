@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
+import com.localmood.domain.space.dto.SpaceDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.repository.SpaceRepository;
 
@@ -35,5 +36,9 @@ public class SpaceService {
 		}
 
 		return spaceRecommendListMap;
+	}
+
+	public List<SpaceDto> getSpaceSearchList(String name, String sort) {
+		return spaceRepository.findSpaceByName(name, sort);
 	}
 }

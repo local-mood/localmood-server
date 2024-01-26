@@ -6,7 +6,9 @@ import static com.localmood.domain.space.entity.QSpaceMenu.*;
 
 import java.util.List;
 
+import com.localmood.domain.space.dto.QSpaceDto;
 import com.localmood.domain.space.dto.QSpaceRecommendDto;
+import com.localmood.domain.space.dto.SpaceDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.entity.SpaceType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -57,4 +59,29 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.limit(3)
 				.fetch();
 	}
+
+	@Override
+	public List<SpaceDto> findSpaceByName(String name, String sort){
+
+		// TODO
+		//  - sort 변경 로직 추가
+
+		return queryFactory
+				.select(
+						new QSpaceDto(
+								space.name,
+								space.type,
+								space.address,
+								spaceInfo.purpose,
+								spaceInfo.interior
+						)
+				)
+				.from(space)
+				.leftJoin(spaceInfo)
+				.on(space.id.eq(spaceInfo.space.id))
+				.where(space.name.contains(name))
+				.orderBy(space.modifiedAt.desc())
+				.fetch();
+	}
+
 }
