@@ -6,16 +6,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SpaceSubType {
-	NULL("없음"),
+
+	KOREAN("한식"),
 	CHINESE("중식"),
 	JAPANESE("일식"),
 	WESTERN("양식"),
-	ASIAN("아시안식"),
-	KOREAN("한식");
+	ASIAN("아시아식");
 
 	private final String value;
 
-	public String getValue() {
-		return value;
-	}
 }
