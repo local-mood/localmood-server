@@ -1,0 +1,1 @@
+rename table scrap to scrap_curation;
