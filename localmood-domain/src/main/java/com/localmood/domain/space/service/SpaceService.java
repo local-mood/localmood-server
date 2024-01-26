@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.localmood.domain.space.dto.SpaceDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
+import com.localmood.domain.space.dto.request.SpaceFilterRequest;
+import com.localmood.domain.space.dto.request.SpaceSearchRequest;
 import com.localmood.domain.space.repository.SpaceRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,7 +40,21 @@ public class SpaceService {
 		return spaceRecommendListMap;
 	}
 
-	public List<SpaceDto> getSpaceSearchList(String name, String sort) {
-		return spaceRepository.findSpaceByName(name, sort);
+	public List<SpaceDto> getSpaceSearchList(SpaceSearchRequest request, String sort) {
+		return spaceRepository.findSpaceByName(request.getName(), sort);
+	}
+
+	public List<SpaceDto> getSpaceFilterList(SpaceFilterRequest request, String sort) {
+		return spaceRepository.findSpaceByKeywords(
+				request.getType(),
+				request.getPurpose(),
+				request.getMood(),
+				request.getMusic(),
+				request.getInterior(),
+				request.getVisitor(),
+				request.getOptServ(),
+				request.getDish(),
+				request.getDisDesc(),
+				sort);
 	}
 }

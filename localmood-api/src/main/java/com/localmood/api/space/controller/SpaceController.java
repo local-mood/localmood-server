@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.localmood.common.dto.SuccessResponse;
 import com.localmood.domain.space.dto.SpaceDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
+import com.localmood.domain.space.dto.request.SpaceFilterRequest;
 import com.localmood.domain.space.dto.request.SpaceSearchRequest;
 import com.localmood.domain.space.service.SpaceService;
 
@@ -38,8 +39,17 @@ public class SpaceController {
 			@RequestParam String sort,
 			@Valid @RequestBody SpaceSearchRequest request
 	){
-		var res = spaceService.getSpaceSearchList(request.getName(), sort);
+		var res = spaceService.getSpaceSearchList(request, sort);
 	    return SuccessResponse.ok(res);
+	}
+
+	@PostMapping("/filter")
+	public ResponseEntity<List<SpaceDto>> getSpaceFilterList(
+			@RequestParam String sort,
+			@Valid @RequestBody SpaceFilterRequest request
+	){
+		var res = spaceService.getSpaceFilterList(request, sort);
+		return SuccessResponse.ok(res);
 	}
 
 }
