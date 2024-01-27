@@ -30,25 +30,31 @@ public class SpaceController {
 
 	@GetMapping("/recommend")
 	public ResponseEntity<Map<String, List<SpaceRecommendDto>>> getSpaceRecommendList(){
-		var res = spaceService.getSpaceRecommendList();
+		Long memberId = Long.valueOf(1);
+
+		var res = spaceService.getSpaceRecommendList(memberId);
 		return SuccessResponse.ok(res);
 	}
 
 	@PostMapping("/search")
 	public ResponseEntity<List<SpaceDto>> getSpaceSearchList(
-			@RequestParam String sort,
+			@RequestParam(value="sort") String sort,
 			@Valid @RequestBody SpaceSearchRequest request
 	){
-		var res = spaceService.getSpaceSearchList(request, sort);
+		Long memberId = Long.valueOf(1);
+
+		var res = spaceService.getSpaceSearchList(request, sort, memberId);
 	    return SuccessResponse.ok(res);
 	}
 
 	@PostMapping("/filter")
 	public ResponseEntity<List<SpaceDto>> getSpaceFilterList(
-			@RequestParam String sort,
+			@RequestParam(value="sort") String sort,
 			@Valid @RequestBody SpaceFilterRequest request
 	){
-		var res = spaceService.getSpaceFilterList(request, sort);
+		Long memberId = Long.valueOf(1);
+
+		var res = spaceService.getSpaceFilterList(request, sort, memberId);
 		return SuccessResponse.ok(res);
 	}
 
