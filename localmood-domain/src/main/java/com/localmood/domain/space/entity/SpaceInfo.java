@@ -51,8 +51,14 @@ public class SpaceInfo extends BaseTimeEntity {
 	@Column
 	private String thumbnailImgUrl;
 
+	@Column
+	private String positiveEval;
+
+	@Column
+	private String negativeEval;
+
 	@Builder
-	public SpaceInfo (Space space, String purpose, String mood, String music, String interior, String visitor, String optServ, String thumbnailImgUrl) {
+	public SpaceInfo (Space space, String purpose, String mood, String music, String interior, String visitor, String optServ, String thumbnailImgUrl, String positiveEval, String negativeEval) {
 		this.space = space;
 		this.purpose = purpose;
 		this.mood = mood;
@@ -61,6 +67,8 @@ public class SpaceInfo extends BaseTimeEntity {
 		this.visitor = visitor;
 		this.optServ = optServ;
 		this.thumbnailImgUrl = thumbnailImgUrl;
+		this.positiveEval = positiveEval;
+		this.negativeEval = negativeEval;
 	}
 
 }
