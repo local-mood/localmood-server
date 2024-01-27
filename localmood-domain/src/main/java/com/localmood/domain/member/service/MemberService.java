@@ -1,8 +1,8 @@
-package com.localmood.api.member.service;
+package com.localmood.domain.member.service;
 
 import org.springframework.stereotype.Service;
 
-import com.localmood.api.member.model.dto.response.MemberDetailResponse;
+import com.localmood.domain.member.dto.response.MemberDetailResponse;
 import com.localmood.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
