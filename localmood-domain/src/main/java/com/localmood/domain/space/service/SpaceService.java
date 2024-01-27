@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
+import com.localmood.domain.curation.repository.CurationRepository;
 import com.localmood.domain.review.repository.ReviewImgRepository;
 import com.localmood.domain.scrap.entity.ScrapSpace;
 import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
@@ -34,6 +35,7 @@ public class SpaceService {
 	private final SpaceMenuRepository spaceMenuRepository;
 	private final ReviewImgRepository reviewImgRepository;
 	private final ScrapSpaceRepository scrapSpaceRepository;
+	private final CurationRepository curationRepository;
 
 	public Map<String, List<SpaceRecommendDto>> getSpaceRecommendList(Long memberId) {
 		String[] keywordArr = {"연인과의 데이트", "친구와의 만남", "왁자지껄 떠들기 좋은", "대화에 집중할 수 있는"};
@@ -103,8 +105,10 @@ public class SpaceService {
 		);
 
 		// 공간과 비슷한 장소
+		// Space space = spaceRepository.findById(spaceId).orElseThrow();
 
 		// 공간이 담긴 큐레이션
+		spaceDetailMap.put("relatedCurationList", curationRepository.findCurationBySpaceId(spaceId, memberId));
 
 		return spaceDetailMap;
 	}

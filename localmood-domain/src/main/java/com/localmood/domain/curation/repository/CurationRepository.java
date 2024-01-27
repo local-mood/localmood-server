@@ -9,7 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import com.localmood.domain.curation.entity.Curation;
 
 @Repository
-public interface CurationRepository extends JpaRepository<Curation, Long> {
+public interface CurationRepository extends JpaRepository<Curation, Long>, CurationRepositoryCustom {
+
 	// 랜덤으로 큐레이션 ID 리스트 검색
 	@Query(value = "SELECT id FROM curation ORDER BY RAND() LIMIT 5", nativeQuery = true)
 	List<Long> findRandomCurationIds();

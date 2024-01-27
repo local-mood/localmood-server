@@ -5,6 +5,7 @@ import static com.localmood.domain.scrap.entity.QScrapCuration.*;
 import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 import static com.localmood.domain.space.entity.QSpaceInfo.*;
 import static com.querydsl.core.types.ExpressionUtils.*;
+import static com.querydsl.core.types.dsl.Expressions.*;
 
 import java.util.List;
 
@@ -30,7 +31,8 @@ public class ScrapCurationRepositoryImpl implements ScrapCurationRepositoryCusto
 								scrapCuration.member.nickname,
 								scrapCuration.curation.keyword,
 								count(curationSpace.space.id),
-								spaceInfo.thumbnailImgUrl
+								spaceInfo.thumbnailImgUrl,
+								TRUE
 						)
 				)
 				.from(scrapCuration)
