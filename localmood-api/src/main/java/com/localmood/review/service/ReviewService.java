@@ -18,6 +18,7 @@ import com.localmood.domain.review.entity.Review;
 import com.localmood.domain.review.entity.ReviewImg;
 import com.localmood.domain.review.repository.ReviewImgRepository;
 import com.localmood.domain.review.repository.ReviewRepository;
+import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.repository.SpaceRepository;
 import com.localmood.review.request.ReviewCreateDto;
@@ -34,6 +35,7 @@ public class ReviewService {
 	private final SpaceRepository spaceRepository;
 	private final ReviewRepository reviewRepository;
 	private final ReviewImgRepository reviewImgRepository;
+	private final ScrapSpaceRepository scrapSpaceRepository;
 
 	public void createReview(Long memberId, String spaceId, @Valid @RequestBody ReviewCreateDto reviewCreateDto) {
 		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
@@ -65,7 +67,8 @@ public class ReviewService {
 			image,
 			space.getName(),
 			space.getType().toString(),
-			space.getAddress()
+			space.getAddress(),
+			checkIfSpaceScrapped(space.getId(), Long.valueOf(1))
 		);
 
 		return new ReviewResponseDto(Arrays.asList(detailResponseDto));
@@ -127,6 +130,11 @@ public class ReviewService {
 			review.getPositive_eval(),
 			review.getNegative_eval()
 		);
+	}
+
+	private boolean checkIfSpaceScrapped(Long spaceId, Long memberId) {
+		boolean isScrapped = scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
+		return isScrapped;
 	}
 
 }

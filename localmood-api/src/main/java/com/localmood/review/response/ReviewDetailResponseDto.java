@@ -18,20 +18,24 @@ public class ReviewDetailResponseDto {
 	private String music;
 	private String positiveEval;
 	private String negativeEval;
+	private boolean isScrapped;
 
-	public ReviewDetailResponseDto(String image, String name, String type, String address) {
+	public ReviewDetailResponseDto(String image, String name, String type, String address, Boolean isScrapped) {
 		this.image = image;
 		this.name = name;
 		this.type = type;
 		this.address = address;
+		this.isScrapped = isScrapped;
 	}
 
 	public ReviewDetailResponseDto(String image, String name, String type, String address,
 		String author, String createdAt, String interior,
 		String mood, String music,
 		String positiveEval, String negativeEval) {
-		this(image, name, type, address);
-
+		this.image = image;
+		this.name = name;
+		this.type = type;
+		this.address = address;
 		this.author = author;
 		this.createdAt = String.valueOf(createdAt);
 		this.mood = mood;
