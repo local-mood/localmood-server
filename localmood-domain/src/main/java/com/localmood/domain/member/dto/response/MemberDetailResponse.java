@@ -1,4 +1,4 @@
-package com.localmood.api.member.model.dto.response;
+package com.localmood.domain.member.dto.response;
 
 import lombok.Builder;
 
