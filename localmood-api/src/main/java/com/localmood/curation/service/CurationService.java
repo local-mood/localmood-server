@@ -24,6 +24,8 @@ import com.localmood.domain.curation.repository.CurationSpaceRepository;
 import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.member.repository.MemberRepository;
 import com.localmood.domain.review.repository.ReviewImgRepository;
+import com.localmood.domain.scrap.repository.ScrapCurationRepository;
+import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.entity.SpaceInfo;
 import com.localmood.domain.space.entity.SpaceMenu;
@@ -45,6 +47,8 @@ public class CurationService {
 	private final SpaceRepository spaceRepository;
 	private final SpaceInfoRepository spaceInfoRepository;
 	private final SpaceMenuRepository spaceMenuRepository;
+	private final ScrapCurationRepository scrapCurationRepository;
+	private final ScrapSpaceRepository scrapSpaceRepository;
 
 	// TODO
 	//   - AUTH 구현 후 currentmember로 변경
@@ -93,13 +97,17 @@ public class CurationService {
 		Member author = curation.getMember();
 		String authorName = author.getNickname();
 
+		// TODO: 스크랩 여부- 로그인된 유저로 memberId 변경필요
+		Long memberId = Long.valueOf(1);
+		boolean isScrapped = checkIfScrapped(curation.getId(), memberId);
+
 		List<String> image = getCurationImg(curation.getId());
 
 		return new CurationResponseDto(
 			curation.getId(), authorName, image, curation.getTitle(),
 			curationSpaceRepository.countByCurationId(curation.getId()),
-			Arrays.asList(curation.getKeyword().split(","))
-		);
+			Arrays.asList(curation.getKeyword().split(",")),
+			isScrapped);
 	}
 
 	private List<String> getCurationImg(Long curationId) {
@@ -133,8 +141,11 @@ public class CurationService {
 
 		List<Map<String, Object>> curationList = curations
 			.stream()
-			.map(this::mapToCurationResponseDto)
-			.map(CurationResponseDto::toMap)
+			.map(curation -> {
+				Map<String, Object> curationMap = mapToCurationResponseDto(curation).toMap();
+				curationMap.put("isScrapped", true);
+				return curationMap;
+			})
 			.collect(Collectors.toList());
 
 		response.put("curationCount", curationList.size());
@@ -142,7 +153,6 @@ public class CurationService {
 
 		return response;
 	}
-
 	public CurationDetailResponseDto getCurationDetail(String curationId) {
 		Curation curation = findByIdOrThrow(curationRepository, Long.parseLong(curationId),
 			ErrorCode.CURATION_NOT_FOUND);
@@ -173,6 +183,7 @@ public class CurationService {
 		SpaceInfo spaceInfo = getSpaceInfo(spaceId);
 		SpaceMenu spaceMenu = getSpaceMenu(spaceId);
 
+		// TODO: 스크랩 여부- 로그인된 유저로 memberId 변경필요
 		return new SpaceResponseDto(
 			space.getName(),
 			String.valueOf(space.getType()),
@@ -181,7 +192,8 @@ public class CurationService {
 			spaceInfo.getPurpose(),
 			spaceInfo.getMood(),
 			spaceInfo.getInterior(),
-			(space.getType() == SpaceType.RESTAURANT) ? spaceMenu.getDishDesc() : ""
+			(space.getType() == SpaceType.RESTAURANT) ? spaceMenu.getDishDesc() : "",
+			checkIfSpaceScrapped(spaceId, Long.valueOf(1))
 		);
 	}
 
@@ -191,6 +203,7 @@ public class CurationService {
 
 		List<Curation> curationList = curationRepository.findByTitleContaining(title);
 
+		// TODO: 스크랩 여부- 로그인된 유저로 memberId 변경필요
 		List<Map<String, Object>> CurationLists = curationList
 			.stream()
 			.map(curation -> {
@@ -201,6 +214,7 @@ public class CurationService {
 				curationMap.put("title", curation.getTitle());
 				curationMap.put("spaceCount", curationSpaceRepository.countByCurationId(curation.getId()));
 				curationMap.put("keyword", curation.getKeyword());
+				curationMap.put("isScrapped", checkIfScrapped(curation.getId(), Long.valueOf(1)));
 				return curationMap;
 			})
 			.collect(Collectors.toList());
@@ -245,5 +259,14 @@ public class CurationService {
 		return findByIdOrNull(spaceMenuRepository, spaceId);
 	}
 
+	private boolean checkIfScrapped(Long curationId, Long memberId) {
+		boolean isScrapped = scrapCurationRepository.existsByMemberIdAndCurationId(memberId, curationId);
+		return isScrapped;
+	}
+
+	private boolean checkIfSpaceScrapped(Long spaceId, Long memberId) {
+		boolean isScrapped = scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
+		return isScrapped;
+	}
 
 }
