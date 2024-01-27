@@ -19,6 +19,7 @@ import com.localmood.curation.request.CurationCreateDto;
 import com.localmood.curation.response.CurationDetailResponseDto;
 import com.localmood.curation.response.CurationResponseDto;
 import com.localmood.curation.service.CurationService;
+import com.localmood.domain.curation.dto.request.CurationFilterRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -116,6 +117,13 @@ public class CurationController {
 		return ResponseEntity.ok(searchResult);
 	}
 
-
+	@Operation(summary = "키워드로 큐레이션 목록 조회 API", description = "키워드로 큐레이션 목록을 조회합니다.")
+	@PostMapping("/filter")
+	public ResponseEntity<List<CurationResponseDto>> getCurationFilterList(
+		@Valid @RequestBody CurationFilterRequest request
+	) {
+		var res = curationService.getCurationFilterList(request);
+		return SuccessResponse.ok(res);
+	}
 
 }
