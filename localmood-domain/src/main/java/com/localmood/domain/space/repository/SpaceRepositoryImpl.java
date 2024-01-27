@@ -8,6 +8,8 @@ import static java.lang.Boolean.*;
 
 import java.util.List;
 
+import com.localmood.domain.member.dto.MemberScrapSpaceDto;
+import com.localmood.domain.member.dto.QMemberScrapSpaceDto;
 import com.localmood.domain.space.dto.QSpaceDto;
 import com.localmood.domain.space.dto.QSpaceRecommendDto;
 import com.localmood.domain.space.dto.SpaceDto;
@@ -187,5 +189,31 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.distinct()
 				.fetch();
 	}
+
+	@Override
+	public List<MemberScrapSpaceDto> findSimilarSpace(String purpose, String mood, Long memberId){
+		return queryFactory
+				.select(
+						new QMemberScrapSpaceDto(
+								space.id,
+								space.name,
+								space.type,
+								space.address,
+								spaceInfo.thumbnailImgUrl,
+								new CaseBuilder()
+										.when(scrapSpace.member.id.eq(memberId))
+										.then(TRUE)
+										.otherwise(FALSE)
+						)
+				)
+				.from(space)
+				.leftJoin(spaceInfo)
+				.on(space.id.eq(spaceInfo.space.id))
+				.leftJoin(scrapSpace)
+				.on(space.id.eq(scrapSpace.space.id))
+				.where(spaceInfo.purpose.eq(purpose).and(spaceInfo.mood.eq(mood)))
+				.distinct()
+				.fetch();
+	};
 
 }
