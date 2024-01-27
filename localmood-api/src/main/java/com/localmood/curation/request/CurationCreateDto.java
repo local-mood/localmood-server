@@ -23,11 +23,6 @@ public class CurationCreateDto {
 	@Schema(description = "공개 여부", required = true)
 	private boolean privacy;
 
-	// TODO
-	//   - AUTH 구현 후 Member로 변경 필요
-	@Schema(description = "멤버 ID", required = true)
-	private Long memberId;
-
 	public Curation toEntity(Member member) {
 		return Curation.builder()
 			.member(member)
