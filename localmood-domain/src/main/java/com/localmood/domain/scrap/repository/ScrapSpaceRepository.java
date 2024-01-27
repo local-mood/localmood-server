@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.localmood.domain.scrap.entity.ScrapSpace;
 
 @Repository
-public interface ScrapSpaceRepository extends JpaRepository<ScrapSpace, Long> {
+public interface ScrapSpaceRepository extends JpaRepository<ScrapSpace, Long>, ScrapSpaceRepositoryCustom{
 }
