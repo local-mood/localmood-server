@@ -41,10 +41,11 @@ public class ReviewController {
 	}
 
 	@Operation(summary = "멤버별 공간기록 조회 API", description = "멤버의 공간기록 목록을 조회합니다.")
-	@GetMapping("/member/{id}")
+	@GetMapping("/member")
 	public ResponseEntity<List<ReviewResponseDto>> getReviewForMember(
-			@PathVariable("id") Long memberId
 	) {
+		Long memberId = Long.valueOf(1);
+
 		var res = reviewService.getReviewForMember(memberId);
 		return ResponseEntity.ok(res);
 	}
