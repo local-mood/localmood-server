@@ -33,11 +33,6 @@ public class ReviewCreateDto {
 	@Schema(description = "이미지")
 	private String image;
 
-	// TODO
-	//   - AUTH 구현 후 Member로 변경 필요
-	@Schema(description = "멤버 ID", required = true)
-	private Long memberId;
-
 	public Review toEntity(Space space, Member member) {
 		return Review.builder()
 			.space(space)

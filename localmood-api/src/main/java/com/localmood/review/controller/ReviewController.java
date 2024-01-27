@@ -36,7 +36,9 @@ public class ReviewController {
 		@PathVariable("id") String spaceId,
 		@RequestBody ReviewCreateDto reviewCreateDto
 	) {
-		reviewService.createReview(spaceId, reviewCreateDto);
+		Long memberId = Long.valueOf(1);
+
+		reviewService.createReview(memberId, spaceId, reviewCreateDto);
 		return SuccessResponse.created("SUCCESS");
 	}
 
