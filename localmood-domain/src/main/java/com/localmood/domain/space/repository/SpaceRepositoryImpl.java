@@ -1,5 +1,6 @@
 package com.localmood.domain.space.repository;
 
+import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 import static com.localmood.domain.space.entity.QSpace.*;
 import static com.localmood.domain.space.entity.QSpaceInfo.*;
 import static com.localmood.domain.space.entity.QSpaceMenu.*;
@@ -11,6 +12,7 @@ import com.localmood.domain.space.dto.QSpaceRecommendDto;
 import com.localmood.domain.space.dto.SpaceDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.entity.SpaceDish;
+import com.localmood.domain.space.entity.SpaceSubType;
 import com.localmood.domain.space.entity.SpaceType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -27,10 +29,12 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 		return queryFactory
 				.select(
 						new QSpaceRecommendDto(
+								space.id,
 								space.name,
 								space.type,
 								space.address,
-								spaceMenu.dishDesc
+								spaceMenu.dishDesc,
+								spaceInfo.thumbnailImgUrl
 						)
 				)
 				.from(space)
@@ -38,7 +42,10 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.on(space.id.eq(spaceInfo.space.id))
 				.leftJoin(spaceMenu)
 				.on(space.id.eq(spaceMenu.space.id))
-				.where(space.type.eq(SpaceType.RESTAURANT), spaceInfo.purpose.contains(keyword))
+				.where(
+						space.type.eq(SpaceType.RESTAURANT),
+						spaceInfo.purpose.contains(keyword)
+				)
 				.limit(3)
 				.fetch();
 	}
@@ -48,10 +55,12 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 		return queryFactory
 				.select(
 						new QSpaceRecommendDto(
+								space.id,
 								space.name,
 								space.type,
 								space.address,
-								spaceInfo.interior
+								spaceInfo.interior,
+								spaceInfo.thumbnailImgUrl
 						)
 				)
 				.from(space)
@@ -71,11 +80,13 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 		return queryFactory
 				.select(
 						new QSpaceDto(
+								space.id,
 								space.name,
 								space.type,
 								space.address,
 								spaceInfo.purpose,
-								spaceInfo.interior
+								spaceInfo.interior,
+								spaceInfo.thumbnailImgUrl
 						)
 				)
 				.from(space)
@@ -87,13 +98,16 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<SpaceDto> findSpaceByKeywords(String type, String purpose, String mood, String music, String interior, String visitor, String optServ, String dish, String dishDesc, String sort){
+	public List<SpaceDto> findSpaceByKeywords(String type, String subType, String purpose, String mood, String music, String interior, String visitor, String optServ, String dish, String dishDesc, String sort){
 
 		// TODO
 		//  - sort 변경 로직 추가
 
 		BooleanBuilder builder = new BooleanBuilder();
 
+		if (!dishDesc.equals("ALL")){
+			builder.and(space.subType.eq(SpaceSubType.valueOf(subType)));
+		}
 		if (!purpose.equals("ALL")){
 			builder.and(spaceInfo.purpose.contains(purpose));
 		}
@@ -122,11 +136,13 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 		return queryFactory
 				.select(
 						new QSpaceDto(
+								space.id,
 								space.name,
 								space.type,
 								space.address,
 								spaceInfo.purpose,
-								spaceInfo.interior
+								spaceInfo.interior,
+								spaceInfo.thumbnailImgUrl
 						)
 				)
 				.from(space)

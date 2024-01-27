@@ -1,11 +1,12 @@
 package com.localmood.domain.space.dto.request;
-import jakarta.validation.constraints.Null;
+
 import lombok.Getter;
 
 @Getter
 public class SpaceFilterRequest {
 
 	private String type;
+	private String subType;
 	private String purpose;
 	private String mood;
 	private String music;

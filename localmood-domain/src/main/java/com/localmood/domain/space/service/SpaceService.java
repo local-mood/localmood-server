@@ -47,6 +47,7 @@ public class SpaceService {
 	public List<SpaceDto> getSpaceFilterList(SpaceFilterRequest request, String sort) {
 		return spaceRepository.findSpaceByKeywords(
 				request.getType(),
+				request.getSubType(),
 				request.getPurpose(),
 				request.getMood(),
 				request.getMusic(),
