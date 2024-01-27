@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/spaces")
+@RequestMapping("/api/v1/spaces")
 public class SpaceController {
 
 	private final SpaceService spaceService;
