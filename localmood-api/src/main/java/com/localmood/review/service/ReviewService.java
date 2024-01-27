@@ -35,9 +35,9 @@ public class ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final ReviewImgRepository reviewImgRepository;
 
-	public void createReview(String spaceId, @Valid @RequestBody ReviewCreateDto reviewCreateDto) {
+	public void createReview(Long memberId, String spaceId, @Valid @RequestBody ReviewCreateDto reviewCreateDto) {
 		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
-		Member member = findByIdOrThrow(memberRepository, reviewCreateDto.getMemberId(), ErrorCode.MEMBER_NOT_FOUND);
+		Member member = findByIdOrThrow(memberRepository, memberId, ErrorCode.MEMBER_NOT_FOUND);
 
 		Review review = reviewCreateDto.toEntity(space, member);
 		reviewRepository.save(review);
