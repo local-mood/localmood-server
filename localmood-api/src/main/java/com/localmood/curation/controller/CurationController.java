@@ -79,6 +79,8 @@ public class CurationController {
 			@PathVariable("curationId") String curationId,
 			@PathVariable("spaceId") String spaceId
 	) {
+		Long memberId = Long.valueOf(1);
+
 		curationService.registerSpace(curationId, spaceId);
 		return SuccessResponse.created("SUCCESS");
 	}
