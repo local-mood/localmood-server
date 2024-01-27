@@ -14,8 +14,10 @@ public class SpaceResponseDto {
 	private String mood;
 	private String interior;
 	private String bestMenu;
+	private boolean isScrapped;
 
-	public SpaceResponseDto(String name, String type, String address, List<String> imageUrls, String purpose, String mood, String interior, String bestMenu) {
+	public SpaceResponseDto(String name, String type, String address, List<String> imageUrls,
+		String purpose, String mood, String interior, String bestMenu, boolean isScrapped) {
 		this.name = name;
 		this.type = type;
 		this.address = address;
@@ -24,5 +26,6 @@ public class SpaceResponseDto {
 		this.mood = mood;
 		this.interior = interior;
 		this.bestMenu = bestMenu;
+		this.isScrapped = isScrapped;
 	}
 }
