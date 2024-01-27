@@ -3,6 +3,7 @@ package com.localmood.curation.service;
 import static com.localmood.common.utils.RepositoryUtil.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,6 +184,32 @@ public class CurationService {
 		);
 	}
 
+	public Map<String, Object> getCurationSearchList(String title) {
+		Map<String, Object> response = new LinkedHashMap<>();
+
+		List<Curation> curationList = curationRepository.findByTitleContaining(title);
+
+		List<Map<String, Object>> CurationLists = curationList
+			.stream()
+			.map(curation -> {
+				Map<String, Object> curationMap = new HashMap<>();
+				curationMap.put("id", curation.getId());
+				curationMap.put("author", curation.getMember().getNickname());
+				curationMap.put("image", getCurationImg(curation.getId()));
+				curationMap.put("title", curation.getTitle());
+				curationMap.put("spaceCount", curationSpaceRepository.countByCurationId(curation.getId()));
+				curationMap.put("keyword", curation.getKeyword());
+				return curationMap;
+			})
+			.collect(Collectors.toList());
+
+		response.put("CurationCount", CurationLists.size());
+		response.put("CurationList", CurationLists);
+
+		return response;
+	}
+
+
 	private List<String> getImageUrls(Long spaceId) {
 		return reviewImgRepository.findImageUrlsBySpaceId(spaceId);
 	}
@@ -196,5 +223,6 @@ public class CurationService {
 	private SpaceMenu getSpaceMenu(Long spaceId) {
 		return findByIdOrNull(spaceMenuRepository, spaceId);
 	}
+
 
 }

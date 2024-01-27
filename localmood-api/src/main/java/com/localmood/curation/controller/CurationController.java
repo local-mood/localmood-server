@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.localmood.common.dto.SuccessResponse;
@@ -104,5 +105,17 @@ public class CurationController {
 		var res = curationService.getCurationsForMember(memberId);
 		return SuccessResponse.ok(res);
 	}
+
+	@Operation(summary = "제목으로 큐레이션 목록 조회 API", description = "제목으로 큐레이션 목록을 조회합니다.")
+	@GetMapping("/search")
+	public ResponseEntity<Map<String, Object>> getCurationSearchList(
+		@RequestParam("title") String title
+	) {
+		Map<String, Object> searchResult = curationService.getCurationSearchList(title);
+
+		return ResponseEntity.ok(searchResult);
+	}
+
+
 
 }
