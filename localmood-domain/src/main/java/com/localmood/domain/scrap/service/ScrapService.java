@@ -43,8 +43,8 @@ public class ScrapService {
 	}
 
 	@Transactional
-	public void unscrapSpace(Long scrapId, Long memberId){
-		ScrapSpace scrapSpace = scrapSpaceRepository.findById(scrapId).orElseThrow();
+	public void unscrapSpace(Long spaceId, Long memberId){
+		ScrapSpace scrapSpace = scrapSpaceRepository.findByMemberIdAndSpaceId(memberId, spaceId).orElseThrow();
 
 		scrapSpaceRepository.delete(scrapSpace);
 	}
@@ -64,8 +64,8 @@ public class ScrapService {
 	}
 
 	@Transactional
-	public void unscrapCuration(Long scrapId, Long memberId){
-		ScrapCuration scrapCuration = scrapCurationRepository.findById(scrapId).orElseThrow();
+	public void unscrapCuration(Long spaceId, Long memberId){
+		ScrapCuration scrapCuration = scrapCurationRepository.findByMemberIdAndCurationId(memberId, spaceId).orElseThrow();
 
 		scrapCurationRepository.delete(scrapCuration);
 	}
