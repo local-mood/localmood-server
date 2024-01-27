@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Review", description = "공간 기록 API")
 @RestController
-@RequestMapping("/api/review")
+@RequestMapping("/api/v1/review")
 @RequiredArgsConstructor
 public class ReviewController {
 

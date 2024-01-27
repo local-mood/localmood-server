@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Curation", description = "큐레이션 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/curation")
+@RequestMapping("/api/v1/curation")
 public class CurationController {
 
 	private final CurationService curationService;
@@ -67,7 +67,7 @@ public class CurationController {
 	}
 
 	@Operation(summary = "랜덤 큐레이션 조회 API", description = "랜덤으로 큐레이션 목록을 조회합니다.")
-	@GetMapping("/random")
+	@GetMapping("/recommend")
 	public ResponseEntity<List<CurationResponseDto>> getRandomCuration() {
 		var res = curationService.getRandomCurations();
 		return SuccessResponse.ok(res);
