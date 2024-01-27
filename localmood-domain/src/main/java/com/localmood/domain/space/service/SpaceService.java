@@ -105,9 +105,9 @@ public class SpaceService {
 		);
 
 		// 공간과 비슷한 장소
-		// Space space = spaceRepository.findById(spaceId).orElseThrow();
+		spaceDetailMap.put("similarSpaceList", spaceRepository.findSimilarSpace(spaceInfo.getPurpose(), spaceInfo.getMood(), memberId));
 
-		// 공간이 담긴 큐레이션
+				// 공간이 담긴 큐레이션
 		spaceDetailMap.put("relatedCurationList", curationRepository.findCurationBySpaceId(spaceId, memberId));
 
 		return spaceDetailMap;

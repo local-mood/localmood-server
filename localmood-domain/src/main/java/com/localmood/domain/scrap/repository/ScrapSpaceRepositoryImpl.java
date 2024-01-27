@@ -2,6 +2,7 @@ package com.localmood.domain.scrap.repository;
 
 import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 import static com.localmood.domain.space.entity.QSpaceInfo.*;
+import static com.querydsl.core.types.dsl.Expressions.*;
 
 import java.util.List;
 
@@ -25,7 +26,8 @@ public class ScrapSpaceRepositoryImpl implements ScrapSpaceRepositoryCustom{
 								scrapSpace.space.name,
 								scrapSpace.space.type,
 								scrapSpace.space.address,
-								spaceInfo.thumbnailImgUrl
+								spaceInfo.thumbnailImgUrl,
+								TRUE
 						)
 				)
 				.from(scrapSpace)
