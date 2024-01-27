@@ -10,4 +10,5 @@ import com.localmood.domain.scrap.entity.ScrapCuration;
 @Repository
 public interface ScrapCurationRepository extends JpaRepository<ScrapCuration, Long>, ScrapCurationRepositoryCustom {
 	Optional<ScrapCuration> findByMemberIdAndCurationId(Long memberId, Long curationId);
+  boolean existsByMemberIdAndCurationId(Long memberId, Long curationId);
 }

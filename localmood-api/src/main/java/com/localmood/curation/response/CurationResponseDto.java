@@ -17,15 +17,18 @@ public class CurationResponseDto {
 	private String title;
 	private int spaceCount;
 	private List<String> keyword;
+	private Boolean isScrapped;
+
 
 	public CurationResponseDto(Long id, String authorName, List<String> image, String title, int spaceCount,
-		List<String> keyword) {
+		List<String> keyword, Boolean isScrapped) {
 		this.id = id;
 		this.author = authorName;
 		this.image = image;
 		this.title = title;
 		this.spaceCount = spaceCount;
 		this.keyword = keyword;
+		this.isScrapped = isScrapped;
 	}
 
 	public Map<String, Object> toMap() {
