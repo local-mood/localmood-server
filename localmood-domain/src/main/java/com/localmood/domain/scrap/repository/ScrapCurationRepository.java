@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.localmood.domain.scrap.entity.ScrapCuration;
 
 @Repository
-public interface ScrapCurationRepository extends JpaRepository<ScrapCuration, Long> {
+public interface ScrapCurationRepository extends JpaRepository<ScrapCuration, Long>, ScrapCurationRepositoryCustom {
 }
