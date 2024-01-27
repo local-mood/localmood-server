@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
+import com.localmood.domain.scrap.entity.ScrapSpace;
+import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.dto.SpaceDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
@@ -22,13 +24,13 @@ public class SpaceService {
 
 	private final SpaceRepository spaceRepository;
 
-	public Map<String, List<SpaceRecommendDto>> getSpaceRecommendList() {
+	public Map<String, List<SpaceRecommendDto>> getSpaceRecommendList(Long memberId) {
 		String[] keywordArr = {"연인과의 데이트", "친구와의 만남", "왁자지껄 떠들기 좋은", "대화에 집중할 수 있는"};
 		HashMap<String, List<SpaceRecommendDto>> spaceRecommendListMap = new HashMap<>();
 
 		for (int i=0; i < keywordArr.length; i++) {
-			var restaurantList = spaceRepository.findRestaurantRecommendByKeyword(keywordArr[i]);
-			var cafeList = spaceRepository.findCafeRecommendByKeyword(keywordArr[i]);
+			var restaurantList = spaceRepository.findRestaurantRecommendByKeyword(keywordArr[i], memberId);
+			var cafeList = spaceRepository.findCafeRecommendByKeyword(keywordArr[i], memberId);
 
 			var mergedSpaceList = Stream.of(restaurantList, cafeList)
 					.flatMap(x -> x.stream())
@@ -40,11 +42,11 @@ public class SpaceService {
 		return spaceRecommendListMap;
 	}
 
-	public List<SpaceDto> getSpaceSearchList(SpaceSearchRequest request, String sort) {
-		return spaceRepository.findSpaceByName(request.getName(), sort);
+	public List<SpaceDto> getSpaceSearchList(SpaceSearchRequest request, String sort, Long memberId) {
+		return spaceRepository.findSpaceByName(request.getName(), sort, memberId);
 	}
 
-	public List<SpaceDto> getSpaceFilterList(SpaceFilterRequest request, String sort) {
+	public List<SpaceDto> getSpaceFilterList(SpaceFilterRequest request, String sort, Long memberId) {
 		return spaceRepository.findSpaceByKeywords(
 				request.getType(),
 				request.getSubType(),
@@ -56,6 +58,8 @@ public class SpaceService {
 				request.getOptServ(),
 				request.getDish(),
 				request.getDisDesc(),
-				sort);
+				sort,
+				memberId
+		);
 	}
 }
