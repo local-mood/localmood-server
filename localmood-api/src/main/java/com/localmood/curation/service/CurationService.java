@@ -3,6 +3,7 @@ package com.localmood.curation.service;
 import static com.localmood.common.utils.RepositoryUtil.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.localmood.common.exception.ErrorCode;
 import com.localmood.curation.request.CurationCreateDto;
 import com.localmood.curation.response.CurationDetailResponseDto;
 import com.localmood.curation.response.CurationResponseDto;
+import com.localmood.domain.curation.dto.request.CurationFilterRequest;
 import com.localmood.domain.curation.entity.Curation;
 import com.localmood.domain.curation.entity.CurationSpace;
 import com.localmood.domain.curation.repository.CurationRepository;
@@ -183,6 +185,52 @@ public class CurationService {
 		);
 	}
 
+	// 제목으로 큐레이션 검색
+	public Map<String, Object> getCurationSearchList(String title) {
+		Map<String, Object> response = new LinkedHashMap<>();
+
+		List<Curation> curationList = curationRepository.findByTitleContaining(title);
+
+		List<Map<String, Object>> CurationLists = curationList
+			.stream()
+			.map(curation -> {
+				Map<String, Object> curationMap = new HashMap<>();
+				curationMap.put("id", curation.getId());
+				curationMap.put("author", curation.getMember().getNickname());
+				curationMap.put("image", getCurationImg(curation.getId()));
+				curationMap.put("title", curation.getTitle());
+				curationMap.put("spaceCount", curationSpaceRepository.countByCurationId(curation.getId()));
+				curationMap.put("keyword", curation.getKeyword());
+				return curationMap;
+			})
+			.collect(Collectors.toList());
+
+		response.put("CurationCount", CurationLists.size());
+		response.put("CurationList", CurationLists);
+
+		return response;
+	}
+
+	// 키워드로 큐레이션 검색
+	public List<CurationResponseDto> getCurationFilterList(CurationFilterRequest request) {
+		List<Curation> curationList = curationRepository.findByKeywordContainingOrKeywordContaining(request.getKeyword1(), request.getKeyword2());
+
+		// 키워드로 필터링
+		List<Curation> CurationLists = curationList
+			.stream()
+			.filter(curation -> curation.getKeyword().contains(request.getKeyword1())
+				&& curation.getKeyword().contains(request.getKeyword2()))
+			.collect(Collectors.toList());
+
+		List<CurationResponseDto> response = CurationLists
+			.stream()
+			.map(this::mapToCurationResponseDto)
+			.collect(Collectors.toList());
+
+		return response;
+	}
+
+
 	private List<String> getImageUrls(Long spaceId) {
 		return reviewImgRepository.findImageUrlsBySpaceId(spaceId);
 	}
@@ -196,5 +244,6 @@ public class CurationService {
 	private SpaceMenu getSpaceMenu(Long spaceId) {
 		return findByIdOrNull(spaceMenuRepository, spaceId);
 	}
+
 
 }

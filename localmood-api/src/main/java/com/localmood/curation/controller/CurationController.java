@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.localmood.common.dto.SuccessResponse;
@@ -18,6 +19,7 @@ import com.localmood.curation.request.CurationCreateDto;
 import com.localmood.curation.response.CurationDetailResponseDto;
 import com.localmood.curation.response.CurationResponseDto;
 import com.localmood.curation.service.CurationService;
+import com.localmood.domain.curation.dto.request.CurationFilterRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -102,6 +104,25 @@ public class CurationController {
 		Long memberId = Long.valueOf(1);
 
 		var res = curationService.getCurationsForMember(memberId);
+		return SuccessResponse.ok(res);
+	}
+
+	@Operation(summary = "제목으로 큐레이션 목록 조회 API", description = "제목으로 큐레이션 목록을 조회합니다.")
+	@GetMapping("/search")
+	public ResponseEntity<Map<String, Object>> getCurationSearchList(
+		@RequestParam("title") String title
+	) {
+		Map<String, Object> searchResult = curationService.getCurationSearchList(title);
+
+		return ResponseEntity.ok(searchResult);
+	}
+
+	@Operation(summary = "키워드로 큐레이션 목록 조회 API", description = "키워드로 큐레이션 목록을 조회합니다.")
+	@PostMapping("/filter")
+	public ResponseEntity<List<CurationResponseDto>> getCurationFilterList(
+		@Valid @RequestBody CurationFilterRequest request
+	) {
+		var res = curationService.getCurationFilterList(request);
 		return SuccessResponse.ok(res);
 	}
 
