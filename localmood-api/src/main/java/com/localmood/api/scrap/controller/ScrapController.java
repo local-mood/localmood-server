@@ -30,13 +30,13 @@ public class ScrapController {
 		return SuccessResponse.created(res);
 	}
 
-	@DeleteMapping("{scrapId}/spaces")
+	@DeleteMapping("spaces/{spaceId}")
 	public ResponseEntity<?> unscrapSpace(
-			@PathVariable(value = "scrapId") Long scrapId
+			@PathVariable(value = "spaceId") Long spaceId
 	){
 		Long memberId = Long.valueOf(1);
 
-		scrapService.unscrapSpace(scrapId, memberId);
+		scrapService.unscrapSpace(spaceId, memberId);
 		return SuccessResponse.noContent();
 	}
 
@@ -50,13 +50,13 @@ public class ScrapController {
 		return SuccessResponse.created(res);
 	}
 
-	@DeleteMapping("{scrapId}/curations")
+	@DeleteMapping("curations/{curationId}")
 	public ResponseEntity<?> unscrapCuration(
-			@PathVariable(value = "scrapId") Long scrapId
+			@PathVariable(value = "curationId") Long curationId
 	){
 		Long memberId = Long.valueOf(1);
 
-		scrapService.unscrapCuration(scrapId, memberId);
+		scrapService.unscrapCuration(curationId, memberId);
 		return SuccessResponse.noContent();
 	}
 
