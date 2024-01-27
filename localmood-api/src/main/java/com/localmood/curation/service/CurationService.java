@@ -47,8 +47,8 @@ public class CurationService {
 	// TODO
 	//   - AUTH 구현 후 currentmember로 변경
 	@Transactional
-	public void createCuration(CurationCreateDto curationCreateDto) {
-		Member member = findByIdOrThrow(memberRepository, curationCreateDto.getMemberId(), ErrorCode.MEMBER_NOT_FOUND);
+	public void createCuration(Long memberId, CurationCreateDto curationCreateDto) {
+		Member member = findByIdOrThrow(memberRepository, memberId, ErrorCode.MEMBER_NOT_FOUND);
 
 		Curation curation = curationCreateDto.toEntity(member);
 

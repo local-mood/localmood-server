@@ -39,7 +39,9 @@ public class CurationController {
 	public ResponseEntity<?> createCuration(
 			@Valid @RequestBody CurationCreateDto curationCreateDto
 	) {
-		curationService.createCuration(curationCreateDto);
+		Long memberId = Long.valueOf(1);
+
+		curationService.createCuration(memberId, curationCreateDto);
 		return SuccessResponse.created("SUCCESS");
 	}
 
@@ -79,7 +81,6 @@ public class CurationController {
 			@PathVariable("curationId") String curationId,
 			@PathVariable("spaceId") String spaceId
 	) {
-		Long memberId = Long.valueOf(1);
 
 		curationService.registerSpace(curationId, spaceId);
 		return SuccessResponse.created("SUCCESS");
