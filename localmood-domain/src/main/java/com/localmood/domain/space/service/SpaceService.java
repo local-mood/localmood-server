@@ -10,10 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.localmood.domain.curation.repository.CurationRepository;
 import com.localmood.domain.review.repository.ReviewImgRepository;
-import com.localmood.domain.scrap.entity.ScrapSpace;
 import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.dto.SpaceDetailDto;
-import com.localmood.domain.space.dto.SpaceDto;
+import com.localmood.domain.space.dto.SpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
 import com.localmood.domain.space.dto.request.SpaceSearchRequest;
@@ -55,11 +54,11 @@ public class SpaceService {
 		return spaceRecommendListMap;
 	}
 
-	public List<SpaceDto> getSpaceSearchList(SpaceSearchRequest request, String sort, Long memberId) {
+	public List<SpaceSearchDto> getSpaceSearchList(SpaceSearchRequest request, String sort, Long memberId) {
 		return spaceRepository.findSpaceByName(request.getName(), sort, memberId);
 	}
 
-	public List<SpaceDto> getSpaceFilterList(SpaceFilterRequest request, String sort, Long memberId) {
+	public List<SpaceSearchDto> getSpaceFilterList(SpaceFilterRequest request, String sort, Long memberId) {
 		return spaceRepository.findSpaceByKeywords(
 				request.getType(),
 				request.getSubType(),
