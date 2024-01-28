@@ -1,5 +1,9 @@
 package com.localmood.review.request;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.review.entity.Review;
 import com.localmood.domain.space.entity.Space;
@@ -30,8 +34,8 @@ public class ReviewCreateDto {
 	@Schema(description = "아쉬워던 점", nullable = true)
 	private String negativeEval;
 
-	@Schema(description = "이미지")
-	private String image;
+	// @Schema(description = "이미지", nullable = true)
+	// private List<MultipartFile> images;
 
 	public Review toEntity(Space space, Member member) {
 		return Review.builder()

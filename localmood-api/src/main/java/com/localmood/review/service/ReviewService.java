@@ -2,6 +2,7 @@ package com.localmood.review.service;
 
 import static com.localmood.common.utils.RepositoryUtil.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -9,9 +10,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.localmood.common.exception.ErrorCode;
+import com.localmood.common.s3.service.AwsS3Service;
 import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.member.repository.MemberRepository;
 import com.localmood.domain.review.entity.Review;
@@ -21,6 +23,7 @@ import com.localmood.domain.review.repository.ReviewRepository;
 import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.repository.SpaceRepository;
+import com.localmood.review.controller.ImageUploadDto;
 import com.localmood.review.request.ReviewCreateDto;
 import com.localmood.review.response.ReviewDetailResponseDto;
 import com.localmood.review.response.ReviewResponseDto;
@@ -31,21 +34,35 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
+	private final AwsS3Service awsS3Service;
 	private final MemberRepository memberRepository;
 	private final SpaceRepository spaceRepository;
 	private final ReviewRepository reviewRepository;
 	private final ReviewImgRepository reviewImgRepository;
 	private final ScrapSpaceRepository scrapSpaceRepository;
 
-	public void createReview(Long memberId, String spaceId, @Valid @RequestBody ReviewCreateDto reviewCreateDto) {
+	public void createReview(Long memberId, String spaceId,
+		@Valid ReviewCreateDto reviewCreateDto, ImageUploadDto imageUploadDto) {
 		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
 		Member member = findByIdOrThrow(memberRepository, memberId, ErrorCode.MEMBER_NOT_FOUND);
 
+		// 리뷰 생성 및 저장
 		Review review = reviewCreateDto.toEntity(space, member);
 		reviewRepository.save(review);
 
-		String image = reviewCreateDto.getImage();
-		saveReviewImage(review, space, member, image);
+		// 이미지 업로드 및 URL 저장
+		List<String> imageUrls = new ArrayList<>();
+		if (imageUploadDto.getFiles() != null && !imageUploadDto.getFiles().isEmpty()) {
+			for (MultipartFile image : imageUploadDto.getFiles()) {
+				String imageUrl = awsS3Service.uploadFile(image);
+				imageUrls.add(imageUrl);
+			}
+		}
+
+		// 리뷰 이미지 DB에 저장
+		for (String imageUrl : imageUrls) {
+			saveReviewImage(review, space, member, imageUrl);
+		}
 	}
 
 	// 사용자별 공간 기록 조회
