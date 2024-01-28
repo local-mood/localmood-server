@@ -10,9 +10,9 @@ import java.util.List;
 
 import com.localmood.domain.member.dto.MemberScrapSpaceDto;
 import com.localmood.domain.member.dto.QMemberScrapSpaceDto;
-import com.localmood.domain.space.dto.QSpaceDto;
 import com.localmood.domain.space.dto.QSpaceRecommendDto;
-import com.localmood.domain.space.dto.SpaceDto;
+import com.localmood.domain.space.dto.QSpaceSearchDto;
+import com.localmood.domain.space.dto.SpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.entity.SpaceDish;
 import com.localmood.domain.space.entity.SpaceSubType;
@@ -90,20 +90,23 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<SpaceDto> findSpaceByName(String name, String sort, Long memberId){
+	public List<SpaceSearchDto> findSpaceByName(String name, String sort, Long memberId){
 
 		// TODO
 		//  - sort 변경 로직 추가
 
 		return queryFactory
 				.select(
-						new QSpaceDto(
+						new QSpaceSearchDto(
 								space.id,
 								space.name,
 								space.type,
 								space.address,
 								spaceInfo.purpose,
-								spaceInfo.interior,
+								new CaseBuilder()
+										.when(space.type.eq(SpaceType.CAFE))
+										.then(spaceInfo.interior)
+										.otherwise(spaceMenu.dishDesc),
 								spaceInfo.thumbnailImgUrl,
 								new CaseBuilder()
 										.when(scrapSpace.member.id.eq(memberId))
@@ -114,6 +117,8 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.from(space)
 				.leftJoin(spaceInfo)
 				.on(space.id.eq(spaceInfo.space.id))
+				.leftJoin(spaceMenu)
+				.on(space.id.eq(spaceMenu.space.id))
 				.leftJoin(scrapSpace)
 				.on(space.id.eq(scrapSpace.space.id))
 				.where(space.name.contains(name))
@@ -123,7 +128,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<SpaceDto> findSpaceByKeywords(String type, String subType, String purpose, String mood, String music, String interior, String visitor, String optServ, String dish, String dishDesc, String sort, Long memberId){
+	public List<SpaceSearchDto> findSpaceByKeywords(String type, String subType, String purpose, String mood, String music, String interior, String visitor, String optServ, String dish, String dishDesc, String sort, Long memberId){
 
 		// TODO
 		//  - sort 변경 로직 추가
@@ -160,13 +165,16 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 
 		return queryFactory
 				.select(
-						new QSpaceDto(
+						new QSpaceSearchDto(
 								space.id,
 								space.name,
 								space.type,
 								space.address,
 								spaceInfo.purpose,
-								spaceInfo.interior,
+								new CaseBuilder()
+										.when(space.type.eq(SpaceType.CAFE))
+										.then(spaceInfo.interior)
+										.otherwise(spaceMenu.dishDesc),
 								spaceInfo.thumbnailImgUrl,
 								new CaseBuilder()
 										.when(scrapSpace.member.id.eq(memberId))
