@@ -8,9 +8,9 @@ spring:
 
   data:
     redis:
-      host: ENC(MM5dPI90nQGS6Rh1V/iaRZ70qDKyC4YY)
+      host: ENC(GS/6qxct1VZ19/Va2qPTIfznL0CSiqRg)
       port: 6379
-      password:
+      password: ENC(N7TVk838ChkHOQAj8YhYBff/3vrgbU8i)
 
   flyway:
     enabled: true
