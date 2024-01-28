@@ -6,6 +6,12 @@ spring:
     username: ENC(KAR1dpuSZ7Ucf8D3TfX11g7FPIelZ0yS)
     password: ENC(JEFlteVuCW6ylc5lN/c/l8Cjeu4phffu)
 
+  data:
+    redis:
+      host: ENC(MM5dPI90nQGS6Rh1V/iaRZ70qDKyC4YY)
+      port: 6379
+      password:
+
   flyway:
     enabled: true
     baseline-on-migrate: true
