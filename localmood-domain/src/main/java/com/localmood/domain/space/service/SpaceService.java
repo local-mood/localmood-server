@@ -63,14 +63,14 @@ public class SpaceService {
 	public List<SpaceSearchDto> getSpaceFilterList(SpaceFilterRequest request, String sort, Long memberId) {
 		return spaceRepository.findSpaceByKeywords(
 				request.getType(),
-				SpaceSubType.of(request.getSubType()),
+				request.getSubType(),
 				request.getPurpose(),
 				request.getMood(),
 				request.getMusic(),
 				request.getInterior(),
 				request.getVisitor(),
 				request.getOptServ(),
-				SpaceDish.of(request.getDish()),
+				request.getDish(),
 				request.getDisDesc(),
 				sort,
 				memberId
