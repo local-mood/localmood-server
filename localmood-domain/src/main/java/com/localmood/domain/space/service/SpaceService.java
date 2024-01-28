@@ -95,6 +95,7 @@ public class SpaceService {
 						.subType(space.getSubType())
 						.dish(spaceMenu.getDish())
 						.dishDesc(spaceMenu.getDishDesc())
+						.optionalService(spaceInfo.getOptServ())
 						.purpose(spaceInfo.getPurpose())
 						.mood(spaceInfo.getMood())
 						.music(spaceInfo.getMusic())
