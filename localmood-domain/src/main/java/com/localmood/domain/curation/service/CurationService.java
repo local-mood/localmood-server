@@ -144,6 +144,7 @@ public class CurationService {
 			.map(curation -> {
 				Map<String, Object> curationMap = mapToCurationResponseDto(curation).toMap();
 				curationMap.put("isScrapped", true);
+				curationMap.put("privacy", curation.getPrivacy());
 				return curationMap;
 			})
 			.collect(Collectors.toList());
