@@ -1,4 +1,4 @@
-package com.localmood.curation.controller;
+package com.localmood.api.curation.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
-import com.localmood.curation.request.CurationCreateDto;
-import com.localmood.curation.response.CurationDetailResponseDto;
-import com.localmood.curation.response.CurationResponseDto;
-import com.localmood.curation.service.CurationService;
+import com.localmood.domain.curation.dto.request.CurationCreateDto;
+import com.localmood.domain.curation.dto.response.CurationDetailResponseDto;
+import com.localmood.domain.curation.dto.response.CurationResponseDto;
+import com.localmood.domain.curation.service.CurationService;
 import com.localmood.domain.curation.dto.request.CurationFilterRequest;
 import com.localmood.domain.member.entity.Member;
 

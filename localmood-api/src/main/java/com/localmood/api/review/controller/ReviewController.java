@@ -1,4 +1,4 @@
-package com.localmood.review.controller;
+package com.localmood.api.review.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
 import com.localmood.domain.member.entity.Member;
-import com.localmood.review.request.ReviewCreateDto;
-import com.localmood.review.response.ReviewResponseDto;
-import com.localmood.review.service.ReviewService;
+import com.localmood.api.review.dto.request.ReviewCreateDto;
+import com.localmood.api.review.dto.response.ReviewResponseDto;
+import com.localmood.api.review.service.ReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

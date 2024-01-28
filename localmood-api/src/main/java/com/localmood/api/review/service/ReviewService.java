@@ -1,4 +1,4 @@
-package com.localmood.review.service;
+package com.localmood.api.review.service;
 
 import static com.localmood.common.utils.RepositoryUtil.*;
 
@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.localmood.api.review.dto.request.ReviewCreateDto;
+import com.localmood.api.review.dto.response.ReviewDetailResponseDto;
+import com.localmood.api.review.dto.response.ReviewResponseDto;
 import com.localmood.common.exception.ErrorCode;
 import com.localmood.common.s3.service.AwsS3Service;
 import com.localmood.domain.member.entity.Member;
@@ -23,10 +26,7 @@ import com.localmood.domain.review.repository.ReviewRepository;
 import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.repository.SpaceRepository;
-import com.localmood.review.controller.ImageUploadDto;
-import com.localmood.review.request.ReviewCreateDto;
-import com.localmood.review.response.ReviewDetailResponseDto;
-import com.localmood.review.response.ReviewResponseDto;
+import com.localmood.api.review.controller.ImageUploadDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
