@@ -4,6 +4,8 @@ import com.localmood.common.entity.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,12 +37,16 @@ public class Member extends BaseTimeEntity {
 	@Column
 	private String profileImgUrl;
 
+	@Enumerated(EnumType.STRING)
+	private Role role;
+
 	@Builder
-	public Member (String nickname, String email, String password, String profileImgUrl) {
+	public Member (String nickname, String email, String password, String profileImgUrl, Role role) {
 		this.nickname = nickname;
 		this.email = email;
 		this.password = password;
 		this.profileImgUrl = profileImgUrl;
+		this.role = role;
 	}
 
 }
