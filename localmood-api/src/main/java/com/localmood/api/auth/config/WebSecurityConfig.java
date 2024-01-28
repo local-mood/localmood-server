@@ -24,7 +24,6 @@ import com.localmood.common.config.CorsConfig;
 
 import lombok.RequiredArgsConstructor;
 
-
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
@@ -52,24 +51,24 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-          .httpBasic(HttpBasicConfigurer::disable)
-          .csrf(CsrfConfigurer::disable)
-          .formLogin(FormLoginConfigurer::disable);
+                .httpBasic(HttpBasicConfigurer::disable)
+                .csrf(CsrfConfigurer::disable)
+                .formLogin(FormLoginConfigurer::disable);
 
         http
-          .addFilter(corsConfig.corsFilter())
-          .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-          .exceptionHandling((exceptionHandling) ->
-            exceptionHandling
-              .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-              .accessDeniedHandler(jwtAccessDeniedHandler)
-          );
+                .addFilter(corsConfig.corsFilter())
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling((exceptionHandling) ->
+                        exceptionHandling
+                                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                                .accessDeniedHandler(jwtAccessDeniedHandler)
+                );
 
         http
-          .authorizeRequests() //
-          .requestMatchers("/", "/api/v1/signup", "/api/v1/login/**", "/api/v1/login")
-          .permitAll()
-          .anyRequest().authenticated();
+                .authorizeRequests() //
+                .requestMatchers("/**")
+                .permitAll()
+                .anyRequest().authenticated();
 
         return http.build();
     }
@@ -78,11 +77,11 @@ public class WebSecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> {
             web.ignoring()
-              .requestMatchers(
-                "/swagger-ui/**",
-                "/v3/api-docs/**",
-                "/swagger-vote.html"
-              );
+                    .requestMatchers(
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**",
+                            "/swagger-vote.html"
+                    );
         };
     }
 
