@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
+import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.space.dto.SpaceDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
@@ -31,42 +33,39 @@ public class SpaceController {
 	private final SpaceService spaceService;
 
 	@GetMapping("/recommend")
-	public ResponseEntity<Map<String, List<SpaceRecommendDto>>> getSpaceRecommendList(){
-		Long memberId = Long.valueOf(1);
-
-		var res = spaceService.getSpaceRecommendList(memberId);
+	public ResponseEntity<Map<String, List<SpaceRecommendDto>>> getSpaceRecommendList(
+			@CurrentUser Member member
+	){
+		var res = spaceService.getSpaceRecommendList(member.getId());
 		return SuccessResponse.ok(res);
 	}
 
 	@PostMapping("/search")
 	public ResponseEntity<List<SpaceDto>> getSpaceSearchList(
 			@RequestParam(value="sort") String sort,
-			@Valid @RequestBody SpaceSearchRequest request
+			@Valid @RequestBody SpaceSearchRequest request,
+			@CurrentUser Member member
 	){
-		Long memberId = Long.valueOf(1);
-
-		var res = spaceService.getSpaceSearchList(request, sort, memberId);
+		var res = spaceService.getSpaceSearchList(request, sort, member.getId());
 	    return SuccessResponse.ok(res);
 	}
 
 	@PostMapping("/filter")
 	public ResponseEntity<List<SpaceDto>> getSpaceFilterList(
 			@RequestParam(value="sort") String sort,
-			@Valid @RequestBody SpaceFilterRequest request
+			@Valid @RequestBody SpaceFilterRequest request,
+			@CurrentUser Member member
 	){
-		Long memberId = Long.valueOf(1);
-
-		var res = spaceService.getSpaceFilterList(request, sort, memberId);
+		var res = spaceService.getSpaceFilterList(request, sort, member.getId());
 		return SuccessResponse.ok(res);
 	}
 
 	@GetMapping("/{spaceId}")
 	public ResponseEntity<HashMap<String, Object>> getSpaceDetail(
-			@PathVariable(value = "spaceId") Long spaceId
+			@PathVariable(value = "spaceId") Long spaceId,
+			@CurrentUser Member member
 	){
-		Long memberId = Long.valueOf(1);
-
-		var res = spaceService.getSpaceDetail(spaceId, memberId);
+		var res = spaceService.getSpaceDetail(spaceId, member.getId());
 		return SuccessResponse.ok(res);
 	}
 

@@ -1,4 +1,4 @@
-package com.localmood.review.controller;
+package com.localmood.api.review.controller;
 
 import java.util.List;
 

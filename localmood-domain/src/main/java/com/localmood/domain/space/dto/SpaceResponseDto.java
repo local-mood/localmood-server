@@ -1,4 +1,4 @@
-package com.localmood.space.response;
+package com.localmood.domain.space.dto;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
-package com.localmood.curation.response;
+package com.localmood.domain.curation.dto.response;
 
 import java.util.List;
 
-import com.localmood.space.response.SpaceResponseDto;
+import com.localmood.domain.space.dto.SpaceResponseDto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

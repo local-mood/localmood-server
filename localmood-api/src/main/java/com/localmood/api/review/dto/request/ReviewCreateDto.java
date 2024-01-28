@@ -1,4 +1,4 @@
-package com.localmood.review.request;
+package com.localmood.api.review.dto.request;
 
 import java.util.List;
 

@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.localmood.api.auth.CurrentUser;
 import com.localmood.domain.member.dto.MemberScrapCurationDto;
 import com.localmood.domain.member.dto.MemberScrapSpaceDto;
+import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.member.service.MemberScrapService;
 import com.localmood.common.dto.SuccessResponse;
 
@@ -22,18 +24,18 @@ public class MemberScrapController {
 	private final MemberScrapService memberScrapService;
 
 	@GetMapping("/space")
-	public ResponseEntity<List<MemberScrapSpaceDto>> getMemberScrapSpace(){
-		Long memberId = Long.valueOf(1);
-
-		var res = memberScrapService.getMemberScrapSpace(memberId);
+	public ResponseEntity<List<MemberScrapSpaceDto>> getMemberScrapSpace(
+			@CurrentUser Member member
+	){
+		var res = memberScrapService.getMemberScrapSpace(member.getId());
 		return SuccessResponse.ok(res);
 	}
 
 	@GetMapping("/curation")
-	public ResponseEntity<List<MemberScrapCurationDto>> getMemberScrapCuration(){
-		Long memberId = Long.valueOf(1);
-
-		var res = memberScrapService.getMemberScrapCuration(memberId);
+	public ResponseEntity<List<MemberScrapCurationDto>> getMemberScrapCuration(
+			@CurrentUser Member member
+	){
+		var res = memberScrapService.getMemberScrapCuration(member.getId());
 		return SuccessResponse.ok(res);
 	}
 

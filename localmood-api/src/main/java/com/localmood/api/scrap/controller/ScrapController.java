@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
+import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.scrap.entity.ScrapSpace;
 import com.localmood.domain.scrap.service.ScrapService;
 
@@ -22,41 +24,37 @@ public class ScrapController {
 
 	@PostMapping("spaces/{spaceId}")
 	public ResponseEntity<ScrapSpace> scrapSpace(
-			@PathVariable(value = "spaceId") Long spaceId
+			@PathVariable(value = "spaceId") Long spaceId,
+			@CurrentUser Member member
 	){
-		Long memberId = Long.valueOf(1);
-
-		var res = scrapService.scrapSpace(spaceId, memberId);
+		var res = scrapService.scrapSpace(spaceId, member.getId());
 		return SuccessResponse.created(res);
 	}
 
 	@DeleteMapping("spaces/{spaceId}")
 	public ResponseEntity<?> unscrapSpace(
-			@PathVariable(value = "spaceId") Long spaceId
+			@PathVariable(value = "spaceId") Long spaceId,
+			@CurrentUser Member member
 	){
-		Long memberId = Long.valueOf(1);
-
-		scrapService.unscrapSpace(spaceId, memberId);
+		scrapService.unscrapSpace(spaceId, member.getId());
 		return SuccessResponse.noContent();
 	}
 
 	@PostMapping("curations/{curationId}")
 	public ResponseEntity<?> scrapCuration(
-			@PathVariable(value = "curationId") Long curationId
+			@PathVariable(value = "curationId") Long curationId,
+			@CurrentUser Member member
 	){
-		Long memberId = Long.valueOf(1);
-
-		var res = scrapService.scrapCuration(curationId, memberId);
+		var res = scrapService.scrapCuration(curationId, member.getId());
 		return SuccessResponse.created(res);
 	}
 
 	@DeleteMapping("curations/{curationId}")
 	public ResponseEntity<?> unscrapCuration(
-			@PathVariable(value = "curationId") Long curationId
+			@PathVariable(value = "curationId") Long curationId,
+			@CurrentUser Member member
 	){
-		Long memberId = Long.valueOf(1);
-
-		scrapService.unscrapCuration(curationId, memberId);
+		scrapService.unscrapCuration(curationId, member.getId());
 		return SuccessResponse.noContent();
 	}
 

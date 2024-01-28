@@ -1,4 +1,4 @@
-package com.localmood.curation.response;
+package com.localmood.domain.curation.dto.response;
 
 import java.util.HashMap;
 import java.util.List;

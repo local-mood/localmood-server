@@ -1,4 +1,4 @@
-package com.localmood.curation.controller;
+package com.localmood.api.curation.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
-import com.localmood.curation.request.CurationCreateDto;
-import com.localmood.curation.response.CurationDetailResponseDto;
-import com.localmood.curation.response.CurationResponseDto;
-import com.localmood.curation.service.CurationService;
+import com.localmood.domain.curation.dto.request.CurationCreateDto;
+import com.localmood.domain.curation.dto.response.CurationDetailResponseDto;
+import com.localmood.domain.curation.dto.response.CurationResponseDto;
+import com.localmood.domain.curation.service.CurationService;
 import com.localmood.domain.curation.dto.request.CurationFilterRequest;
+import com.localmood.domain.member.entity.Member;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,11 +41,10 @@ public class CurationController {
 	@Operation(summary = "큐레이션 생성 API", description = "새로운 큐레이션을 생성합니다.")
 	@PostMapping("")
 	public ResponseEntity<?> createCuration(
-			@Valid @RequestBody CurationCreateDto curationCreateDto
+			@Valid @RequestBody CurationCreateDto curationCreateDto,
+			@CurrentUser Member member
 	) {
-		Long memberId = Long.valueOf(1);
-
-		curationService.createCuration(memberId, curationCreateDto);
+		curationService.createCuration(member.getId(), curationCreateDto);
 		return SuccessResponse.created("SUCCESS");
 	}
 
@@ -83,7 +84,6 @@ public class CurationController {
 			@PathVariable("curationId") String curationId,
 			@PathVariable("spaceId") String spaceId
 	) {
-
 		curationService.registerSpace(curationId, spaceId);
 		return SuccessResponse.created("SUCCESS");
 	}
@@ -100,10 +100,9 @@ public class CurationController {
 	@Operation(summary = "사용자별 큐레이션 목록 조회 API", description = "사용자별 큐레이션 목록을 조회합니다.")
 	@GetMapping("/member")
 	public ResponseEntity<Map<String, Object>> getCurationsForMember(
+			@CurrentUser Member member
 	) {
-		Long memberId = Long.valueOf(1);
-
-		var res = curationService.getCurationsForMember(memberId);
+		var res = curationService.getCurationsForMember(member.getId());
 		return SuccessResponse.ok(res);
 	}
 

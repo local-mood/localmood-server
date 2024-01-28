@@ -1,4 +1,4 @@
-package com.localmood.curation.service;
+package com.localmood.domain.curation.service;
 
 import static com.localmood.common.utils.RepositoryUtil.*;
 
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.localmood.common.exception.ErrorCode;
-import com.localmood.curation.request.CurationCreateDto;
-import com.localmood.curation.response.CurationDetailResponseDto;
-import com.localmood.curation.response.CurationResponseDto;
+import com.localmood.domain.curation.dto.request.CurationCreateDto;
+import com.localmood.domain.curation.dto.response.CurationDetailResponseDto;
+import com.localmood.domain.curation.dto.response.CurationResponseDto;
 import com.localmood.domain.curation.dto.request.CurationFilterRequest;
 import com.localmood.domain.curation.entity.Curation;
 import com.localmood.domain.curation.entity.CurationSpace;
@@ -33,7 +33,7 @@ import com.localmood.domain.space.entity.SpaceType;
 import com.localmood.domain.space.repository.SpaceInfoRepository;
 import com.localmood.domain.space.repository.SpaceMenuRepository;
 import com.localmood.domain.space.repository.SpaceRepository;
-import com.localmood.space.response.SpaceResponseDto;
+import com.localmood.domain.space.dto.SpaceResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
