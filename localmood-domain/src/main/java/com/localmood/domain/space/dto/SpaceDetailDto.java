@@ -1,14 +1,18 @@
 package com.localmood.domain.space.dto;
 
-import java.util.Arrays;
 import java.util.List;
 
+import com.localmood.common.utils.ArrayUtil;
 import com.localmood.domain.space.entity.SpaceDish;
 import com.localmood.domain.space.entity.SpaceSubType;
 import com.localmood.domain.space.entity.SpaceType;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 public class SpaceDetailDto {
 
 	private Long id;
@@ -24,8 +28,8 @@ public class SpaceDetailDto {
 	private List<String> purpose;
 	private String mood;
 	private String music;
-	private String positiveEval;
-	private String negativeEval;
+	private String[][] positiveEval;
+	private String[][] negativeEval;
 	private Boolean isScraped;
 
 	@Builder
@@ -40,11 +44,11 @@ public class SpaceDetailDto {
 		this.dishDesc = dishDesc;
 		this.visitorNum = visitorNum;
 		this.optionalService = optionalService;
-		this.purpose = Arrays.asList(purpose.split(","));
+		this.purpose = ArrayUtil.toArr(purpose);
 		this.mood = mood;
 		this.music = music;
-		this.positiveEval = positiveEval;
-		this.negativeEval = negativeEval;
+		this.positiveEval = ArrayUtil.to2DArr(positiveEval);
+		this.negativeEval = ArrayUtil.to2DArr(negativeEval);
 		this.isScraped = isScraped;
 	}
 }
