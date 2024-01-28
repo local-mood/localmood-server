@@ -22,8 +22,8 @@ public enum SpaceSubType {
 	private static final Map<String, SpaceSubType> BY_VALUE =
 			Stream.of(values()).collect(Collectors.toMap(SpaceSubType::getValue, e -> e));
 
-	public static String of(String value) {
-		return BY_VALUE.get(value).toString();
+	public static SpaceSubType of(String value) {
+		return BY_VALUE.get(value);
 	}
 
 }
