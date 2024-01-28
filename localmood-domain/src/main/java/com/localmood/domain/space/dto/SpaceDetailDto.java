@@ -16,8 +16,8 @@ public class SpaceDetailDto {
 	private List<String> imgUrlList;
 	private String address;
 	private SpaceType type;
-	private SpaceSubType subType;
-	private SpaceDish dish;
+	private String subType;
+	private String dish;
 	private String dishDesc;
 	private String visitorNum;
 	private String optionalService;
@@ -35,8 +35,8 @@ public class SpaceDetailDto {
 		this.imgUrlList = imgUrlList;
 		this.address = address;
 		this.type = type;
-		this.subType = subType;
-		this.dish = dish;
+		this.subType = subType.getValue();
+		this.dish = dish.getValue();
 		this.dishDesc = dishDesc;
 		this.visitorNum = visitorNum;
 		this.optionalService = optionalService;
