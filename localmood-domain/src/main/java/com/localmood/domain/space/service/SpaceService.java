@@ -17,8 +17,10 @@ import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
 import com.localmood.domain.space.dto.request.SpaceSearchRequest;
 import com.localmood.domain.space.entity.Space;
+import com.localmood.domain.space.entity.SpaceDish;
 import com.localmood.domain.space.entity.SpaceInfo;
 import com.localmood.domain.space.entity.SpaceMenu;
+import com.localmood.domain.space.entity.SpaceSubType;
 import com.localmood.domain.space.repository.SpaceInfoRepository;
 import com.localmood.domain.space.repository.SpaceMenuRepository;
 import com.localmood.domain.space.repository.SpaceRepository;
@@ -61,14 +63,14 @@ public class SpaceService {
 	public List<SpaceSearchDto> getSpaceFilterList(SpaceFilterRequest request, String sort, Long memberId) {
 		return spaceRepository.findSpaceByKeywords(
 				request.getType(),
-				request.getSubType(),
+				SpaceSubType.of(request.getSubType()),
 				request.getPurpose(),
 				request.getMood(),
 				request.getMusic(),
 				request.getInterior(),
 				request.getVisitor(),
 				request.getOptServ(),
-				request.getDish(),
+				SpaceDish.of(request.getDish()),
 				request.getDisDesc(),
 				sort,
 				memberId
