@@ -1,5 +1,6 @@
 package com.localmood.common.s3.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -26,8 +27,16 @@ public class AmazonS3Controller {
 	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile",
 		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<List<String>> uploadFile(
-		@RequestPart(value = "file", required = true) List<MultipartFile> multipartFiles) {
-		return ResponseEntity.ok(awsS3Service.uploadFile(multipartFiles));
+		@RequestPart(value = "file", required = true) MultipartFile[] multipartFiles) {
+		List<String> uploadedFileNames = new ArrayList<>();
+
+		for (MultipartFile file : multipartFiles) {
+			String fileName = awsS3Service.uploadFile(file);
+			uploadedFileNames.add(fileName);
+		}
+
+		return ResponseEntity.ok(uploadedFileNames);
 	}
+
 
 }
