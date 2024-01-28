@@ -4,12 +4,14 @@ import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 import static com.localmood.domain.space.entity.QSpace.*;
 import static com.localmood.domain.space.entity.QSpaceInfo.*;
 import static com.localmood.domain.space.entity.QSpaceMenu.*;
-import static java.lang.Boolean.*;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.localmood.common.util.ScrapUtil;
 import com.localmood.domain.member.dto.MemberScrapSpaceDto;
 import com.localmood.domain.member.dto.QMemberScrapSpaceDto;
+import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.space.dto.QSpaceRecommendDto;
 import com.localmood.domain.space.dto.QSpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceSearchDto;
@@ -27,9 +29,10 @@ import lombok.RequiredArgsConstructor;
 public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 
 	private final JPAQueryFactory queryFactory;
+	private final ScrapUtil scrapUtil;
 
 	@Override
-	public List<SpaceRecommendDto> findRestaurantRecommendByKeyword(String keyword, Long memberId){
+	public List<SpaceRecommendDto> findRestaurantRecommendByKeyword(String keyword, Optional<Member> member){
 		return queryFactory
 				.select(
 						new QSpaceRecommendDto(
@@ -39,10 +42,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 								space.address,
 								spaceMenu.dishDesc,
 								spaceInfo.thumbnailImgUrl,
-								new CaseBuilder()
-										.when(scrapSpace.member.id.eq(memberId))
-										.then(TRUE)
-										.otherwise(FALSE)
+								scrapUtil.isScraped(member, scrapSpace.member.id)
 						)
 				)
 				.from(space)
@@ -62,7 +62,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<SpaceRecommendDto> findCafeRecommendByKeyword(String keyword, Long memberId){
+	public List<SpaceRecommendDto> findCafeRecommendByKeyword(String keyword, Optional<Member> member){
 		return queryFactory
 				.select(
 						new QSpaceRecommendDto(
@@ -72,10 +72,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 								space.address,
 								spaceInfo.interior,
 								spaceInfo.thumbnailImgUrl,
-								new CaseBuilder()
-										.when(scrapSpace.member.id.eq(memberId))
-										.then(TRUE)
-										.otherwise(FALSE)
+								scrapUtil.isScraped(member, scrapSpace.member.id)
 						)
 				)
 				.from(space)
@@ -90,7 +87,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<SpaceSearchDto> findSpaceByName(String name, String sort, Long memberId){
+	public List<SpaceSearchDto> findSpaceByName(String name, String sort, Optional<Member> member){
 
 		// TODO
 		//  - sort 변경 로직 추가
@@ -108,10 +105,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 										.then(spaceInfo.interior)
 										.otherwise(spaceMenu.dishDesc),
 								spaceInfo.thumbnailImgUrl,
-								new CaseBuilder()
-										.when(scrapSpace.member.id.eq(memberId))
-										.then(TRUE)
-										.otherwise(FALSE)
+								scrapUtil.isScraped(member, scrapSpace.member.id)
 						)
 				)
 				.from(space)
@@ -128,7 +122,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<SpaceSearchDto> findSpaceByKeywords(String type, String subType, String purpose, String mood, String music, String interior, String visitor, String optServ, String dish, String dishDesc, String sort, Long memberId){
+	public List<SpaceSearchDto> findSpaceByKeywords(String type, String subType, String purpose, String mood, String music, String interior, String visitor, String optServ, String dish, String dishDesc, String sort, Optional<Member> member){
 
 		// TODO
 		//  - sort 변경 로직 추가
@@ -176,10 +170,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 										.then(spaceInfo.interior)
 										.otherwise(spaceMenu.dishDesc),
 								spaceInfo.thumbnailImgUrl,
-								new CaseBuilder()
-										.when(scrapSpace.member.id.eq(memberId))
-										.then(TRUE)
-										.otherwise(FALSE)
+								scrapUtil.isScraped(member, scrapSpace.member.id)
 						)
 				)
 				.from(space)
@@ -199,7 +190,8 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<MemberScrapSpaceDto> findSimilarSpace(String purpose, String mood, Long memberId){
+	public List<MemberScrapSpaceDto> findSimilarSpace(String purpose, String mood, Optional<Member> member){
+
 		return queryFactory
 				.select(
 						new QMemberScrapSpaceDto(
@@ -208,10 +200,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 								space.type,
 								space.address,
 								spaceInfo.thumbnailImgUrl,
-								new CaseBuilder()
-										.when(scrapSpace.member.id.eq(memberId))
-										.then(TRUE)
-										.otherwise(FALSE)
+								scrapUtil.isScraped(member, scrapSpace.member.id)
 						)
 				)
 				.from(space)
@@ -222,6 +211,6 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.where(spaceInfo.purpose.eq(purpose).and(spaceInfo.mood.eq(mood)))
 				.distinct()
 				.fetch();
-	};
+	}
 
 }
