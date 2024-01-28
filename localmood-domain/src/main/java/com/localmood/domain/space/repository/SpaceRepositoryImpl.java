@@ -135,7 +135,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 
 		BooleanBuilder builder = new BooleanBuilder();
 
-		if (!dishDesc.equals("ALL")){
+		if (!subType.equals("ALL")){
 			builder.and(space.subType.eq(SpaceSubType.of(subType)));
 		}
 		if (!purpose.equals("ALL")){
