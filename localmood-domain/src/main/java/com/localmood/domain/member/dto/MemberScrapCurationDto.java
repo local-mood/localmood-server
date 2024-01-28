@@ -7,17 +7,17 @@ public record MemberScrapCurationDto(
 		String title,
 		String author,
 		String keyword,
-		Long spaceCnt,
+		Long spaceCount,
 		String imgUrl,
 		Boolean isScraped
 ){
 	@QueryProjection
-	public MemberScrapCurationDto(Long id, String title, String author, String keyword, Long spaceCnt, String imgUrl, Boolean isScraped){
+	public MemberScrapCurationDto(Long id, String title, String author, String keyword, Long spaceCount, String imgUrl, Boolean isScraped){
 		this.id = id;
 		this.title = title;
 		this.author = author;
 		this.keyword = keyword;
-		this.spaceCnt = spaceCnt;
+		this.spaceCount = spaceCount;
 		this.imgUrl = imgUrl;
 		this.isScraped = isScraped;
 	}
