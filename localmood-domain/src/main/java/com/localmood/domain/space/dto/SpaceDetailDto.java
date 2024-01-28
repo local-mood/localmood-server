@@ -19,6 +19,7 @@ public class SpaceDetailDto {
 	private SpaceSubType subType;
 	private SpaceDish dish;
 	private String dishDesc;
+	private String visitorNum;
 	private String optionalService;
 	private List<String> purpose;
 	private String mood;
@@ -28,7 +29,7 @@ public class SpaceDetailDto {
 	private Boolean isScraped;
 
 	@Builder
-	public SpaceDetailDto(Long id, String name, List<String> imgUrlList, String address, SpaceType type, SpaceSubType subType, String optionalService, SpaceDish dish, String dishDesc, String purpose, String mood, String music, String positiveEval, String negativeEval, Boolean isScraped){
+	public SpaceDetailDto(Long id, String name, List<String> imgUrlList, String address, SpaceType type, SpaceSubType subType, SpaceDish dish, String dishDesc, String visitorNum, String optionalService, String purpose, String mood, String music, String positiveEval, String negativeEval, Boolean isScraped){
 		this.id = id;
 		this.name = name;
 		this.imgUrlList = imgUrlList;
@@ -37,6 +38,7 @@ public class SpaceDetailDto {
 		this.subType = subType;
 		this.dish = dish;
 		this.dishDesc = dishDesc;
+		this.visitorNum = visitorNum;
 		this.optionalService = optionalService;
 		this.purpose = Arrays.asList(purpose.split(","));
 		this.mood = mood;
