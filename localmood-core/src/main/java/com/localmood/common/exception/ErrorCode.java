@@ -14,7 +14,8 @@ public enum ErrorCode {
 	SPACE_NOT_FOUND(HttpStatus.NOT_FOUND, "공간을 찾지 못했습니다.", "존재하는 공간인지 확인해주세요."),
 	SPACE_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "공간 정보를 찾지 못했습니다.", "존재하는 공간 정보인지 확인해주세요."),
 	SPACE_MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "공간 메뉴를 찾지 못했습니다.", "존재하는 공간 메뉴인지 확인해주세요."),
-	SPACE_SUB_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "공간 서브 유형을 찾지 못했습니다.", "존재하는 공간 서브 유형인지 확인해주세요.");
+	SPACE_SUB_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "공간 서브 유형을 찾지 못했습니다.", "존재하는 공간 서브 유형인지 확인해주세요."),
+	FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.", "파일 업로드를 다시 시도해주세요.");
 
 	private final HttpStatus httpStatus;
 	private final String message;
