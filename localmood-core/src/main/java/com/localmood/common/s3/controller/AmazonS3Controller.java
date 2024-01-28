@@ -12,11 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.localmood.common.s3.service.AwsS3Service;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "File", description = "파일 업로드 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/file")
+@RequestMapping("/api/v1/file")
 public class AmazonS3Controller {
 
 	private final AwsS3Service awsS3Service;
