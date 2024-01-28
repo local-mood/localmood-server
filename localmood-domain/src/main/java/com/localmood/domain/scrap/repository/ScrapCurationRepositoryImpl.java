@@ -2,7 +2,6 @@ package com.localmood.domain.scrap.repository;
 
 import static com.localmood.domain.curation.entity.QCurationSpace.*;
 import static com.localmood.domain.scrap.entity.QScrapCuration.*;
-import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 import static com.localmood.domain.space.entity.QSpaceInfo.*;
 import static com.querydsl.core.types.ExpressionUtils.*;
 import static com.querydsl.core.types.dsl.Expressions.*;
@@ -11,7 +10,6 @@ import java.util.List;
 
 import com.localmood.domain.member.dto.MemberScrapCurationDto;
 import com.localmood.domain.member.dto.QMemberScrapCurationDto;
-import com.localmood.domain.member.dto.QMemberScrapSpaceDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
