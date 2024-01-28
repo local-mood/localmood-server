@@ -136,7 +136,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 		BooleanBuilder builder = new BooleanBuilder();
 
 		if (!dishDesc.equals("ALL")){
-			builder.and(space.subType.eq(SpaceSubType.valueOf(subType)));
+			builder.and(space.subType.eq(SpaceSubType.of(subType)));
 		}
 		if (!purpose.equals("ALL")){
 			builder.and(spaceInfo.purpose.contains(purpose));
@@ -157,7 +157,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			builder.and(spaceInfo.optServ.contains(optServ));
 		}
 		if (!dish.equals("ALL")){
-			builder.and(spaceMenu.dish.eq(SpaceDish.valueOf(dish)));
+			builder.and(spaceMenu.dish.eq(SpaceDish.of(dish)));
 		}
 		if (!dishDesc.equals("ALL")){
 			builder.and(spaceMenu.dishDesc.contains(dishDesc));
