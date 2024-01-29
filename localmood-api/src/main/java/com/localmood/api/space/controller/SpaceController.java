@@ -20,6 +20,7 @@ import com.localmood.domain.space.dto.SpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
 import com.localmood.domain.space.dto.request.SpaceSearchRequest;
+import com.localmood.domain.space.dto.response.SpaceSearchResponse;
 import com.localmood.domain.space.service.SpaceService;
 
 import jakarta.validation.Valid;
@@ -41,7 +42,7 @@ public class SpaceController {
 	}
 
 	@PostMapping("/search")
-	public ResponseEntity<List<SpaceSearchDto>> getSpaceSearchList(
+	public ResponseEntity<SpaceSearchResponse> getSpaceSearchList(
 			@RequestParam(value="sort") String sort,
 			@Valid @RequestBody SpaceSearchRequest request,
 			@CurrentUser Member member
@@ -51,7 +52,7 @@ public class SpaceController {
 	}
 
 	@PostMapping("/filter")
-	public ResponseEntity<List<SpaceSearchDto>> getSpaceFilterList(
+	public ResponseEntity<SpaceSearchResponse> getSpaceFilterList(
 			@RequestParam(value="sort") String sort,
 			@Valid @RequestBody SpaceFilterRequest request,
 			@CurrentUser Member member
