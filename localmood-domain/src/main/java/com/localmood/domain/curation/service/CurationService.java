@@ -154,7 +154,7 @@ public class CurationService {
 
 		return response;
 	}
-	public CurationDetailResponseDto getCurationDetail(String curationId) {
+	public CurationDetailResponseDto getCurationDetail(String curationId, Long memberId) {
 		Curation curation = findByIdOrThrow(curationRepository, Long.parseLong(curationId),
 			ErrorCode.CURATION_NOT_FOUND);
 
@@ -163,9 +163,11 @@ public class CurationService {
 
 		List<SpaceResponseDto> curationSpaceInfo = getCurationSpaceInfo(Long.valueOf(curationId));
 
+		String variant = memberId.equals(curation.getMember().getId()) ? "my" : "others";
+
 		return new CurationDetailResponseDto(
 			curation.getTitle(), curation.getKeyword(), curation.getPrivacy(),
-			author, createdDate, curationSpaceInfo);
+			author, createdDate, curationSpaceInfo, variant);
 	}
 
 	private List<SpaceResponseDto> getCurationSpaceInfo(Long curationId) {
