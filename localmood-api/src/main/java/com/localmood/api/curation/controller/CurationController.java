@@ -41,8 +41,8 @@ public class CurationController {
 	@Operation(summary = "큐레이션 생성 API", description = "새로운 큐레이션을 생성합니다.")
 	@PostMapping("")
 	public ResponseEntity<?> createCuration(
-			@Valid @RequestBody CurationCreateDto curationCreateDto,
-			@CurrentUser Member member
+		@Valid @RequestBody CurationCreateDto curationCreateDto,
+		@CurrentUser Member member
 	) {
 		curationService.createCuration(member.getId(), curationCreateDto);
 		return SuccessResponse.created("SUCCESS");
@@ -52,8 +52,8 @@ public class CurationController {
 	@Operation(summary = "큐레이션 편집 API", description = "큐레이션을 편집합니다.")
 	@PatchMapping("/{curationId}")
 	public ResponseEntity<?> editCuration(
-			@PathVariable("curationId") String curationId,
-			@RequestBody CurationCreateDto curationCreateDto
+		@PathVariable("curationId") String curationId,
+		@RequestBody CurationCreateDto curationCreateDto
 	) {
 		curationService.editCuration(curationId, curationCreateDto);
 		return SuccessResponse.ok("SUCCESS");
@@ -62,7 +62,7 @@ public class CurationController {
 	@Operation(summary = "큐레이션 삭제 API", description = "큐레이션을 삭제합니다.")
 	@DeleteMapping("/{curationId}")
 	public ResponseEntity<?> deleteCuration(
-			@PathVariable("curationId") String curationId
+		@PathVariable("curationId") String curationId
 	) {
 		curationService.deleteCuration(curationId);
 		return SuccessResponse.noContent();
@@ -80,8 +80,8 @@ public class CurationController {
 	@Operation(summary = "큐레이션 공간 등록 API", description = "큐레이션에 공간을 추가합니다.")
 	@PostMapping("/{curationId}/space/{spaceId}")
 	public ResponseEntity<?> registerSpace(
-			@PathVariable("curationId") String curationId,
-			@PathVariable("spaceId") String spaceId
+		@PathVariable("curationId") String curationId,
+		@PathVariable("spaceId") String spaceId
 	) {
 		curationService.registerSpace(curationId, spaceId);
 		return SuccessResponse.created("SUCCESS");
@@ -100,7 +100,7 @@ public class CurationController {
 	@Operation(summary = "사용자별 큐레이션 목록 조회 API", description = "사용자별 큐레이션 목록을 조회합니다.")
 	@GetMapping("/member")
 	public ResponseEntity<Map<String, Object>> getCurationsForMember(
-			@CurrentUser Member member
+		@CurrentUser Member member
 	) {
 		var res = curationService.getCurationsForMember(member.getId());
 		return SuccessResponse.ok(res);
@@ -119,7 +119,7 @@ public class CurationController {
 
 	@Operation(summary = "키워드로 큐레이션 목록 조회 API", description = "키워드로 큐레이션 목록을 조회합니다.")
 	@PostMapping("/filter")
-	public ResponseEntity<List<CurationResponseDto>> getCurationFilterList(
+	public ResponseEntity<Map<String, Object>> getCurationFilterList(
 		@Valid @RequestBody CurationFilterRequest request,
 		@CurrentUser Member member
 	) {
