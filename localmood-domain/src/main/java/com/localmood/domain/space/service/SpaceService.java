@@ -16,6 +16,7 @@ import com.localmood.domain.space.dto.SpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
 import com.localmood.domain.space.dto.request.SpaceSearchRequest;
+import com.localmood.domain.space.dto.response.SpaceSearchResponse;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.entity.SpaceDish;
 import com.localmood.domain.space.entity.SpaceInfo;
@@ -56,12 +57,17 @@ public class SpaceService {
 		return spaceRecommendListMap;
 	}
 
-	public List<SpaceSearchDto> getSpaceSearchList(SpaceSearchRequest request, String sort, Long memberId) {
-		return spaceRepository.findSpaceByName(request.getName(), sort, memberId);
+	public SpaceSearchResponse getSpaceSearchList(SpaceSearchRequest request, String sort, Long memberId) {
+		var spaceList = spaceRepository.findSpaceByName(request.getName(), sort, memberId);
+
+		return SpaceSearchResponse.builder()
+				.spaceCount(spaceList.size())
+				.spaceList(spaceList)
+				.build();
 	}
 
-	public List<SpaceSearchDto> getSpaceFilterList(SpaceFilterRequest request, String sort, Long memberId) {
-		return spaceRepository.findSpaceByKeywords(
+	public SpaceSearchResponse getSpaceFilterList(SpaceFilterRequest request, String sort, Long memberId) {
+		var spaceList = spaceRepository.findSpaceByKeywords(
 				request.getType(),
 				request.getSubType(),
 				request.getPurpose(),
@@ -75,6 +81,11 @@ public class SpaceService {
 				sort,
 				memberId
 		);
+
+		return SpaceSearchResponse.builder()
+				.spaceCount(spaceList.size())
+				.spaceList(spaceList)
+				.build();
 	}
 
 	public HashMap<String,Object> getSpaceDetail(Long spaceId, Long memberId) {
