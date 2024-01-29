@@ -109,9 +109,10 @@ public class CurationController {
 	@Operation(summary = "제목으로 큐레이션 목록 조회 API", description = "제목으로 큐레이션 목록을 조회합니다.")
 	@GetMapping("/search")
 	public ResponseEntity<Map<String, Object>> getCurationSearchList(
-		@RequestParam("title") String title
+		@RequestParam("title") String title,
+		@CurrentUser Member member
 	) {
-		Map<String, Object> searchResult = curationService.getCurationSearchList(title);
+		Map<String, Object> searchResult = curationService.getCurationSearchList(title, Optional.ofNullable(member));
 
 		return ResponseEntity.ok(searchResult);
 	}
@@ -119,9 +120,10 @@ public class CurationController {
 	@Operation(summary = "키워드로 큐레이션 목록 조회 API", description = "키워드로 큐레이션 목록을 조회합니다.")
 	@PostMapping("/filter")
 	public ResponseEntity<List<CurationResponseDto>> getCurationFilterList(
-		@Valid @RequestBody CurationFilterRequest request
+		@Valid @RequestBody CurationFilterRequest request,
+		@CurrentUser Member member
 	) {
-		var res = curationService.getCurationFilterList(request);
+		var res = curationService.getCurationFilterList(request, Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 

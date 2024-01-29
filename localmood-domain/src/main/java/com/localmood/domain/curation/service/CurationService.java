@@ -208,14 +208,12 @@ public class CurationService {
 	}
 
 	// 제목으로 큐레이션 검색
-	public Map<String, Object> getCurationSearchList(String title) {
+	public Map<String, Object> getCurationSearchList(String title, Optional<Member> memberOptional) {
 		Map<String, Object> response = new LinkedHashMap<>();
 
 		List<Curation> curationList = curationRepository.findByTitleContaining(title);
 
-		// TODO: 스크랩 여부- 로그인된 유저로 memberId 변경필요
-		List<Map<String, Object>> CurationLists = curationList
-			.stream()
+		List<Map<String, Object>> curationLists = curationList.stream()
 			.map(curation -> {
 				Map<String, Object> curationMap = new HashMap<>();
 				curationMap.put("id", curation.getId());
@@ -224,34 +222,36 @@ public class CurationService {
 				curationMap.put("title", curation.getTitle());
 				curationMap.put("spaceCount", curationSpaceRepository.countByCurationId(curation.getId()));
 				curationMap.put("keyword", curation.getKeyword());
-				curationMap.put("isScrapped", checkIfScrapped(curation.getId(), Long.valueOf(1)));
+
+				boolean isScrapped = memberOptional.map(member -> checkIfScrapped(curation.getId(), member.getId())).orElse(false);
+				curationMap.put("isScrapped", isScrapped);
+
 				return curationMap;
 			})
 			.collect(Collectors.toList());
 
-		response.put("CurationCount", CurationLists.size());
-		response.put("CurationList", CurationLists);
+		response.put("CurationCount", curationLists.size());
+		response.put("CurationList", curationLists);
 
 		return response;
 	}
 
 	// 키워드로 큐레이션 검색
-	public List<CurationResponseDto> getCurationFilterList(CurationFilterRequest request) {
+	public List<CurationResponseDto> getCurationFilterList(CurationFilterRequest request, Optional<Member> memberOptional) {
 		List<Curation> curationList = curationRepository.findByKeywordContainingOrKeywordContaining(request.getKeyword1(), request.getKeyword2());
 
-		// 키워드로 필터링
-		List<Curation> CurationLists = curationList
+		return curationList
 			.stream()
 			.filter(curation -> curation.getKeyword().contains(request.getKeyword1())
 				&& curation.getKeyword().contains(request.getKeyword2()))
-			.collect(Collectors.toList());
+			.map(curation -> {
+				boolean isScrapped = memberOptional.map(member ->
+						scrapCurationRepository.existsByMemberIdAndCurationId(member.getId(), curation.getId()))
+					.orElse(false);
 
-		List<CurationResponseDto> response = CurationLists
-			.stream()
-			.map(this::mapToCurationResponseDto)
+				return mapToCurationResponseDto(curation, isScrapped);
+			})
 			.collect(Collectors.toList());
-
-		return response;
 	}
 
 
