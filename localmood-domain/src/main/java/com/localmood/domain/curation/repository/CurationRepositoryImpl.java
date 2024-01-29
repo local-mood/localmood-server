@@ -9,15 +9,10 @@ import static com.querydsl.core.types.ExpressionUtils.*;
 import static java.lang.Boolean.*;
 
 import java.util.List;
-import java.util.Optional;
 
-import com.localmood.common.util.ScrapUtil;
 import com.localmood.domain.member.dto.MemberScrapCurationDto;
 import com.localmood.domain.member.dto.QMemberScrapCurationDto;
-import com.localmood.domain.member.entity.Member;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -26,10 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class CurationRepositoryImpl implements CurationRepositoryCustom{
 
 	private final JPAQueryFactory queryFactory;
-	private final ScrapUtil scrapUtil;
 
 	@Override
-	public List<MemberScrapCurationDto> findCurationBySpaceId(Long spaceId, Optional<Member> member){
+	public List<MemberScrapCurationDto> findCurationBySpaceId(Long spaceId, Long memberId){
 		return queryFactory
 				.select(
 						new QMemberScrapCurationDto(
@@ -39,7 +33,10 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 								curation.keyword,
 								count(curationSpace.id),
 								spaceInfo.thumbnailImgUrl,
-								scrapUtil.isScraped(member, scrapSpace.member.id)
+								new CaseBuilder()
+										.when(scrapSpace.member.id.eq(memberId))
+										.then(TRUE)
+										.otherwise(FALSE)
 						)
 				)
 				.from(curation)
