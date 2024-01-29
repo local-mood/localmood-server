@@ -2,6 +2,7 @@ package com.localmood.api.curation.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,8 +37,7 @@ public class CurationController {
 
 	private final CurationService curationService;
 
-	// TODO
-	// 	- DTO 설정 필요
+
 	@Operation(summary = "큐레이션 생성 API", description = "새로운 큐레이션을 생성합니다.")
 	@PostMapping("")
 	public ResponseEntity<?> createCuration(
@@ -48,8 +48,7 @@ public class CurationController {
 		return SuccessResponse.created("SUCCESS");
 	}
 
-	// TODO
-	// 	- DTO 설정 필요
+
 	@Operation(summary = "큐레이션 편집 API", description = "큐레이션을 편집합니다.")
 	@PatchMapping("/{curationId}")
 	public ResponseEntity<?> editCuration(
@@ -69,15 +68,15 @@ public class CurationController {
 		return SuccessResponse.noContent();
 	}
 
-	@Operation(summary = "랜덤 큐레이션 조회 API", description = "랜덤으로 큐레이션 목록을 조회합니다.")
+	@Operation(summary = "추천 큐레이션 조회 API", description = "추천 큐레이션 목록을 조회합니다.")
 	@GetMapping("/recommend")
-	public ResponseEntity<List<CurationResponseDto>> getRandomCuration() {
-		var res = curationService.getRandomCurations();
+	public ResponseEntity<List<CurationResponseDto>> getRandomCuration(
+		@CurrentUser Member member
+	) {
+		var res = curationService.getRandomCurations(Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 
-	// TODO
-	// 	- DTO 설정 필요
 	@Operation(summary = "큐레이션 공간 등록 API", description = "큐레이션에 공간을 추가합니다.")
 	@PostMapping("/{curationId}/space/{spaceId}")
 	public ResponseEntity<?> registerSpace(
@@ -91,10 +90,10 @@ public class CurationController {
 	@Operation(summary = "큐레이션 상세 조회 API", description = "큐레이션 상세 정보를 조회합니다.")
 	@GetMapping("/{curationId}")
 	public ResponseEntity<CurationDetailResponseDto> getCurationDetail(
-			@PathVariable("curationId") String curationId,
-			@CurrentUser Member member
-		) {
-		var res = curationService.getCurationDetail(curationId, member.getId());
+		@PathVariable("curationId") String curationId,
+		@CurrentUser Member member
+	) {
+		var res = curationService.getCurationDetail(curationId, Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 
@@ -110,9 +109,10 @@ public class CurationController {
 	@Operation(summary = "제목으로 큐레이션 목록 조회 API", description = "제목으로 큐레이션 목록을 조회합니다.")
 	@GetMapping("/search")
 	public ResponseEntity<Map<String, Object>> getCurationSearchList(
-		@RequestParam("title") String title
+		@RequestParam("title") String title,
+		@CurrentUser Member member
 	) {
-		Map<String, Object> searchResult = curationService.getCurationSearchList(title);
+		Map<String, Object> searchResult = curationService.getCurationSearchList(title, Optional.ofNullable(member));
 
 		return ResponseEntity.ok(searchResult);
 	}
@@ -120,9 +120,10 @@ public class CurationController {
 	@Operation(summary = "키워드로 큐레이션 목록 조회 API", description = "키워드로 큐레이션 목록을 조회합니다.")
 	@PostMapping("/filter")
 	public ResponseEntity<List<CurationResponseDto>> getCurationFilterList(
-		@Valid @RequestBody CurationFilterRequest request
+		@Valid @RequestBody CurationFilterRequest request,
+		@CurrentUser Member member
 	) {
-		var res = curationService.getCurationFilterList(request);
+		var res = curationService.getCurationFilterList(request, Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 

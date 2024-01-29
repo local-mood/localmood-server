@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.localmood.common.exception.ErrorCode;
+import com.localmood.common.exception.LocalmoodException;
 import com.localmood.domain.curation.dto.request.CurationCreateDto;
 import com.localmood.domain.curation.dto.response.CurationDetailResponseDto;
 import com.localmood.domain.curation.dto.response.CurationResponseDto;
@@ -50,8 +52,6 @@ public class CurationService {
 	private final ScrapCurationRepository scrapCurationRepository;
 	private final ScrapSpaceRepository scrapSpaceRepository;
 
-	// TODO
-	//   - AUTH 구현 후 currentmember로 변경
 	@Transactional
 	public void createCuration(Long memberId, CurationCreateDto curationCreateDto) {
 		Member member = findByIdOrThrow(memberRepository, memberId, ErrorCode.MEMBER_NOT_FOUND);
@@ -82,24 +82,26 @@ public class CurationService {
 		curationRepository.delete(curation);
 	}
 
-	public List<CurationResponseDto> getRandomCurations() {
-		List<Long> randomCurationIds = curationRepository.findRandomCurationIds();
+	public List<CurationResponseDto> getRandomCurations(Optional<Member> memberOptional) {
+		List<Long> curationIds = curationRepository.findRandomCurationIds();
 
-		return randomCurationIds.stream()
+		return curationIds.stream()
 			.map(id -> {
-				Curation curation = findByIdOrThrow(curationRepository, id, ErrorCode.CURATION_NOT_FOUND);
-				return mapToCurationResponseDto(curation);
+				Curation curation = curationRepository.findById(id)
+					.orElseThrow(() -> new LocalmoodException(ErrorCode.CURATION_NOT_FOUND));
+
+				boolean isScrapped = memberOptional.map(member ->
+						scrapCurationRepository.existsByMemberIdAndCurationId(member.getId(), curation.getId()))
+					.orElse(false);
+
+				return mapToCurationResponseDto(curation, isScrapped);
 			})
 			.collect(Collectors.toList());
 	}
 
-	private CurationResponseDto mapToCurationResponseDto(Curation curation) {
+	private CurationResponseDto mapToCurationResponseDto(Curation curation, boolean isScrapped) {
 		Member author = curation.getMember();
 		String authorName = author.getNickname();
-
-		// TODO: 스크랩 여부- 로그인된 유저로 memberId 변경필요
-		Long memberId = Long.valueOf(1);
-		boolean isScrapped = checkIfScrapped(curation.getId(), memberId);
 
 		List<String> image = getCurationImg(curation.getId());
 
@@ -142,8 +144,8 @@ public class CurationService {
 		List<Map<String, Object>> curationList = curations
 			.stream()
 			.map(curation -> {
-				Map<String, Object> curationMap = mapToCurationResponseDto(curation).toMap();
-				curationMap.put("isScrapped", true);
+				boolean isScrapped = scrapCurationRepository.existsByMemberIdAndCurationId(memberId, curation.getId());
+				Map<String, Object> curationMap = mapToCurationResponseDto(curation, isScrapped).toMap();
 				curationMap.put("privacy", curation.getPrivacy());
 				return curationMap;
 			})
@@ -154,30 +156,32 @@ public class CurationService {
 
 		return response;
 	}
-	public CurationDetailResponseDto getCurationDetail(String curationId, Long memberId) {
+	public CurationDetailResponseDto getCurationDetail(String curationId, Optional<Member> memberOptional) {
+		Member member = memberOptional.orElse(null);
+
 		Curation curation = findByIdOrThrow(curationRepository, Long.parseLong(curationId),
 			ErrorCode.CURATION_NOT_FOUND);
 
 		String author = curation.getMember().getNickname();
 		String createdDate = String.valueOf(curation.getCreatedAt());
 
-		List<SpaceResponseDto> curationSpaceInfo = getCurationSpaceInfo(Long.valueOf(curationId));
+		List<SpaceResponseDto> curationSpaceInfo = getCurationSpaceInfo(Long.valueOf(curationId), member);
 
-		String variant = memberId.equals(curation.getMember().getId()) ? "my" : "others";
+		String variant = (member != null && member.getId().equals(curation.getMember().getId())) ? "my" : "others";
 
 		return new CurationDetailResponseDto(
 			curation.getTitle(), curation.getKeyword(), curation.getPrivacy(),
 			author, createdDate, curationSpaceInfo, variant);
 	}
 
-	private List<SpaceResponseDto> getCurationSpaceInfo(Long curationId) {
+	private List<SpaceResponseDto> getCurationSpaceInfo(Long curationId, Member member) {
 		return curationSpaceRepository.findByCurationId(curationId)
 			.stream()
-			.map(this::mapToSpaceResponseDto)
+			.map(curationSpace -> mapToSpaceResponseDto(curationSpace, member))
 			.collect(Collectors.toList());
 	}
 
-	private SpaceResponseDto mapToSpaceResponseDto(CurationSpace curationSpace) {
+	private SpaceResponseDto mapToSpaceResponseDto(CurationSpace curationSpace, Member member) {
 		Space space = curationSpace.getSpace();
 		Long spaceId = curationSpace.getSpace().getId();
 
@@ -186,7 +190,13 @@ public class CurationService {
 		SpaceInfo spaceInfo = getSpaceInfo(spaceId);
 		SpaceMenu spaceMenu = getSpaceMenu(spaceId);
 
-		// TODO: 스크랩 여부- 로그인된 유저로 memberId 변경필요
+		boolean isScrapped = false;
+
+		// 로그인한 경우, 스크랩 여부 확인
+		if (member != null) {
+			isScrapped = checkIfSpaceScrapped(spaceId, member.getId());
+		}
+
 		return new SpaceResponseDto(
 			space.getName(),
 			String.valueOf(space.getType()),
@@ -196,19 +206,17 @@ public class CurationService {
 			spaceInfo.getMood(),
 			spaceInfo.getInterior(),
 			(space.getType() == SpaceType.RESTAURANT) ? spaceMenu.getDishDesc() : "",
-			checkIfSpaceScrapped(spaceId, Long.valueOf(1))
+			isScrapped
 		);
 	}
 
 	// 제목으로 큐레이션 검색
-	public Map<String, Object> getCurationSearchList(String title) {
+	public Map<String, Object> getCurationSearchList(String title, Optional<Member> memberOptional) {
 		Map<String, Object> response = new LinkedHashMap<>();
 
 		List<Curation> curationList = curationRepository.findByTitleContaining(title);
 
-		// TODO: 스크랩 여부- 로그인된 유저로 memberId 변경필요
-		List<Map<String, Object>> CurationLists = curationList
-			.stream()
+		List<Map<String, Object>> curationLists = curationList.stream()
 			.map(curation -> {
 				Map<String, Object> curationMap = new HashMap<>();
 				curationMap.put("id", curation.getId());
@@ -217,34 +225,36 @@ public class CurationService {
 				curationMap.put("title", curation.getTitle());
 				curationMap.put("spaceCount", curationSpaceRepository.countByCurationId(curation.getId()));
 				curationMap.put("keyword", curation.getKeyword());
-				curationMap.put("isScrapped", checkIfScrapped(curation.getId(), Long.valueOf(1)));
+
+				boolean isScrapped = memberOptional.map(member -> checkIfScrapped(curation.getId(), member.getId())).orElse(false);
+				curationMap.put("isScrapped", isScrapped);
+
 				return curationMap;
 			})
 			.collect(Collectors.toList());
 
-		response.put("CurationCount", CurationLists.size());
-		response.put("CurationList", CurationLists);
+		response.put("CurationCount", curationLists.size());
+		response.put("CurationList", curationLists);
 
 		return response;
 	}
 
 	// 키워드로 큐레이션 검색
-	public List<CurationResponseDto> getCurationFilterList(CurationFilterRequest request) {
+	public List<CurationResponseDto> getCurationFilterList(CurationFilterRequest request, Optional<Member> memberOptional) {
 		List<Curation> curationList = curationRepository.findByKeywordContainingOrKeywordContaining(request.getKeyword1(), request.getKeyword2());
 
-		// 키워드로 필터링
-		List<Curation> CurationLists = curationList
+		return curationList
 			.stream()
 			.filter(curation -> curation.getKeyword().contains(request.getKeyword1())
 				&& curation.getKeyword().contains(request.getKeyword2()))
-			.collect(Collectors.toList());
+			.map(curation -> {
+				boolean isScrapped = memberOptional.map(member ->
+						scrapCurationRepository.existsByMemberIdAndCurationId(member.getId(), curation.getId()))
+					.orElse(false);
 
-		List<CurationResponseDto> response = CurationLists
-			.stream()
-			.map(this::mapToCurationResponseDto)
+				return mapToCurationResponseDto(curation, isScrapped);
+			})
 			.collect(Collectors.toList());
-
-		return response;
 	}
 
 
