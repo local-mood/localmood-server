@@ -24,7 +24,7 @@ public class ScrapCurationRepositoryImpl implements ScrapCurationRepositoryCusto
 		return queryFactory
 				.select(
 						new QMemberScrapCurationDto(
-								scrapCuration.id,
+								scrapCuration.curation.id,
 								scrapCuration.curation.title,
 								scrapCuration.member.nickname,
 								scrapCuration.curation.keyword,
