@@ -22,7 +22,7 @@ public class ScrapSpaceRepositoryImpl implements ScrapSpaceRepositoryCustom{
 		return queryFactory
 				.select(
 						new QMemberScrapSpaceDto(
-								scrapSpace.id,
+								scrapSpace.space.id,
 								scrapSpace.space.name,
 								scrapSpace.space.type,
 								scrapSpace.space.address,
