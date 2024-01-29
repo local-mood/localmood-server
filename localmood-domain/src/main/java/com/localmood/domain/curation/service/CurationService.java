@@ -240,10 +240,10 @@ public class CurationService {
 	}
 
 	// 키워드로 큐레이션 검색
-	public List<CurationResponseDto> getCurationFilterList(CurationFilterRequest request, Optional<Member> memberOptional) {
+	public Map<String, Object> getCurationFilterList(CurationFilterRequest request, Optional<Member> memberOptional) {
 		List<Curation> curationList = curationRepository.findByKeywordContainingOrKeywordContaining(request.getKeyword1(), request.getKeyword2());
 
-		return curationList
+		List<CurationResponseDto> curationLists = curationList
 			.stream()
 			.filter(curation -> curation.getKeyword().contains(request.getKeyword1())
 				&& curation.getKeyword().contains(request.getKeyword2()))
@@ -255,8 +255,13 @@ public class CurationService {
 				return mapToCurationResponseDto(curation, isScrapped);
 			})
 			.collect(Collectors.toList());
-	}
 
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("CurationCount", curationLists.size());
+		response.put("CurationList", curationLists);
+
+		return response;
+	}
 
 	private List<String> getImageUrls(Long spaceId) {
 		return reviewImgRepository.findImageUrlsBySpaceId(spaceId);
