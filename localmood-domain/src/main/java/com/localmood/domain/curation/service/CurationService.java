@@ -2,8 +2,8 @@ package com.localmood.domain.curation.service;
 
 import static com.localmood.common.utils.RepositoryUtil.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -213,12 +213,14 @@ public class CurationService {
 	// 제목으로 큐레이션 검색
 	public Map<String, Object> getCurationSearchList(String title, Optional<Member> memberOptional) {
 		Map<String, Object> response = new LinkedHashMap<>();
+		List<Map<String, Object>> curationLists = new ArrayList<>();
 
 		List<Curation> curationList = curationRepository.findByTitleContaining(title);
 
-		List<Map<String, Object>> curationLists = curationList.stream()
+		curationLists = curationList
+			.stream()
 			.map(curation -> {
-				Map<String, Object> curationMap = new HashMap<>();
+				Map<String, Object> curationMap = new LinkedHashMap<>();
 				curationMap.put("id", curation.getId());
 				curationMap.put("author", curation.getMember().getNickname());
 				curationMap.put("image", getCurationImg(curation.getId()));
