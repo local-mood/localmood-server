@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.localmood.common.exception.ErrorCode;
+import com.localmood.common.exception.LocalmoodException;
 import com.localmood.domain.curation.dto.request.CurationCreateDto;
 import com.localmood.domain.curation.dto.response.CurationDetailResponseDto;
 import com.localmood.domain.curation.dto.response.CurationResponseDto;
@@ -50,8 +52,6 @@ public class CurationService {
 	private final ScrapCurationRepository scrapCurationRepository;
 	private final ScrapSpaceRepository scrapSpaceRepository;
 
-	// TODO
-	//   - AUTH 구현 후 currentmember로 변경
 	@Transactional
 	public void createCuration(Long memberId, CurationCreateDto curationCreateDto) {
 		Member member = findByIdOrThrow(memberRepository, memberId, ErrorCode.MEMBER_NOT_FOUND);
@@ -82,24 +82,31 @@ public class CurationService {
 		curationRepository.delete(curation);
 	}
 
-	public List<CurationResponseDto> getRandomCurations() {
-		List<Long> randomCurationIds = curationRepository.findRandomCurationIds();
+	public List<CurationResponseDto> getRandomCurations(Optional<Member> memberOptional) {
+		List<Long> CurationIds = curationRepository.findRandomCurationIds();
 
-		return randomCurationIds.stream()
+		Member member = memberOptional.orElse(null);
+
+		return CurationIds
+			.stream()
 			.map(id -> {
-				Curation curation = findByIdOrThrow(curationRepository, id, ErrorCode.CURATION_NOT_FOUND);
-				return mapToCurationResponseDto(curation);
+				Curation curation = curationRepository.findById(id)
+					.orElseThrow(() -> new LocalmoodException(ErrorCode.CURATION_NOT_FOUND));
+
+				boolean isScrapped = false; // 기본값은 스크랩 false
+
+				// 로그인 상태일 경우, 스크랩 여부 확인
+				if (member != null) {
+					isScrapped = scrapCurationRepository.existsByMemberIdAndCurationId(member.getId(), curation.getId());
+				}
+				return mapToCurationResponseDto(curation, isScrapped);
 			})
 			.collect(Collectors.toList());
 	}
 
-	private CurationResponseDto mapToCurationResponseDto(Curation curation) {
+	private CurationResponseDto mapToCurationResponseDto(Curation curation, boolean isScrapped) {
 		Member author = curation.getMember();
 		String authorName = author.getNickname();
-
-		// TODO: 스크랩 여부- 로그인된 유저로 memberId 변경필요
-		Long memberId = Long.valueOf(1);
-		boolean isScrapped = checkIfScrapped(curation.getId(), memberId);
 
 		List<String> image = getCurationImg(curation.getId());
 
