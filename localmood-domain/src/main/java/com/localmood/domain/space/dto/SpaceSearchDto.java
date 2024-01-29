@@ -1,5 +1,6 @@
 package com.localmood.domain.space.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.localmood.common.utils.ArrayUtil;
@@ -21,9 +22,11 @@ public class SpaceSearchDto {
 	private List<String> keyword;
 	private String imgUrl;
 	private Boolean isScraped;
+	private Long scrapCount;
+	private LocalDateTime modifiedAt;
 
 	@QueryProjection
-	public SpaceSearchDto(Long id, String name, SpaceType type, String address, String purpose, String keyword, String imgUrl, Boolean isScraped){
+	public SpaceSearchDto(Long id, String name, SpaceType type, String address, String purpose, String keyword, String imgUrl, Boolean isScraped, Long scrapCount, LocalDateTime modifiedAt){
 		this.id = id;
 		this.name = name;
 		this.type = type;
@@ -32,5 +35,7 @@ public class SpaceSearchDto {
 		this.keyword = ArrayUtil.toArr(keyword);
 		this.imgUrl = imgUrl;
 		this.isScraped = isScraped;
+		this.scrapCount = scrapCount;
+		this.modifiedAt = modifiedAt;
 	}
 }

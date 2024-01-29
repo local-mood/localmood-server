@@ -4,6 +4,7 @@ import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 import static com.localmood.domain.space.entity.QSpace.*;
 import static com.localmood.domain.space.entity.QSpaceInfo.*;
 import static com.localmood.domain.space.entity.QSpaceMenu.*;
+import static com.querydsl.core.types.ExpressionUtils.*;
 import static java.lang.Boolean.*;
 
 import java.util.List;
@@ -18,6 +19,8 @@ import com.localmood.domain.space.entity.SpaceDish;
 import com.localmood.domain.space.entity.SpaceSubType;
 import com.localmood.domain.space.entity.SpaceType;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -92,8 +95,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	@Override
 	public List<SpaceSearchDto> findSpaceByName(String name, String sort, Long memberId){
 
-		// TODO
-		//  - sort 변경 로직 추가
+		OrderSpecifier orderSpecifier = createOrderSpecifier(sort);
 
 		return queryFactory
 				.select(
@@ -111,7 +113,9 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 								new CaseBuilder()
 										.when(scrapSpace.member.id.eq(memberId))
 										.then(TRUE)
-										.otherwise(FALSE)
+										.otherwise(FALSE),
+								count(scrapSpace.id),
+								spaceInfo.modifiedAt
 						)
 				)
 				.from(space)
@@ -122,8 +126,8 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.leftJoin(scrapSpace)
 				.on(space.id.eq(scrapSpace.space.id))
 				.where(space.name.contains(name))
-				.orderBy(space.modifiedAt.desc())
-				.distinct()
+				.orderBy(orderSpecifier)
+				.groupBy(space.id)
 				.fetch();
 	}
 
@@ -133,6 +137,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 		// TODO
 		//  - sort 변경 로직 추가
 
+		OrderSpecifier orderSpecifier = createOrderSpecifier(sort);
 		BooleanBuilder builder = new BooleanBuilder();
 
 		if (!subType.equals("ALL")){
@@ -179,7 +184,9 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 								new CaseBuilder()
 										.when(scrapSpace.member.id.eq(memberId))
 										.then(TRUE)
-										.otherwise(FALSE)
+										.otherwise(FALSE),
+								count(scrapSpace.id),
+								spaceInfo.modifiedAt
 						)
 				)
 				.from(space)
@@ -193,8 +200,8 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 						space.type.eq(SpaceType.valueOf(type)),
 						builder
 				)
-				.orderBy(space.modifiedAt.desc())
-				.distinct()
+				.orderBy(orderSpecifier)
+				.groupBy(space.id)
 				.fetch();
 	}
 
@@ -222,6 +229,15 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.where(spaceInfo.purpose.eq(purpose).and(spaceInfo.mood.eq(mood)))
 				.distinct()
 				.fetch();
-	};
+	}
+
+	private OrderSpecifier createOrderSpecifier(String sort) {
+
+		return switch (sort) {
+			case "RECENT" -> new OrderSpecifier<>(Order.DESC, spaceInfo.modifiedAt);
+			case "HOT" -> new OrderSpecifier<>(Order.DESC, count(scrapSpace.id));
+			default -> new OrderSpecifier<>(Order.DESC, spaceInfo.modifiedAt);
+		};
+	}
 
 }
