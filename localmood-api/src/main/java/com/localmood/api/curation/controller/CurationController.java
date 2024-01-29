@@ -90,10 +90,10 @@ public class CurationController {
 	@Operation(summary = "큐레이션 상세 조회 API", description = "큐레이션 상세 정보를 조회합니다.")
 	@GetMapping("/{curationId}")
 	public ResponseEntity<CurationDetailResponseDto> getCurationDetail(
-			@PathVariable("curationId") String curationId,
-			@CurrentUser Member member
-		) {
-		var res = curationService.getCurationDetail(curationId, member.getId());
+		@PathVariable("curationId") String curationId,
+		@CurrentUser Member member
+	) {
+		var res = curationService.getCurationDetail(curationId, Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 
