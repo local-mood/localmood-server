@@ -22,6 +22,8 @@ import com.localmood.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import jakarta.validation.Validator;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,24 +34,33 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
-
     private final MemberRepository memberRepository;
+    private final Validator validator;
     private final String SERVER = "Server";
 
     // 회원가입
     @Transactional
     public Member joinMember(SignupRequestDto requestDto) {
+        // 이메일 형식 검증
+        if (!validator.validateProperty(requestDto, "email").isEmpty()) {
+            throw new LocalmoodException(ErrorCode.INVALID_EMAIL_FORMAT);
+        }
+
+        // 비밀번호 형식 검증
+        if (!validator.validateProperty(requestDto, "password").isEmpty()) {
+            throw new LocalmoodException(ErrorCode.INVALID_PASSWORD_FORMAT);
+        }
 
         // 이메일 중복 검사
-        if (findUserByEmail(requestDto.getEmail()))
+        if (findUserByEmail(requestDto.getEmail())) {
             throw new LocalmoodException(ErrorCode.ALREADY_MEMBER_EMAIL);
+        }
 
         Member member = requestDto.toMember(passwordEncoder);
         memberRepository.save(member);
 
         return member;
     }
-
 
     // 로그인
     @Transactional
