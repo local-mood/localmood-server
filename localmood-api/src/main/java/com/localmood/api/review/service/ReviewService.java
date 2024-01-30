@@ -4,14 +4,18 @@ import static com.localmood.common.utils.RepositoryUtil.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.localmood.api.review.controller.ImageUploadDto;
 import com.localmood.api.review.dto.request.ReviewCreateDto;
 import com.localmood.api.review.dto.response.ReviewDetailResponseDto;
 import com.localmood.api.review.dto.response.ReviewResponseDto;
@@ -26,7 +30,6 @@ import com.localmood.domain.review.repository.ReviewRepository;
 import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.repository.SpaceRepository;
-import com.localmood.api.review.controller.ImageUploadDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -109,27 +112,31 @@ public class ReviewService {
 	}
 
 	// 공간별 공간 기록 조회
-	public Map<String, List<ReviewResponseDto>> getSpaceReview(Long spaceId) {
+	public Map<String, Object> getSpaceReview(Long spaceId) {
+		Map<String, Object> response = new LinkedHashMap<>();
+
 		// 해당 공간의 리뷰만 필터링
 		List<Review> spaceReviews = reviewRepository.findBySpaceId(spaceId);
 
 		// 방문 목적별로 그룹화하여 dto 생성
-		return spaceReviews
-			.stream()
-			.collect(Collectors.groupingBy(
-				review -> review.getPurpose().toString(),
+		Map<String, List<ReviewDetailResponseDto>> reviewMap = new HashMap<>();
 
-				Collectors.collectingAndThen(Collectors.toList(), purposeReviews -> {
-					int reviewCount = purposeReviews.size();
+		for (Review review : spaceReviews) {
+			String[] purposes = review.getPurpose().split(",");
 
-					List<ReviewDetailResponseDto> reviewDetails = purposeReviews
-						.stream()
-						.map(this::mapToReviewDetailResponseDto)
-						.collect(Collectors.toList());
+			for (String purpose : purposes) {
+				// 방문 목적 콤마로 분할
+				List<ReviewDetailResponseDto> reviewList = reviewMap.getOrDefault(purpose.trim(), new ArrayList<>());
 
-					return Collections.singletonList(new ReviewResponseDto(reviewCount, reviewDetails));
-				})
-			));
+				reviewList.add(mapToReviewDetailResponseDto(review));
+				reviewMap.put(purpose.trim(), reviewList);
+			}
+		}
+
+		response.put("reviewCount", spaceReviews.size());
+		response.put("reviews", reviewMap);
+
+		return response;
 	}
 
 	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review) {

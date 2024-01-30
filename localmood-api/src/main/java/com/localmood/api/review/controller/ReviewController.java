@@ -55,7 +55,7 @@ public class ReviewController {
 
 	@Operation(summary = "공간별 공간기록 조회 API", description = "공간의 방문 목적별 공간기록 목록을 조회합니다.")
 	@GetMapping("/space/{id}")
-	public ResponseEntity<Map<String, List<ReviewResponseDto>>> getSpaceReview(
+	public ResponseEntity<Map<String, Object>> getSpaceReview(
 		@PathVariable("id") Long spaceId
 	) {
 		var res = reviewService.getSpaceReview(spaceId);
