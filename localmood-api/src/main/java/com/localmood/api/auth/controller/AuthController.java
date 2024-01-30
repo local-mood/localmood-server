@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import com.localmood.common.exception.ErrorResponse;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +18,8 @@ import com.localmood.api.auth.dto.LoginRequestDto;
 import com.localmood.api.auth.dto.SignupRequestDto;
 import com.localmood.api.auth.jwt.entity.TokenDto;
 import com.localmood.api.auth.service.AuthService;
-import com.localmood.common.dto.SuccessResponse;
+import com.localmood.common.exception.LocalmoodException;
+import com.localmood.domain.member.entity.Member;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -38,8 +40,13 @@ public class AuthController {
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<?> join(@RequestBody @Valid SignupRequestDto signupRequest) {
-
-        return SuccessResponse.created(authService.joinMember(signupRequest));
+        try {
+            Member member = authService.joinMember(signupRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(member);
+        } catch (LocalmoodException e) {
+            return ResponseEntity.status(e.getStatus())
+                .body(new ErrorResponse(e.getStatus(), e.getMessage(), e.getSolution()));
+        }
     }
 
     // 로그인

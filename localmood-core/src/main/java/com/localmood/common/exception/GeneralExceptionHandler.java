@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GeneralExceptionHandler {
@@ -56,12 +57,9 @@ public class GeneralExceptionHandler {
 		}
 
 		public static String convert(List<ObjectError> errors) {
-			ObjectMapper objectMapper = new ObjectMapper();
-			try {
-				return objectMapper.writeValueAsString(errors);
-			} catch (JsonProcessingException e) {
-				throw new RuntimeException(e);
-			}
+			return errors.stream()
+				.map(ObjectError::getDefaultMessage)
+				.collect(Collectors.joining(", "));
 		}
 	}
 }
