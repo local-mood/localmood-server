@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SpaceDish {
-
+	NULL("해당없음"),
 	KOREAN_A("족발/보쌈"),
 	KOREAN_B("찜/탕/찌개"),
 	KOREAN_C("고기/구이"),
