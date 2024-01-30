@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SpaceSubType {
-
+	NULL("해당없음"),
 	KOREAN("한식"),
 	CHINESE("중식"),
 	JAPANESE("일식"),
