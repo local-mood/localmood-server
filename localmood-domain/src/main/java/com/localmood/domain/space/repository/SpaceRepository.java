@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.localmood.domain.space.entity.Space;
 
 @Repository
-public interface SpaceRepository extends JpaRepository<Space, Long> {
+public interface SpaceRepository extends JpaRepository<Space, Long>, SpaceRepositoryCustom {
 }

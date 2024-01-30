@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "scrap")
-public class Scrap extends BaseTimeEntity {
+@Table(name = "scrap_curation")
+public class ScrapCuration extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class Scrap extends BaseTimeEntity {
 	private Curation curation;
 
 	@Builder
-	public Scrap (Member member, Curation curation) {
+	public ScrapCuration(Member member, Curation curation) {
 		this.member = member;
 		this.curation = curation;
 	}
