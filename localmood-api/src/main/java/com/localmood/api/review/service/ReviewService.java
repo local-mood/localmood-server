@@ -3,15 +3,13 @@ package com.localmood.api.review.service;
 import static com.localmood.common.utils.RepositoryUtil.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -69,15 +67,15 @@ public class ReviewService {
 	}
 
 	// 사용자별 공간 기록 조회
-	public Map<String, Object> getReviewForMember(Long memberId) {
+	public Map<String, Object> getReviewForMember(Member member) {
 		Map<String, Object> response = new LinkedHashMap<>();
 
 		// 리뷰 목록을 생성 시간 순서대로 가져오기
-		List<Review> review = reviewRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+		List<Review> review = reviewRepository.findByMemberIdOrderByCreatedAtDesc(member.getId());
 
 		List<ReviewResponseDto> reviews = review
 			.stream()
-			.map(r -> mapToReviewResponseDto(r, memberId))
+			.map(r -> mapToReviewResponseDto(r, member))
 			.collect(Collectors.toList());
 
 		response.put("reviewCount", reviews.size());
@@ -86,7 +84,7 @@ public class ReviewService {
 		return response;
 	}
 
-	private ReviewResponseDto mapToReviewResponseDto(Review review, Long memberId) {
+	private ReviewResponseDto mapToReviewResponseDto(Review review, Member member) {
 		String image = getReviewImageUrl(review.getId());
 
 		return new ReviewResponseDto(
@@ -95,7 +93,7 @@ public class ReviewService {
 			review.getSpace().getType().toString(),
 			review.getSpace().getAddress(),
 			review.getMember().getNickname(),
-			checkIfSpaceScrapped(review.getSpace().getId(), memberId)
+			checkIfSpaceScrapped(review.getSpace().getId(), member.getId())
 		);
 	}
 
@@ -117,7 +115,7 @@ public class ReviewService {
 	}
 
 	// 공간별 공간 기록 조회
-	public Map<String, Object> getSpaceReview(Long spaceId) {
+	public Map<String, Object> getSpaceReview(Long spaceId, Optional<Member> memberOptional) {
 		Map<String, Object> response = new LinkedHashMap<>();
 
 		// 해당 공간의 리뷰만 필터링
@@ -133,7 +131,7 @@ public class ReviewService {
 				// 방문 목적 콤마로 분할
 				List<ReviewDetailResponseDto> reviewList = reviewMap.getOrDefault(purpose.trim(), new ArrayList<>());
 
-				reviewList.add(mapToReviewDetailResponseDto(review));
+				reviewList.add(mapToReviewDetailResponseDto(review, memberOptional));
 				reviewMap.put(purpose.trim(), reviewList);
 			}
 		}
@@ -144,7 +142,7 @@ public class ReviewService {
 		return response;
 	}
 
-	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review) {
+	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review, Optional<Member> memberOptional) {
 
 		return new ReviewDetailResponseDto(
 			getReviewImageUrl(review.getId()),
@@ -157,7 +155,8 @@ public class ReviewService {
 			review.getMood(),
 			review.getMusic(),
 			review.getPositive_eval(),
-			review.getNegative_eval()
+			review.getNegative_eval(),
+			memberOptional.map(member -> checkIfSpaceScrapped(review.getSpace().getId(), member.getId())).orElse(false)
 		);
 	}
 
