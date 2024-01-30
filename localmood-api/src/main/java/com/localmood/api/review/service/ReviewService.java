@@ -3,15 +3,17 @@ package com.localmood.api.review.service;
 import static com.localmood.common.utils.RepositoryUtil.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.localmood.api.review.controller.ImageUploadDto;
 import com.localmood.api.review.dto.request.ReviewCreateDto;
 import com.localmood.api.review.dto.response.ReviewDetailResponseDto;
 import com.localmood.api.review.dto.response.ReviewResponseDto;
@@ -26,7 +28,6 @@ import com.localmood.domain.review.repository.ReviewRepository;
 import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.repository.SpaceRepository;
-import com.localmood.api.review.controller.ImageUploadDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -66,29 +67,34 @@ public class ReviewService {
 	}
 
 	// 사용자별 공간 기록 조회
-	public List<ReviewResponseDto> getReviewForMember(Long memberId) {
-		// 리뷰 목록을 생성 시간 순서대로 가져오기
-		List<Review> review = reviewRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+	public Map<String, Object> getReviewForMember(Member member) {
+		Map<String, Object> response = new LinkedHashMap<>();
 
-		return review
+		// 리뷰 목록을 생성 시간 순서대로 가져오기
+		List<Review> review = reviewRepository.findByMemberIdOrderByCreatedAtDesc(member.getId());
+
+		List<ReviewResponseDto> reviews = review
 			.stream()
-			.map(this::mapToReviewResponseDto)
+			.map(r -> mapToReviewResponseDto(r, member))
 			.collect(Collectors.toList());
+
+		response.put("reviewCount", reviews.size());
+		response.put("reviews", reviews);
+
+		return response;
 	}
 
-	private ReviewResponseDto mapToReviewResponseDto(Review review) {
+	private ReviewResponseDto mapToReviewResponseDto(Review review, Member member) {
 		String image = getReviewImageUrl(review.getId());
 
-		Space space = review.getSpace();
-		ReviewDetailResponseDto detailResponseDto = new ReviewDetailResponseDto(
-			image,
-			space.getName(),
-			space.getType().toString(),
-			space.getAddress(),
-			checkIfSpaceScrapped(space.getId(), Long.valueOf(1))
+		return new ReviewResponseDto(
+			getReviewImageUrl(review.getId()),
+			review.getSpace().getName(),
+			review.getSpace().getType().toString(),
+			review.getSpace().getAddress(),
+			review.getMember().getNickname(),
+			checkIfSpaceScrapped(review.getSpace().getId(), member.getId())
 		);
-
-		return new ReviewResponseDto(Arrays.asList(detailResponseDto));
 	}
 
 	private void saveReviewImage(Review review, Space space, Member member, String imageUrl) {
@@ -109,30 +115,34 @@ public class ReviewService {
 	}
 
 	// 공간별 공간 기록 조회
-	public Map<String, List<ReviewResponseDto>> getSpaceReview(Long spaceId) {
+	public Map<String, Object> getSpaceReview(Long spaceId, Optional<Member> memberOptional) {
+		Map<String, Object> response = new LinkedHashMap<>();
+
 		// 해당 공간의 리뷰만 필터링
 		List<Review> spaceReviews = reviewRepository.findBySpaceId(spaceId);
 
 		// 방문 목적별로 그룹화하여 dto 생성
-		return spaceReviews
-			.stream()
-			.collect(Collectors.groupingBy(
-				review -> review.getPurpose().toString(),
+		Map<String, List<ReviewDetailResponseDto>> reviewMap = new HashMap<>();
 
-				Collectors.collectingAndThen(Collectors.toList(), purposeReviews -> {
-					int reviewCount = purposeReviews.size();
+		for (Review review : spaceReviews) {
+			String[] purposes = review.getPurpose().split(",");
 
-					List<ReviewDetailResponseDto> reviewDetails = purposeReviews
-						.stream()
-						.map(this::mapToReviewDetailResponseDto)
-						.collect(Collectors.toList());
+			for (String purpose : purposes) {
+				// 방문 목적 콤마로 분할
+				List<ReviewDetailResponseDto> reviewList = reviewMap.getOrDefault(purpose.trim(), new ArrayList<>());
 
-					return Collections.singletonList(new ReviewResponseDto(reviewCount, reviewDetails));
-				})
-			));
+				reviewList.add(mapToReviewDetailResponseDto(review, memberOptional));
+				reviewMap.put(purpose.trim(), reviewList);
+			}
+		}
+
+		response.put("reviewCount", spaceReviews.size());
+		response.put("reviews", reviewMap);
+
+		return response;
 	}
 
-	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review) {
+	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review, Optional<Member> memberOptional) {
 
 		return new ReviewDetailResponseDto(
 			getReviewImageUrl(review.getId()),
@@ -145,7 +155,8 @@ public class ReviewService {
 			review.getMood(),
 			review.getMusic(),
 			review.getPositive_eval(),
-			review.getNegative_eval()
+			review.getNegative_eval(),
+			memberOptional.map(member -> checkIfSpaceScrapped(review.getSpace().getId(), member.getId())).orElse(false)
 		);
 	}
 

@@ -1,7 +1,7 @@
 package com.localmood.api.review.controller;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,6 @@ import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
 import com.localmood.domain.member.entity.Member;
 import com.localmood.api.review.dto.request.ReviewCreateDto;
-import com.localmood.api.review.dto.response.ReviewResponseDto;
 import com.localmood.api.review.service.ReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,19 +45,20 @@ public class ReviewController {
 
 	@Operation(summary = "멤버별 공간기록 조회 API", description = "멤버의 공간기록 목록을 조회합니다.")
 	@GetMapping("/member")
-	public ResponseEntity<List<ReviewResponseDto>> getReviewForMember(
+	public ResponseEntity<Map<String, Object>> getReviewForMember(
 			@CurrentUser Member member
 	) {
-		var res = reviewService.getReviewForMember(member.getId());
+		var res = reviewService.getReviewForMember(member);
 		return ResponseEntity.ok(res);
 	}
 
 	@Operation(summary = "공간별 공간기록 조회 API", description = "공간의 방문 목적별 공간기록 목록을 조회합니다.")
 	@GetMapping("/space/{id}")
-	public ResponseEntity<Map<String, List<ReviewResponseDto>>> getSpaceReview(
-		@PathVariable("id") Long spaceId
+	public ResponseEntity<Map<String, Object>> getSpaceReview(
+		@PathVariable("id") Long spaceId,
+		@CurrentUser Member member
 	) {
-		var res = reviewService.getSpaceReview(spaceId);
+		var res = reviewService.getSpaceReview(spaceId, Optional.ofNullable(member));
 		return ResponseEntity.ok(res);
 	}
 
