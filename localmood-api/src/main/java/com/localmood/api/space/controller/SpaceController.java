@@ -3,6 +3,7 @@ package com.localmood.api.space.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
 import com.localmood.domain.member.entity.Member;
-import com.localmood.domain.space.dto.SpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
 import com.localmood.domain.space.dto.request.SpaceSearchRequest;
@@ -37,7 +37,7 @@ public class SpaceController {
 	public ResponseEntity<Map<String, List<SpaceRecommendDto>>> getSpaceRecommendList(
 			@CurrentUser Member member
 	){
-		var res = spaceService.getSpaceRecommendList(member.getId());
+		var res = spaceService.getSpaceRecommendList(Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 
@@ -47,7 +47,7 @@ public class SpaceController {
 			@Valid @RequestBody SpaceSearchRequest request,
 			@CurrentUser Member member
 	){
-		var res = spaceService.getSpaceSearchList(request, sort, member.getId());
+		var res = spaceService.getSpaceSearchList(request, sort, Optional.ofNullable(member));
 	    return SuccessResponse.ok(res);
 	}
 
@@ -57,7 +57,7 @@ public class SpaceController {
 			@Valid @RequestBody SpaceFilterRequest request,
 			@CurrentUser Member member
 	){
-		var res = spaceService.getSpaceFilterList(request, sort, member.getId());
+		var res = spaceService.getSpaceFilterList(request, sort, Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 
@@ -66,7 +66,7 @@ public class SpaceController {
 			@PathVariable(value = "spaceId") Long spaceId,
 			@CurrentUser Member member
 	){
-		var res = spaceService.getSpaceDetail(spaceId, member.getId());
+		var res = spaceService.getSpaceDetail(spaceId, Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 

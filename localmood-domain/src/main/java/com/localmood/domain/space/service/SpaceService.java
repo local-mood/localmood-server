@@ -3,25 +3,24 @@ package com.localmood.domain.space.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
 import com.localmood.domain.curation.repository.CurationRepository;
+import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.review.repository.ReviewImgRepository;
 import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.dto.SpaceDetailDto;
-import com.localmood.domain.space.dto.SpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
 import com.localmood.domain.space.dto.request.SpaceSearchRequest;
 import com.localmood.domain.space.dto.response.SpaceSearchResponse;
 import com.localmood.domain.space.entity.Space;
-import com.localmood.domain.space.entity.SpaceDish;
 import com.localmood.domain.space.entity.SpaceInfo;
 import com.localmood.domain.space.entity.SpaceMenu;
-import com.localmood.domain.space.entity.SpaceSubType;
 import com.localmood.domain.space.repository.SpaceInfoRepository;
 import com.localmood.domain.space.repository.SpaceMenuRepository;
 import com.localmood.domain.space.repository.SpaceRepository;
@@ -39,13 +38,13 @@ public class SpaceService {
 	private final ScrapSpaceRepository scrapSpaceRepository;
 	private final CurationRepository curationRepository;
 
-	public Map<String, List<SpaceRecommendDto>> getSpaceRecommendList(Long memberId) {
+	public Map<String, List<SpaceRecommendDto>> getSpaceRecommendList(Optional<Member> member) {
 		String[] keywordArr = {"연인과의 데이트", "친구와의 만남", "왁자지껄 떠들기 좋은", "대화에 집중할 수 있는"};
 		HashMap<String, List<SpaceRecommendDto>> spaceRecommendListMap = new HashMap<>();
 
 		for (int i=0; i < keywordArr.length; i++) {
-			var restaurantList = spaceRepository.findRestaurantRecommendByKeyword(keywordArr[i], memberId);
-			var cafeList = spaceRepository.findCafeRecommendByKeyword(keywordArr[i], memberId);
+			var restaurantList = spaceRepository.findRestaurantRecommendByKeyword(keywordArr[i], member);
+			var cafeList = spaceRepository.findCafeRecommendByKeyword(keywordArr[i], member);
 
 			var mergedSpaceList = Stream.of(restaurantList, cafeList)
 					.flatMap(x -> x.stream())
@@ -57,8 +56,8 @@ public class SpaceService {
 		return spaceRecommendListMap;
 	}
 
-	public SpaceSearchResponse getSpaceSearchList(SpaceSearchRequest request, String sort, Long memberId) {
-		var spaceList = spaceRepository.findSpaceByName(request.getName(), sort, memberId);
+	public SpaceSearchResponse getSpaceSearchList(SpaceSearchRequest request, String sort, Optional<Member> member) {
+		var spaceList = spaceRepository.findSpaceByName(request.getName(), sort, member);
 
 		return SpaceSearchResponse.builder()
 				.spaceCount(spaceList.size())
@@ -66,7 +65,7 @@ public class SpaceService {
 				.build();
 	}
 
-	public SpaceSearchResponse getSpaceFilterList(SpaceFilterRequest request, String sort, Long memberId) {
+	public SpaceSearchResponse getSpaceFilterList(SpaceFilterRequest request, String sort, Optional<Member> member) {
 		var spaceList = spaceRepository.findSpaceByKeywords(
 				request.getType(),
 				request.getSubType(),
@@ -79,7 +78,7 @@ public class SpaceService {
 				request.getDish(),
 				request.getDisDesc(),
 				sort,
-				memberId
+				member
 		);
 
 		return SpaceSearchResponse.builder()
@@ -88,14 +87,14 @@ public class SpaceService {
 				.build();
 	}
 
-	public HashMap<String,Object> getSpaceDetail(Long spaceId, Long memberId) {
+	public HashMap<String,Object> getSpaceDetail(Long spaceId, Optional<Member> member) {
 		HashMap<String, Object> spaceDetailMap = new HashMap<>();
 
 		Space space = spaceRepository.findById(spaceId).orElseThrow();
 		SpaceInfo spaceInfo = spaceInfoRepository.findBySpaceId(spaceId).orElseThrow();
 		SpaceMenu spaceMenu = spaceMenuRepository.findBySpaceId(spaceId).orElseThrow();
 		List<String> imgUrlList = reviewImgRepository.findImageUrlsBySpaceId(spaceId);
-		Boolean isScraped = scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
+		Boolean isScraped = member.isPresent() ? scrapSpaceRepository.existsByMemberIdAndSpaceId(member.get().getId(), spaceId) : false;
 
 		spaceDetailMap.put("info",
 				SpaceDetailDto.builder()
@@ -119,10 +118,10 @@ public class SpaceService {
 		);
 
 		// 공간과 비슷한 장소
-		spaceDetailMap.put("similarSpaceList", spaceRepository.findSimilarSpace(spaceInfo.getPurpose(), spaceInfo.getMood(), memberId));
+		spaceDetailMap.put("similarSpaceList", spaceRepository.findSimilarSpace(spaceInfo.getPurpose(), spaceInfo.getMood(), member));
 
-				// 공간이 담긴 큐레이션
-		spaceDetailMap.put("relatedCurationList", curationRepository.findCurationBySpaceId(spaceId, memberId));
+		// 공간이 담긴 큐레이션
+		spaceDetailMap.put("relatedCurationList", curationRepository.findCurationBySpaceId(spaceId, member));
 
 		return spaceDetailMap;
 	}
