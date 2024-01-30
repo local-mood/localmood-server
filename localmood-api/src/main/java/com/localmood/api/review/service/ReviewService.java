@@ -69,29 +69,34 @@ public class ReviewService {
 	}
 
 	// 사용자별 공간 기록 조회
-	public List<ReviewResponseDto> getReviewForMember(Long memberId) {
+	public Map<String, Object> getReviewForMember(Long memberId) {
+		Map<String, Object> response = new LinkedHashMap<>();
+
 		// 리뷰 목록을 생성 시간 순서대로 가져오기
 		List<Review> review = reviewRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
 
-		return review
+		List<ReviewResponseDto> reviews = review
 			.stream()
-			.map(this::mapToReviewResponseDto)
+			.map(r -> mapToReviewResponseDto(r, memberId))
 			.collect(Collectors.toList());
+
+		response.put("reviewCount", reviews.size());
+		response.put("reviews", reviews);
+
+		return response;
 	}
 
-	private ReviewResponseDto mapToReviewResponseDto(Review review) {
+	private ReviewResponseDto mapToReviewResponseDto(Review review, Long memberId) {
 		String image = getReviewImageUrl(review.getId());
 
-		Space space = review.getSpace();
-		ReviewDetailResponseDto detailResponseDto = new ReviewDetailResponseDto(
-			image,
-			space.getName(),
-			space.getType().toString(),
-			space.getAddress(),
-			checkIfSpaceScrapped(space.getId(), Long.valueOf(1))
+		return new ReviewResponseDto(
+			getReviewImageUrl(review.getId()),
+			review.getSpace().getName(),
+			review.getSpace().getType().toString(),
+			review.getSpace().getAddress(),
+			review.getMember().getNickname(),
+			checkIfSpaceScrapped(review.getSpace().getId(), memberId)
 		);
-
-		return new ReviewResponseDto(Arrays.asList(detailResponseDto));
 	}
 
 	private void saveReviewImage(Review review, Space space, Member member, String imageUrl) {

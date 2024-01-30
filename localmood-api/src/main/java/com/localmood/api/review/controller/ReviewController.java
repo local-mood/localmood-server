@@ -1,6 +1,5 @@
 package com.localmood.api.review.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
 import com.localmood.domain.member.entity.Member;
 import com.localmood.api.review.dto.request.ReviewCreateDto;
-import com.localmood.api.review.dto.response.ReviewResponseDto;
 import com.localmood.api.review.service.ReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +44,7 @@ public class ReviewController {
 
 	@Operation(summary = "멤버별 공간기록 조회 API", description = "멤버의 공간기록 목록을 조회합니다.")
 	@GetMapping("/member")
-	public ResponseEntity<List<ReviewResponseDto>> getReviewForMember(
+	public ResponseEntity<Map<String, Object>> getReviewForMember(
 			@CurrentUser Member member
 	) {
 		var res = reviewService.getReviewForMember(member.getId());
