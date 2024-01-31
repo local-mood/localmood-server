@@ -56,8 +56,11 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.leftJoin(scrapSpace)
 				.on(space.id.eq(scrapSpace.space.id))
 				.where(
-						space.type.eq(SpaceType.RESTAURANT),
-						spaceInfo.purpose.contains(keyword)
+						space.type.eq(SpaceType.RESTAURANT)
+										.and(
+												spaceInfo.purpose.contains(keyword)
+														.or(spaceInfo.mood.contains(keyword))
+										)
 				)
 				.distinct()
 				.limit(3)
@@ -83,7 +86,13 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.on(space.id.eq(spaceInfo.space.id))
 				.leftJoin(scrapSpace)
 				.on(space.id.eq(scrapSpace.space.id))
-				.where(space.type.eq(SpaceType.CAFE), spaceInfo.purpose.contains(keyword))
+				.where(
+						space.type.eq(SpaceType.CAFE)
+								.and(
+										spaceInfo.purpose.contains(keyword)
+												.or(spaceInfo.mood.contains(keyword))
+								)
+				)
 				.distinct()
 				.limit(3)
 				.fetch();
