@@ -17,7 +17,9 @@ public enum ErrorCode {
 	SPACE_SUB_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "공간 서브 유형을 찾지 못했습니다.", "존재하는 공간 서브 유형인지 확인해주세요."),
 	FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.", "파일 업로드를 다시 시도해주세요."),
 	INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 형식입니다.", "올바른 이메일 주소를 입력하세요."),
-	INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "유효하지 않은 비밀번호 형식입니다.", "비밀번호는 8~16자리여야 하며, 영문, 숫자, 특수문자를 포함해야 합니다.");
+	INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "유효하지 않은 비밀번호 형식입니다.", "비밀번호는 8~16자리여야 하며, 영문, 숫자, 특수문자를 포함해야 합니다."),
+	ALREADY_SCRAP_SPACE(HttpStatus.BAD_REQUEST, "이미 스크랩된 공간입니다.", "중복 스크랩은 불가합니다."),
+	ALREADY_SCRAP_CURATION(HttpStatus.BAD_REQUEST, "이미 스크랩된 큐레이션입니다.", "중복 스크랩은 불가합니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;
