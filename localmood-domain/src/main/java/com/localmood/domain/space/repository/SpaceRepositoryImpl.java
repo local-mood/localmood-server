@@ -24,6 +24,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 										)
 				)
 				.distinct()
+				.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
 				.limit(3)
 				.fetch();
 	}
@@ -94,6 +96,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 								)
 				)
 				.distinct()
+				.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
 				.limit(3)
 				.fetch();
 	}
