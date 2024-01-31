@@ -1,8 +1,11 @@
 package com.localmood.domain.scrap.service;
 
+import static com.localmood.common.exception.ErrorCode.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.localmood.common.exception.LocalmoodException;
 import com.localmood.domain.curation.entity.Curation;
 import com.localmood.domain.curation.repository.CurationRepository;
 import com.localmood.domain.member.entity.Member;
@@ -33,6 +36,11 @@ public class ScrapService {
 		Space space = spaceRepository.findById(spaceId).orElseThrow();
 		Member member = memberRepository.findById(memberId).orElseThrow();
 
+		if (scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId)) {
+			throw new LocalmoodException(ALREADY_SCRAP_SPACE);
+		}
+
+
 		return scrapSpaceRepository.save(
 				ScrapSpace
 						.builder()
@@ -53,6 +61,10 @@ public class ScrapService {
 	public ScrapCuration scrapCuration(Long curationId, Long memberId){
 		Curation curation = curationRepository.findById(curationId).orElseThrow();
 		Member member = memberRepository.findById(memberId).orElseThrow();
+
+		if (scrapCurationRepository.existsByMemberIdAndCurationId(memberId, curationId)) {
+			throw new LocalmoodException(ALREADY_SCRAP_CURATION);
+		}
 
 		return scrapCurationRepository.save(
 				ScrapCuration
