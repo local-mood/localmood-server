@@ -11,7 +11,3 @@ spring:
         - prod
         - core
         - secret
-
-logging:
-  level:
-    root: DEBUG
