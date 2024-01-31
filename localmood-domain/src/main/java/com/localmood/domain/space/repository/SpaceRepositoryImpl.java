@@ -63,7 +63,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 														.or(spaceInfo.mood.contains(keyword))
 										)
 				)
-				.distinct()
+				.groupBy(space.id)
 				.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
 				.limit(3)
 				.fetch();
@@ -95,7 +95,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 												.or(spaceInfo.mood.contains(keyword))
 								)
 				)
-				.distinct()
+				.groupBy(space.id)
 				.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
 				.limit(3)
 				.fetch();
