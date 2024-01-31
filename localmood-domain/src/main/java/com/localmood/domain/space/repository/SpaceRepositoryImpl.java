@@ -24,6 +24,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -56,10 +57,14 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.leftJoin(scrapSpace)
 				.on(space.id.eq(scrapSpace.space.id))
 				.where(
-						space.type.eq(SpaceType.RESTAURANT),
-						spaceInfo.purpose.contains(keyword)
+						space.type.eq(SpaceType.RESTAURANT)
+										.and(
+												spaceInfo.purpose.contains(keyword)
+														.or(spaceInfo.mood.contains(keyword))
+										)
 				)
-				.distinct()
+				.groupBy(space.id)
+				.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
 				.limit(3)
 				.fetch();
 	}
@@ -83,8 +88,15 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.on(space.id.eq(spaceInfo.space.id))
 				.leftJoin(scrapSpace)
 				.on(space.id.eq(scrapSpace.space.id))
-				.where(space.type.eq(SpaceType.CAFE), spaceInfo.purpose.contains(keyword))
-				.distinct()
+				.where(
+						space.type.eq(SpaceType.CAFE)
+								.and(
+										spaceInfo.purpose.contains(keyword)
+												.or(spaceInfo.mood.contains(keyword))
+								)
+				)
+				.groupBy(space.id)
+				.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
 				.limit(3)
 				.fetch();
 	}
