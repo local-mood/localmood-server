@@ -32,7 +32,7 @@ public class ReviewController {
 	private final ReviewService reviewService;
 
 	@Operation(summary = "공간 기록 생성 API", description = "새로운 공간 기록을 생성합니다.")
-	@RequestMapping(method = RequestMethod.POST, value = "/{id}")
+	@RequestMapping(method = RequestMethod.POST, value = "/{id}", consumes = "multipart/form-data")
 	public ResponseEntity<?> createReview(
 		@PathVariable("id") String spaceId,
 		@RequestPart(name = "request") @Valid ReviewCreateDto reviewCreateDto,
