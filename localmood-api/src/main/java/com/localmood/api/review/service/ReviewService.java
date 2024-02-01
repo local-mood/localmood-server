@@ -2,6 +2,7 @@ package com.localmood.api.review.service;
 
 import static com.localmood.common.utils.RepositoryUtil.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -11,9 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.localmood.api.review.controller.ImageUploadDto;
 import com.localmood.api.review.dto.request.ReviewCreateDto;
 import com.localmood.api.review.dto.response.ReviewDetailResponseDto;
 import com.localmood.api.review.dto.response.ReviewResponseDto;
@@ -141,6 +140,7 @@ public class ReviewService {
 	}
 
 	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review, Optional<Member> memberOptional) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd");
 
 		return new ReviewDetailResponseDto(
 			getReviewImageUrl(review.getId()),
@@ -148,7 +148,7 @@ public class ReviewService {
 			review.getSpace().getType().toString(),
 			review.getSpace().getAddress(),
 			review.getMember().getNickname(),
-			review.getCreatedAt().toString(),
+			review.getCreatedAt().format(formatter),
 			review.getInterior(),
 			review.getMood(),
 			review.getMusic(),
