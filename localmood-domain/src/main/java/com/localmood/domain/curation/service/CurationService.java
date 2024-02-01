@@ -53,12 +53,14 @@ public class CurationService {
 	private final ScrapSpaceRepository scrapSpaceRepository;
 
 	@Transactional
-	public void createCuration(Long memberId, CurationCreateDto curationCreateDto) {
+	public Long createCuration(Long memberId, CurationCreateDto curationCreateDto) {
 		Member member = findByIdOrThrow(memberRepository, memberId, ErrorCode.MEMBER_NOT_FOUND);
 
 		Curation curation = curationCreateDto.toEntity(member);
 
 		curationRepository.save(curation);
+
+		return curation.getId();
 	}
 
 	public void editCuration(String curationId, CurationCreateDto curationCreateDto) {
