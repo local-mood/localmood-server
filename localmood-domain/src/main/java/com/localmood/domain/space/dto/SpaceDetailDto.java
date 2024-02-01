@@ -29,7 +29,7 @@ public class SpaceDetailDto {
 	private List<String> purpose;
 	private String mood;
 	private String music;
-	private String interior;
+	private List<String> interior;
 	private String[][] positiveEval;
 	private String[][] negativeEval;
 	private Boolean isScraped;
@@ -49,7 +49,7 @@ public class SpaceDetailDto {
 		this.purpose = ArrayUtil.toArr(purpose);
 		this.mood = mood;
 		this.music = music;
-		this.interior = interior;
+		this.interior = ArrayUtil.toArr(interior);
 		this.positiveEval = positiveEval == null ? null : ArrayUtil.to2DArr(positiveEval);
 		this.negativeEval = negativeEval == null ? null : ArrayUtil.to2DArr(negativeEval);
 		this.isScraped = isScraped;
