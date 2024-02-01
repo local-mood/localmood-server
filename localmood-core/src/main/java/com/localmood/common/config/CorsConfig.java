@@ -15,7 +15,7 @@ public class CorsConfig {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
     config.addAllowedOrigin("http://localhost:3000");
-    config.addAllowedOrigin("https://local-mood-front-gtgp.vercel.app/");
+    config.addAllowedOrigin("https://www.localmood.co.kr");
     config.addAllowedHeader("*");
     config.addAllowedMethod("*");
     source.registerCorsConfiguration("/**", config);
