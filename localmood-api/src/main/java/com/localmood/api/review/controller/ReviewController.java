@@ -6,11 +6,10 @@ import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.localmood.api.auth.CurrentUser;
 import com.localmood.api.review.dto.request.ReviewCreateDto;
@@ -20,7 +19,6 @@ import com.localmood.domain.member.entity.Member;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Review", description = "공간 기록 API")
@@ -32,14 +30,14 @@ public class ReviewController {
 	private final ReviewService reviewService;
 
 	@Operation(summary = "공간 기록 생성 API", description = "새로운 공간 기록을 생성합니다.")
-	@RequestMapping(method = RequestMethod.POST, value = "/{id}", consumes = "multipart/form-data")
+	@PostMapping("/{id}")
 	public ResponseEntity<?> createReview(
 		@PathVariable("id") String spaceId,
-		@RequestPart(name = "request") @Valid ReviewCreateDto reviewCreateDto,
-		@RequestPart(required = false, name = "image") MultipartFile[] multipartFiles,
+		@RequestBody ReviewCreateDto reviewCreateDto,
 		@CurrentUser Member member
 	) {
-		reviewService.createReview(member.getId(), spaceId, reviewCreateDto, multipartFiles);
+		reviewService.createReview(spaceId, reviewCreateDto, member);
+
 		return SuccessResponse.created("SUCCESS");
 	}
 
