@@ -42,23 +42,20 @@ public class ReviewService {
 	private final ReviewImgRepository reviewImgRepository;
 	private final ScrapSpaceRepository scrapSpaceRepository;
 
-	public void createReview(Long memberId, String spaceId,
-		@Valid ReviewCreateDto reviewCreateDto, MultipartFile[] multipartFiles) {
+	public void createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto, Member member) {
 		// 공간 조회
 		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
-
-		// 회원 조회
-		Member member = findByIdOrThrow(memberRepository, memberId, ErrorCode.MEMBER_NOT_FOUND);
 
 		// 리뷰 생성 및 저장
 		Review review = reviewCreateDto.toEntity(space, member);
 		reviewRepository.save(review);
 
-		// 이미지 업로드 및 URL 저장
-		if (multipartFiles != null && multipartFiles.length > 0) {
-			for (MultipartFile multipartFile : multipartFiles) {
-				String imageUrl = awsS3Service.uploadFile(multipartFile);
-				// 리뷰 이미지 DB에 저장
+		// 이미지 URL 가져오기
+		List<String> imageUrls = reviewCreateDto.getImageUrls();
+
+		// 이미지 URL 저장
+		if (imageUrls != null && !imageUrls.isEmpty()) {
+			for (String imageUrl : imageUrls) {
 				saveReviewImage(review, space, member, imageUrl);
 			}
 		}
