@@ -1,6 +1,5 @@
 package com.localmood.common.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -16,6 +15,7 @@ public class CorsConfig {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
     config.addAllowedOrigin("http://localhost:3000");
+    config.addAllowedOrigin("https://local-mood-front-gtgp.vercel.app/");
     config.addAllowedHeader("*");
     config.addAllowedMethod("*");
     source.registerCorsConfiguration("/**", config);
