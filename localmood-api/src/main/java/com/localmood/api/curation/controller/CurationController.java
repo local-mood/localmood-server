@@ -44,8 +44,8 @@ public class CurationController {
 		@Valid @RequestBody CurationCreateDto curationCreateDto,
 		@CurrentUser Member member
 	) {
-		curationService.createCuration(member.getId(), curationCreateDto);
-		return SuccessResponse.created("SUCCESS");
+		var res = curationService.createCuration(member.getId(), curationCreateDto);
+		return SuccessResponse.ok(res);
 	}
 
 
