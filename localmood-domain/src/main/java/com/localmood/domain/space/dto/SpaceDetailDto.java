@@ -52,7 +52,7 @@ public class SpaceDetailDto {
 		this.purpose = ArrayUtil.toArr(purpose);
 		this.mood = mood;
 		this.music = music;
-		this.interior = type.equals(CAFE) ? null : ArrayUtil.toArr(interior);
+		this.interior = type.equals(CAFE) ? ArrayUtil.toArr(interior) : null;
 		this.positiveEval = positiveEval == null ? null : ArrayUtil.to2DArr(positiveEval);
 		this.negativeEval = negativeEval == null ? null : ArrayUtil.to2DArr(negativeEval);
 		this.isScraped = isScraped;
