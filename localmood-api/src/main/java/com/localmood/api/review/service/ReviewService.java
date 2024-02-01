@@ -70,11 +70,14 @@ public class ReviewService {
 
 		// 리뷰 목록을 생성 시간 순서대로 가져오기
 		List<Review> review = reviewRepository.findByMemberIdOrderByCreatedAtDesc(member.getId());
+		List<ReviewResponseDto> reviews = new ArrayList<>();
 
-		List<ReviewResponseDto> reviews = review
-			.stream()
-			.map(r -> mapToReviewResponseDto(r, member))
-			.collect(Collectors.toList());
+		if (!review.isEmpty()) {
+			reviews = review
+				.stream()
+				.map(r -> mapToReviewResponseDto(r, member))
+				.collect(Collectors.toList());
+		}
 
 		response.put("reviewCount", reviews.size());
 		response.put("reviews", reviews);

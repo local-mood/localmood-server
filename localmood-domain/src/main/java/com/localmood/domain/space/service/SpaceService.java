@@ -39,7 +39,7 @@ public class SpaceService {
 	private final CurationRepository curationRepository;
 
 	public Map<String, List<SpaceRecommendDto>> getSpaceRecommendList(Optional<Member> member) {
-		String[] keywordArr = {"연인과의 데이트", "친구와의 만남", "왁자지껄 떠들기 좋은", "대화에 집중할 수 있는"};
+		String[] keywordArr = {"연인과의 데이트", "친구와의 만남", "왁자지껄 떠들 수 있는", "대화에 집중할 수 있는"};
 		HashMap<String, List<SpaceRecommendDto>> spaceRecommendListMap = new HashMap<>();
 
 		for (int i=0; i < keywordArr.length; i++) {
