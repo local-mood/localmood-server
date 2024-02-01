@@ -1,7 +1,10 @@
 package com.localmood.domain.space.dto;
 
+import static com.localmood.domain.space.entity.SpaceType.*;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.localmood.common.utils.ArrayUtil;
 import com.localmood.domain.space.entity.SpaceDish;
@@ -43,13 +46,13 @@ public class SpaceDetailDto {
 		this.type = type;
 		this.subType = subType;
 		this.dish = dish;
-		this.dishDesc = dishDesc;
+		this.dishDesc = type.equals(CAFE) ? dishDesc : String.join(",", ArrayUtil.toArr(dishDesc).stream().skip(2).collect(Collectors.toList()));
 		this.visitorNum = visitorNum;
-		this.optionalService = optionalService;
+		this.optionalService = optionalService == null ? null : optionalService;
 		this.purpose = ArrayUtil.toArr(purpose);
 		this.mood = mood;
 		this.music = music;
-		this.interior = ArrayUtil.toArr(interior);
+		this.interior = type.equals(CAFE) ? null : ArrayUtil.toArr(interior);
 		this.positiveEval = positiveEval == null ? null : ArrayUtil.to2DArr(positiveEval);
 		this.negativeEval = negativeEval == null ? null : ArrayUtil.to2DArr(negativeEval);
 		this.isScraped = isScraped;
