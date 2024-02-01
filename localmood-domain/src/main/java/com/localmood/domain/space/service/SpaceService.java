@@ -110,6 +110,7 @@ public class SpaceService {
 						.optionalService(spaceInfo.getOptServ())
 						.purpose(spaceInfo.getPurpose())
 						.mood(spaceInfo.getMood())
+						.interior(spaceInfo.getInterior())
 						.music(spaceInfo.getMusic())
 						.positiveEval(spaceInfo.getPositiveEval())
 						.negativeEval(spaceInfo.getNegativeEval())
