@@ -28,14 +28,14 @@ public class AmazonS3Controller {
 		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<List<String>> uploadFile(
 		@RequestPart(value = "file", required = true) MultipartFile[] multipartFiles) {
-		List<String> uploadedFileNames = new ArrayList<>();
+		List<String> uploadedFileUrls = new ArrayList<>();
 
 		for (MultipartFile file : multipartFiles) {
-			String fileName = awsS3Service.uploadFile(file);
-			uploadedFileNames.add(fileName);
+			String fileUrl = awsS3Service.uploadFile(file);
+			uploadedFileUrls.add(fileUrl);
 		}
 
-		return ResponseEntity.ok(uploadedFileNames);
+		return ResponseEntity.ok(uploadedFileUrls);
 	}
 
 
