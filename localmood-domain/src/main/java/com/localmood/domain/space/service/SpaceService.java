@@ -111,8 +111,8 @@ public class SpaceService {
 						.purpose(spaceInfo.getPurpose())
 						.mood(spaceInfo.getMood())
 						.music(spaceInfo.getMusic())
-						.positiveEval(Optional.ofNullable(spaceInfo.getPositiveEval()))
-						.negativeEval(Optional.ofNullable(spaceInfo.getNegativeEval()))
+						.positiveEval(spaceInfo.getPositiveEval())
+						.negativeEval(spaceInfo.getNegativeEval())
 						.isScraped(isScraped)
 						.build()
 		);
