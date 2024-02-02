@@ -27,8 +27,8 @@ public class SwaggerConfig {
       .description("로컬무드 API")
       .version("0.0.1");
 
-    Server server = new Server()
-      .url(domainUrl);
+    // Server server = new Server()
+    //   .url(domainUrl);
 
     SecurityScheme basicAuth = new SecurityScheme()
       .type(Type.HTTP)
@@ -41,8 +41,8 @@ public class SwaggerConfig {
 
     return new OpenAPI()
       .components(new Components().addSecuritySchemes("basicAuth", basicAuth))
-      .addSecurityItem(securityItem)
-      .addServersItem(server);
+      .addSecurityItem(securityItem);
+      // .addServersItem(server);
 
   }
 }
