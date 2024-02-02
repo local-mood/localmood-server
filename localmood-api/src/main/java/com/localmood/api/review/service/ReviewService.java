@@ -41,13 +41,15 @@ public class ReviewService {
 	private final ReviewImgRepository reviewImgRepository;
 	private final ScrapSpaceRepository scrapSpaceRepository;
 
-	public void createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto, Member member) {
+	public Long createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto, Member member) {
 		// 공간 조회
 		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
 
 		// 리뷰 생성 및 저장
 		Review review = reviewCreateDto.toEntity(space, member);
 		reviewRepository.save(review);
+
+		return review.getId();
 
 	}
 

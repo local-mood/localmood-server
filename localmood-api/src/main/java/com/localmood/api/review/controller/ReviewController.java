@@ -36,9 +36,9 @@ public class ReviewController {
 		@RequestBody ReviewCreateDto reviewCreateDto,
 		@CurrentUser Member member
 	) {
-		reviewService.createReview(spaceId, reviewCreateDto, member);
+		var res = reviewService.createReview(spaceId, reviewCreateDto, member);
 
-		return SuccessResponse.created("SUCCESS");
+		return SuccessResponse.ok(res);
 	}
 
 	@Operation(summary = "멤버별 공간기록 조회 API", description = "멤버의 공간기록 목록을 조회합니다.")
