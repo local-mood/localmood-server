@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,10 +25,9 @@ public class AmazonS3Controller {
 
 	private final AwsS3Service awsS3Service;
 
-	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile",
-		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile")
 	public ResponseEntity<List<String>> uploadFile(
-		@RequestPart(value = "file", required = true) MultipartFile[] multipartFiles) {
+		@RequestParam(value = "file", required = true) MultipartFile[] multipartFiles) {
 		List<String> uploadedFileUrls = new ArrayList<>();
 
 		for (MultipartFile file : multipartFiles) {
