@@ -4,9 +4,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.localmood.common.s3.service.AwsS3Service;
 
@@ -25,6 +27,16 @@ public class AmazonS3Controller {
 		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> uploadFile(
 		@RequestPart(value = "file", required = true) MultipartFile multipartFile) {
+
+		String fileUrl = awsS3Service.uploadFile(multipartFile);
+
+		return ResponseEntity.ok(fileUrl);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile/temp",
+		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> uploadFileTemp(
+		@RequestParam(value = "file", required = true) MultipartFile multipartFile) {
 
 		String fileUrl = awsS3Service.uploadFile(multipartFile);
 
