@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class SpaceResponseDto {
+	private Long id;
 	private String name;
 	private String type;
 	private String address;
@@ -16,8 +17,9 @@ public class SpaceResponseDto {
 	private String bestMenu;
 	private boolean isScrapped;
 
-	public SpaceResponseDto(String name, String type, String address, List<String> imageUrls,
+	public SpaceResponseDto(Long id, String name, String type, String address, List<String> imageUrls,
 		String purpose, String mood, String interior, String bestMenu, boolean isScrapped) {
+		this.id = id;
 		this.name = name;
 		this.type = type;
 		this.address = address;
