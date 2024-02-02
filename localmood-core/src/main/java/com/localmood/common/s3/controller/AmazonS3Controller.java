@@ -24,8 +24,7 @@ public class AmazonS3Controller {
 
 	private final AwsS3Service awsS3Service;
 
-	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile",
-		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile")
 	public ResponseEntity<List<String>> uploadFile(
 		@RequestPart(value = "file", required = true) MultipartFile[] multipartFiles) {
 		List<String> uploadedFileUrls = new ArrayList<>();
