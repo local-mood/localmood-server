@@ -43,5 +43,14 @@ public class AmazonS3Controller {
 		return ResponseEntity.ok(fileUrl);
 	}
 
+	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile/temp/2")
+	public ResponseEntity<String> uploadFileTemp2(
+		@RequestPart(value = "file", required = true) MultipartFile multipartFile) {
+
+		String fileUrl = awsS3Service.uploadFile(multipartFile);
+
+		return ResponseEntity.ok(fileUrl);
+	}
+
 
 }
