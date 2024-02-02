@@ -137,6 +137,17 @@ public class CurationService {
 		curationSpaceRepository.save(curationSpace);
 	}
 
+	public void removeSpace(String curationId, String spaceId) {
+		CurationSpace curationSpace = curationSpaceRepository.findByCurationIdAndSpaceId(Long.parseLong(curationId), Long.parseLong(spaceId));
+
+		if (curationSpace != null) {
+			curationSpaceRepository.delete(curationSpace);
+		} else {
+			throw new LocalmoodException(ErrorCode.CURATION_SPACE_NOT_FOUND);
+		}
+	}
+
+
 	public Map<String, Object> getCurationsForMember(Long memberId) {
 		Map<String, Object> response = new LinkedHashMap<>();
 

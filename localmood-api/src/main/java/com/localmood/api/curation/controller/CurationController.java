@@ -87,6 +87,16 @@ public class CurationController {
 		return SuccessResponse.created("SUCCESS");
 	}
 
+	@Operation(summary = "큐레이션 공간 해제 API", description = "큐레이션에 공간을 해제합니다.")
+	@DeleteMapping("/{curationId}/space/{spaceId}")
+	public ResponseEntity<?> removeSpace(
+		@PathVariable("curationId") String curationId,
+		@PathVariable("spaceId") String spaceId
+	) {
+		curationService.removeSpace(curationId, spaceId);
+		return SuccessResponse.created("SUCCESS");
+	}
+
 	@Operation(summary = "큐레이션 상세 조회 API", description = "큐레이션 상세 정보를 조회합니다.")
 	@GetMapping("/{curationId}")
 	public ResponseEntity<CurationDetailResponseDto> getCurationDetail(
