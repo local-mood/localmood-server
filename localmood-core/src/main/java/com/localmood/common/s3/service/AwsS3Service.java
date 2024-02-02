@@ -1,6 +1,8 @@
 package com.localmood.common.s3.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +41,26 @@ public class AwsS3Service {
 			throw new LocalmoodException(ErrorCode.FILE_UPLOAD_FAILED);
 		}
 	}
+
+	public List<String> uploadFileDto(List<MultipartFile> files) {
+		List<String> fileUrls = new ArrayList<>();
+		for (MultipartFile file : files) {
+			try {
+				String fileName = generateFileName(file);
+				ObjectMetadata metadata = new ObjectMetadata();
+				metadata.setContentLength(file.getSize());
+				metadata.setContentType(file.getContentType());
+				amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
+
+				String fileUrl = generateFileUrl(fileName);
+				fileUrls.add(fileUrl);
+			} catch (IOException e) {
+				throw new LocalmoodException(ErrorCode.FILE_UPLOAD_FAILED);
+			}
+		}
+		return fileUrls;
+	}
+
 
 	// 파일명 생성
 	private String generateFileName(MultipartFile file) {
