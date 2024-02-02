@@ -18,4 +18,6 @@ public interface CurationSpaceRepository extends JpaRepository<CurationSpace, Lo
 	// Curation ID에 속한 Space ID 가져오기
 	@Query("SELECT cs.space.id FROM CurationSpace cs WHERE cs.curation.id = :curationId")
 	List<Long> findSpaceIdsByCurationId(@Param("curationId") Long curationId);
+
+	CurationSpace findByCurationIdAndSpaceId(Long curationId, Long spaceId);
 }
