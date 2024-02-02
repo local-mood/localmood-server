@@ -200,6 +200,7 @@ public class CurationService {
 		}
 
 		return new SpaceResponseDto(
+			spaceId,
 			space.getName(),
 			String.valueOf(space.getType()),
 			space.getAddress(),
