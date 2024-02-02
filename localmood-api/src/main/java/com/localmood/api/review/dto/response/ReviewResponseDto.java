@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class ReviewResponseDto {
+	private Long id;
 	private String image;
 	private String name;
 	private String type;
@@ -16,7 +17,8 @@ public class ReviewResponseDto {
 	private String author;
 	private boolean isScrapped;
 
-	public ReviewResponseDto(String image, String name, String type, String address, String author, Boolean isScrapped) {
+	public ReviewResponseDto(Long id, String image, String name, String type, String address, String author, Boolean isScrapped) {
+		this.id = id;
 		this.image = image;
 		this.name = name;
 		this.type = type;
