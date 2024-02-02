@@ -49,15 +49,6 @@ public class ReviewService {
 		Review review = reviewCreateDto.toEntity(space, member);
 		reviewRepository.save(review);
 
-		// 이미지 URL 가져오기
-		List<String> imageUrls = reviewCreateDto.getImageUrls();
-
-		// 이미지 URL 저장
-		if (imageUrls != null && !imageUrls.isEmpty()) {
-			for (String imageUrl : imageUrls) {
-				saveReviewImage(review, space, member, imageUrl);
-			}
-		}
 	}
 
 	// 사용자별 공간 기록 조회

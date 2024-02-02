@@ -34,9 +34,6 @@ public class ReviewCreateDto {
 	@Schema(description = "아쉬워던 점", nullable = true)
 	private String negativeEval;
 
-	@Schema(description = "이미지", nullable = true)
-	private List<String> imageUrls;
-
 	public Review toEntity(Space space, Member member) {
 		return Review.builder()
 			.space(space)
