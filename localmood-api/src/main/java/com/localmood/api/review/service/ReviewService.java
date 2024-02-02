@@ -1,4 +1,4 @@
-package com.localmood.domain.review.service;
+package com.localmood.api.review.service;
 
 import static com.localmood.common.utils.RepositoryUtil.*;
 
@@ -12,13 +12,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.localmood.domain.review.dto.request.ReviewCreateDto;
-import com.localmood.domain.review.dto.response.ReviewDetailResponseDto;
-import com.localmood.domain.review.dto.response.ReviewResponseDto;
+import com.localmood.api.review.dto.request.ReviewCreateDto;
+import com.localmood.api.review.dto.response.ReviewDetailResponseDto;
+import com.localmood.api.review.dto.response.ReviewResponseDto;
 import com.localmood.common.exception.ErrorCode;
+import com.localmood.common.s3.service.AwsS3Service;
 import com.localmood.domain.member.entity.Member;
+import com.localmood.domain.member.repository.MemberRepository;
 import com.localmood.domain.review.entity.Review;
 import com.localmood.domain.review.entity.ReviewImg;
 import com.localmood.domain.review.repository.ReviewImgRepository;
@@ -33,23 +34,27 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
+	private final AwsS3Service awsS3Service;
+	private final MemberRepository memberRepository;
 	private final SpaceRepository spaceRepository;
 	private final ReviewRepository reviewRepository;
 	private final ReviewImgRepository reviewImgRepository;
 	private final ScrapSpaceRepository scrapSpaceRepository;
 
-	@Transactional
-	public void createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto, List<String> imgUrls, Member member) {
+	public void createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto, Member member) {
 		// 공간 조회
 		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
 
-		// 리뷰 저장
+		// 리뷰 생성 및 저장
 		Review review = reviewCreateDto.toEntity(space, member);
 		reviewRepository.save(review);
 
+		// 이미지 URL 가져오기
+		List<String> imageUrls = reviewCreateDto.getImageUrls();
+
 		// 이미지 URL 저장
-		if (imgUrls != null && !imgUrls.isEmpty()) {
-			for (String imageUrl : imgUrls) {
+		if (imageUrls != null && !imageUrls.isEmpty()) {
+			for (String imageUrl : imageUrls) {
 				saveReviewImage(review, space, member, imageUrl);
 			}
 		}
