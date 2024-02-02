@@ -1,4 +1,4 @@
-package com.localmood.domain.review.dto.response;
+package com.localmood.api.review.dto.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
