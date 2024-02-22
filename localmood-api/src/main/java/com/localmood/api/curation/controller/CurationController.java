@@ -70,10 +70,10 @@ public class CurationController {
 
 	@Operation(summary = "추천 큐레이션 조회 API", description = "추천 큐레이션 목록을 조회합니다.")
 	@GetMapping("/recommend")
-	public ResponseEntity<List<CurationResponseDto>> getRandomCuration(
+	public ResponseEntity<List<CurationResponseDto>> getCurationRecommendList(
 		@CurrentUser Member member
 	) {
-		var res = curationService.getRandomCurations(Optional.ofNullable(member));
+		var res = curationService.getCurationRecommendList(Optional.ofNullable(member));
 		return SuccessResponse.ok(res);
 	}
 
