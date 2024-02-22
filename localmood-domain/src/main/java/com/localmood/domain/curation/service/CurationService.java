@@ -84,10 +84,11 @@ public class CurationService {
 		curationRepository.delete(curation);
 	}
 
-	public List<CurationResponseDto> getRandomCurations(Optional<Member> memberOptional) {
-		List<Long> curationIds = curationRepository.findRandomCurationIds();
+	public List<CurationResponseDto> getCurationRecommendList(Optional<Member> memberOptional) {
+		List<Long> curationIds = curationRepository.findCurationsByScrapCount();
 
-		return curationIds.stream()
+		return curationIds
+			.stream()
 			.map(id -> {
 				Curation curation = curationRepository.findById(id)
 					.orElseThrow(() -> new LocalmoodException(ErrorCode.CURATION_NOT_FOUND));
