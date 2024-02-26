@@ -1,6 +1,7 @@
 package com.localmood.domain.review.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,8 @@ public interface ReviewImgRepository extends JpaRepository<ReviewImg, Long> {
 	// Space ID에 속한 모든 이미지 가져오기
 	@Query("SELECT new java.lang.String(ri.imgUrl) FROM ReviewImg ri WHERE ri.space.id = :spaceId")
 	List<String> findImageUrlsBySpaceId(@Param("spaceId") Long spaceId);
+
+	Optional<ReviewImg> findByReviewId(Long reviewId);
+	List<ReviewImg> findListByReviewId(Long reviewId);
+
 }

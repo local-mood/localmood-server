@@ -3,10 +3,12 @@ package com.localmood.api.review.dto.response;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @RequiredArgsConstructor
 public class ReviewDetailResponseDto {
-	private String image;
+	private List<String> image;
 	private String name;
 	private String type;
 	private String address;
@@ -20,7 +22,7 @@ public class ReviewDetailResponseDto {
 	private String negativeEval;
 	private boolean isScrapped;
 
-	public ReviewDetailResponseDto(String image, String name, String type, String address,
+	public ReviewDetailResponseDto(List<String> image, String name, String type, String address,
 		String author, String createdAt, String interior,
 		String mood, String music,
 		String positiveEval, String negativeEval, Boolean isScrapped) {
