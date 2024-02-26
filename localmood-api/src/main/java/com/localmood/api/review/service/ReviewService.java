@@ -100,10 +100,23 @@ public class ReviewService {
 	}
 
 	private String getReviewImageUrl(Long reviewId) {
-		return reviewImgRepository.findById(reviewId)
+		return reviewImgRepository.findByReviewId(reviewId)
 			.map(ReviewImg::getImgUrl)
 			.orElse(null);
 	}
+
+	private List<String> getReviewImageUrls(Long reviewId) {
+		List<String> imageUrls = new ArrayList<>();
+		List<ReviewImg> reviewImages = reviewImgRepository.findListByReviewId(reviewId);
+		for (ReviewImg img : reviewImages) {
+			imageUrls.add(img.getImgUrl());
+			if (imageUrls.size() == 2) {
+				break;
+			}
+		}
+		return imageUrls;
+	}
+
 
 	// 공간별 공간 기록 조회
 	public Map<String, Object> getSpaceReview(Long spaceId, Optional<Member> memberOptional) {
@@ -136,19 +149,21 @@ public class ReviewService {
 	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review, Optional<Member> memberOptional) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd");
 
+		List<String> images = getReviewImageUrls(review.getId());
+
 		return new ReviewDetailResponseDto(
-			getReviewImageUrl(review.getId()),
-			review.getSpace().getName(),
-			review.getSpace().getType().toString(),
-			review.getSpace().getAddress(),
-			review.getMember().getNickname(),
-			review.getCreatedAt().format(formatter),
-			review.getInterior(),
-			review.getMood(),
-			review.getMusic(),
-			review.getPositive_eval(),
-			review.getNegative_eval(),
-			memberOptional.map(member -> checkIfSpaceScrapped(review.getSpace().getId(), member.getId())).orElse(false)
+				images,
+				review.getSpace().getName(),
+				review.getSpace().getType().toString(),
+				review.getSpace().getAddress(),
+				review.getMember().getNickname(),
+				review.getCreatedAt().format(formatter),
+				review.getInterior(),
+				review.getMood(),
+				review.getMusic(),
+				review.getPositive_eval(),
+				review.getNegative_eval(),
+				memberOptional.map(member -> checkIfSpaceScrapped(review.getSpace().getId(), member.getId())).orElse(false)
 		);
 	}
 
