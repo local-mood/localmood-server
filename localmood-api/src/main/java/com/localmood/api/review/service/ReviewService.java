@@ -126,14 +126,14 @@ public class ReviewService {
 		List<Review> spaceReviews = reviewRepository.findBySpaceId(spaceId);
 
 		// 방문 목적별로 그룹화하여 dto 생성
-		Map<String, List<ReviewDetailResponseDto>> reviewMap = new HashMap<>();
+		Map<String, List<Map<String, Object>>> reviewMap = new HashMap<>();
 
 		for (Review review : spaceReviews) {
 			String[] purposes = review.getPurpose().split(",");
 
 			for (String purpose : purposes) {
 				// 방문 목적 콤마로 분할
-				List<ReviewDetailResponseDto> reviewList = reviewMap.getOrDefault(purpose.trim(), new ArrayList<>());
+				List<Map<String, Object>> reviewList = reviewMap.getOrDefault(purpose.trim(), new ArrayList<>());
 
 				reviewList.add(mapToReviewDetailResponseDto(review, memberOptional));
 				reviewMap.put(purpose.trim(), reviewList);
@@ -146,30 +146,33 @@ public class ReviewService {
 		return response;
 	}
 
-	private ReviewDetailResponseDto mapToReviewDetailResponseDto(Review review, Optional<Member> memberOptional) {
+	private Map<String, Object> mapToReviewDetailResponseDto(Review review, Optional<Member> memberOptional) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd");
 
 		List<String> images = getReviewImageUrls(review.getId());
+		boolean isScraped = memberOptional.
+				map(member -> checkIfSpaceScrapped(review.getSpace().getId(), member.getId())).orElse(false);
 
-		return new ReviewDetailResponseDto(
-				images,
-				review.getSpace().getName(),
-				review.getSpace().getType().toString(),
-				review.getSpace().getAddress(),
-				review.getMember().getNickname(),
-				review.getCreatedAt().format(formatter),
-				review.getInterior(),
-				review.getMood(),
-				review.getMusic(),
-				review.getPositive_eval(),
-				review.getNegative_eval(),
-				memberOptional.map(member -> checkIfSpaceScrapped(review.getSpace().getId(), member.getId())).orElse(false)
-		);
+		Map<String, Object> reviewDetailResponseDto = new LinkedHashMap<>();
+		reviewDetailResponseDto.put("image", images);
+		reviewDetailResponseDto.put("name", review.getSpace().getName());
+		reviewDetailResponseDto.put("type", review.getSpace().getType().toString());
+		reviewDetailResponseDto.put("address", review.getSpace().getAddress());
+		reviewDetailResponseDto.put("author", review.getMember().getNickname());
+		reviewDetailResponseDto.put("createdAt", review.getCreatedAt().format(formatter));
+		reviewDetailResponseDto.put("interior", review.getInterior());
+		reviewDetailResponseDto.put("mood", review.getMood());
+		reviewDetailResponseDto.put("music", review.getMusic());
+		reviewDetailResponseDto.put("positiveEval", review.getPositive_eval());
+		reviewDetailResponseDto.put("negativeEval", review.getNegative_eval());
+		reviewDetailResponseDto.put("isScraped", isScraped);
+
+		return reviewDetailResponseDto;
 	}
 
 	private boolean checkIfSpaceScrapped(Long spaceId, Long memberId) {
-		boolean isScrapped = scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
-		return isScrapped;
+		return scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
 	}
+
 
 }
