@@ -20,12 +20,12 @@ public class ReviewDetailResponseDto {
 	private String music;
 	private String positiveEval;
 	private String negativeEval;
-	private boolean isScrapped;
+	private boolean isScraped;
 
 	public ReviewDetailResponseDto(List<String> image, String name, String type, String address,
 		String author, String createdAt, String interior,
 		String mood, String music,
-		String positiveEval, String negativeEval, Boolean isScrapped) {
+		String positiveEval, String negativeEval, Boolean isScraped) {
 		this.image = image;
 		this.name = name;
 		this.type = type;
@@ -40,7 +40,7 @@ public class ReviewDetailResponseDto {
 		this.positiveEval = positiveEval != null ? positiveEval : "";
 		this.negativeEval = negativeEval != null ? negativeEval : "";
 
-		this.isScrapped = isScrapped;
+		this.isScraped = isScraped;
 	}
 
 }

@@ -17,14 +17,14 @@ public class SpaceScrapService {
 
     public Map<String, Boolean> getSpaceScrap(Long spaceId, Optional<Member> memberOptional) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean isScrapped = false;
+        boolean isScraped = false;
 
         if (memberOptional.isPresent()) {
             Member member = memberOptional.get();
-            isScrapped = scrapSpaceRepository.existsByMemberIdAndSpaceId(member.getId(), spaceId);
+            isScraped = scrapSpaceRepository.existsByMemberIdAndSpaceId(member.getId(), spaceId);
         }
 
-        response.put("isScrapped", isScrapped);
+        response.put("isScraped", isScraped);
         return response;
     }
 
