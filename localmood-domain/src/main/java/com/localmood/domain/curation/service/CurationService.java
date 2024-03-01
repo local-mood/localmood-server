@@ -93,16 +93,16 @@ public class CurationService {
 				Curation curation = curationRepository.findById(id)
 					.orElseThrow(() -> new LocalmoodException(ErrorCode.CURATION_NOT_FOUND));
 
-				boolean isScrapped = memberOptional.map(member ->
+				boolean isScraped = memberOptional.map(member ->
 						scrapCurationRepository.existsByMemberIdAndCurationId(member.getId(), curation.getId()))
 					.orElse(false);
 
-				return mapToCurationResponseDto(curation, isScrapped);
+				return mapToCurationResponseDto(curation, isScraped);
 			})
 			.collect(Collectors.toList());
 	}
 
-	private CurationResponseDto mapToCurationResponseDto(Curation curation, boolean isScrapped) {
+	private CurationResponseDto mapToCurationResponseDto(Curation curation, boolean isScraped) {
 		Member author = curation.getMember();
 		String authorName = author.getNickname();
 
@@ -111,8 +111,7 @@ public class CurationService {
 		return new CurationResponseDto(
 			curation.getId(), authorName, image, curation.getTitle(),
 			curationSpaceRepository.countByCurationId(curation.getId()),
-			Arrays.asList(curation.getKeyword().split(",")),
-			isScrapped);
+			Arrays.asList(curation.getKeyword().split(",")), isScraped);
 	}
 
 	private List<String> getCurationImg(Long curationId) {
@@ -158,8 +157,8 @@ public class CurationService {
 		List<Map<String, Object>> curationList = curations
 			.stream()
 			.map(curation -> {
-				boolean isScrapped = scrapCurationRepository.existsByMemberIdAndCurationId(memberId, curation.getId());
-				Map<String, Object> curationMap = mapToCurationResponseDto(curation, isScrapped).toMap();
+				boolean isScraped = scrapCurationRepository.existsByMemberIdAndCurationId(memberId, curation.getId());
+				Map<String, Object> curationMap = mapToCurationResponseDto(curation, isScraped).toMap();
 				curationMap.put("privacy", curation.getPrivacy());
 				return curationMap;
 			})
@@ -204,11 +203,11 @@ public class CurationService {
 		SpaceInfo spaceInfo = getSpaceInfo(spaceId);
 		SpaceMenu spaceMenu = getSpaceMenu(spaceId);
 
-		boolean isScrapped = false;
+		boolean isScraped = false;
 
 		// 로그인한 경우, 스크랩 여부 확인
 		if (member != null) {
-			isScrapped = checkIfSpaceScrapped(spaceId, member.getId());
+			isScraped = checkIfSpaceScrapped(spaceId, member.getId());
 		}
 
 		return new SpaceResponseDto(
@@ -221,7 +220,7 @@ public class CurationService {
 			spaceInfo.getMood(),
 			spaceInfo.getInterior(),
 			(space.getType() == SpaceType.RESTAURANT) ? spaceMenu.getDishDesc() : "",
-			isScrapped
+			isScraped
 		);
 	}
 
@@ -243,8 +242,8 @@ public class CurationService {
 				curationMap.put("spaceCount", curationSpaceRepository.countByCurationId(curation.getId()));
 				curationMap.put("keyword", curation.getKeyword());
 
-				boolean isScrapped = memberOptional.map(member -> checkIfScrapped(curation.getId(), member.getId())).orElse(false);
-				curationMap.put("isScrapped", isScrapped);
+				boolean isScraped = memberOptional.map(member -> checkIfScrapped(curation.getId(), member.getId())).orElse(false);
+				curationMap.put("isScraped", isScraped);
 
 				return curationMap;
 			})
@@ -265,11 +264,11 @@ public class CurationService {
 			.filter(curation -> curation.getKeyword().contains(request.getKeyword1())
 				&& curation.getKeyword().contains(request.getKeyword2()))
 			.map(curation -> {
-				boolean isScrapped = memberOptional.map(member ->
+				boolean isScraped = memberOptional.map(member ->
 						scrapCurationRepository.existsByMemberIdAndCurationId(member.getId(), curation.getId()))
 					.orElse(false);
 
-				return mapToCurationResponseDto(curation, isScrapped);
+				return mapToCurationResponseDto(curation, isScraped);
 			})
 			.collect(Collectors.toList());
 
@@ -295,13 +294,13 @@ public class CurationService {
 	}
 
 	private boolean checkIfScrapped(Long curationId, Long memberId) {
-		boolean isScrapped = scrapCurationRepository.existsByMemberIdAndCurationId(memberId, curationId);
-		return isScrapped;
+		boolean isScraped = scrapCurationRepository.existsByMemberIdAndCurationId(memberId, curationId);
+		return isScraped;
 	}
 
 	private boolean checkIfSpaceScrapped(Long spaceId, Long memberId) {
-		boolean isScrapped = scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
-		return isScrapped;
+		boolean isScraped = scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
+		return isScraped;
 	}
 
 }
