@@ -108,6 +108,13 @@ public class SpaceService {
 			// 키워드 파싱
 			List<String[]> positiveEvalList = parseKeyword(review.getPositive_eval());
 			List<String[]> negativeEvalList = parseKeyword(review.getNegative_eval());
+
+			// 퍼센티지 계산
+			String[][] positiveEval = calculateEvalPercent(positiveEvalList);
+			String[][] negativeEval = calculateEvalPercent(negativeEvalList);
+
+			positiveEvalResult.add(positiveEval);
+			negativeEvalResult.add(negativeEval);
 		}
 
 		spaceDetailMap.put("info",
@@ -155,6 +162,32 @@ public class SpaceService {
 			}
 		}
 		return parsedKeywords;
+	}
+
+	// 키워드 퍼센티지 계산
+	private String[][] calculateEvalPercent(List<String[]> parsedKeywords) {
+		String[][] keywordArray = new String[parsedKeywords.size()][2];
+		int totalPercentage = 0;
+
+		// 각 키워드별로 퍼센티지 합산
+		for (String[] keyword : parsedKeywords) {
+			totalPercentage += keyword.length > 1 ? Integer.parseInt(keyword[1]) : 100;
+		}
+
+		// 각 키워드별로 퍼센티지 계산하여 결과 배열에 추가
+		for (int i = 0; i < parsedKeywords.size(); i++) {
+			String[] eval = parsedKeywords.get(i);
+			String content = eval[0];
+			int percentage = eval.length > 1 ? Integer.parseInt(eval[1]) : 100;
+
+			// 퍼센티지를 전체 퍼센티지에 대한 비율로 계산
+			int calculatedPercentage = (int) Math.round(((double) percentage / totalPercentage) * 100);
+
+			keywordArray[i][0] = content;
+			keywordArray[i][1] = String.valueOf(calculatedPercentage);
+		}
+
+		return keywordArray;
 	}
 
 }
