@@ -2,11 +2,14 @@ package com.localmood.domain.space.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.localmood.domain.review.entity.Review;
+import com.localmood.domain.review.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
 import com.localmood.domain.curation.repository.CurationRepository;
@@ -34,6 +37,7 @@ public class SpaceService {
 	private final SpaceRepository spaceRepository;
 	private final SpaceInfoRepository spaceInfoRepository;
 	private final SpaceMenuRepository spaceMenuRepository;
+	private final ReviewRepository reviewRepository;
 	private final ReviewImgRepository reviewImgRepository;
 	private final ScrapSpaceRepository scrapSpaceRepository;
 	private final CurationRepository curationRepository;
@@ -95,6 +99,23 @@ public class SpaceService {
 		SpaceMenu spaceMenu = spaceMenuRepository.findBySpaceId(spaceId).orElseThrow();
 		List<String> imgUrlList = reviewImgRepository.findImageUrlsBySpaceId(spaceId);
 		Boolean isScraped = member.isPresent() ? scrapSpaceRepository.existsByMemberIdAndSpaceId(member.get().getId(), spaceId) : false;
+		List<Review> reviews = reviewRepository.findBySpaceId(spaceId);
+
+		List<String[][]> positiveEvalResult = new ArrayList<>();
+		List<String[][]> negativeEvalResult = new ArrayList<>();
+
+		for (Review review : reviews) {
+			// 키워드 파싱
+			List<String[]> positiveEvalList = parseKeyword(review.getPositive_eval());
+			List<String[]> negativeEvalList = parseKeyword(review.getNegative_eval());
+
+			// 퍼센티지 계산
+			String[][] positiveEval = calculateEvalPercent(positiveEvalList);
+			String[][] negativeEval = calculateEvalPercent(negativeEvalList);
+
+			positiveEvalResult.add(positiveEval);
+			negativeEvalResult.add(negativeEval);
+		}
 
 		spaceDetailMap.put("info",
 				SpaceDetailDto.builder()
@@ -112,8 +133,8 @@ public class SpaceService {
 						.mood(spaceInfo.getMood())
 						.interior(spaceInfo.getInterior())
 						.music(spaceInfo.getMusic())
-						.positiveEval(spaceInfo.getPositiveEval())
-						.negativeEval(spaceInfo.getNegativeEval())
+						.positiveEval(positiveEvalResult)
+						.negativeEval(negativeEvalResult)
 						.isScraped(isScraped)
 						.build()
 		);
@@ -126,4 +147,47 @@ public class SpaceService {
 
 		return spaceDetailMap;
 	}
+
+	// 키워드 파싱
+	private List<String[]> parseKeyword(String keywordList) {
+		List<String[]> parsedKeywords = new ArrayList<>();
+
+		if (keywordList != null && !keywordList.isEmpty()) {
+			// 쉼표로 구분된 키워드를 분할하여 배열로 변환
+			String[] keywords = keywordList.split(",");
+			for (String keyword : keywords) {
+				// 공백을 제거한 후 배열에 추가
+				String[] keywordArray = {keyword.trim()};
+				parsedKeywords.add(keywordArray);
+			}
+		}
+		return parsedKeywords;
+	}
+
+	// 키워드 퍼센티지 계산
+	private String[][] calculateEvalPercent(List<String[]> parsedKeywords) {
+		String[][] keywordArray = new String[parsedKeywords.size()][2];
+		int totalPercentage = 0;
+
+		// 각 키워드별로 퍼센티지 합산
+		for (String[] keyword : parsedKeywords) {
+			totalPercentage += keyword.length > 1 ? Integer.parseInt(keyword[1]) : 100;
+		}
+
+		// 각 키워드별로 퍼센티지 계산하여 결과 배열에 추가
+		for (int i = 0; i < parsedKeywords.size(); i++) {
+			String[] eval = parsedKeywords.get(i);
+			String content = eval[0];
+			int percentage = eval.length > 1 ? Integer.parseInt(eval[1]) : 100;
+
+			// 퍼센티지를 전체 퍼센티지에 대한 비율로 계산
+			int calculatedPercentage = (int) Math.round(((double) percentage / totalPercentage) * 100);
+
+			keywordArray[i][0] = content;
+			keywordArray[i][1] = String.valueOf(calculatedPercentage);
+		}
+
+		return keywordArray;
+	}
+
 }

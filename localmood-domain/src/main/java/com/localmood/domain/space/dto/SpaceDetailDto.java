@@ -33,12 +33,12 @@ public class SpaceDetailDto {
 	private String mood;
 	private String music;
 	private List<String> interior;
-	private String[][] positiveEval;
-	private String[][] negativeEval;
+	private List<String[][]> positiveEval;
+	private List<String[][]> negativeEval;
 	private Boolean isScraped;
 
 	@Builder
-	public SpaceDetailDto(Long id, String name, List<String> imgUrlList, String address, SpaceType type, Optional<SpaceSubType> subType, Optional<SpaceDish> dish, String dishDesc, String visitorNum, String optionalService, String purpose, String mood, String music, String interior, String positiveEval, String negativeEval, Boolean isScraped){
+	public SpaceDetailDto(Long id, String name, List<String> imgUrlList, String address, SpaceType type, Optional<SpaceSubType> subType, Optional<SpaceDish> dish, String dishDesc, String visitorNum, String optionalService, String purpose, String mood, String music, String interior, List<String[][]> positiveEval, List<String[][]> negativeEval, Boolean isScraped){
 		this.id = id;
 		this.name = name;
 		this.imgUrlList = imgUrlList;
@@ -53,8 +53,8 @@ public class SpaceDetailDto {
 		this.mood = mood;
 		this.music = music;
 		this.interior = type.equals(CAFE) ? ArrayUtil.toArr(interior) : null;
-		this.positiveEval = positiveEval == null ? null : ArrayUtil.to2DArr(positiveEval);
-		this.negativeEval = negativeEval == null ? null : ArrayUtil.to2DArr(negativeEval);
+		this.positiveEval = positiveEval;
+		this.negativeEval = negativeEval;
 		this.isScraped = isScraped;
 	}
 }
