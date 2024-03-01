@@ -15,16 +15,16 @@ public class ReviewResponseDto {
 	private String type;
 	private String address;
 	private String author;
-	private boolean isScrapped;
+	private boolean isScraped;
 
-	public ReviewResponseDto(Long id, String image, String name, String type, String address, String author, Boolean isScrapped) {
+	public ReviewResponseDto(Long id, String image, String name, String type, String address, String author, Boolean isScraped) {
 		this.id = id;
 		this.image = image;
 		this.name = name;
 		this.type = type;
 		this.address = address;
 		this.author = author;
-		this.isScrapped = isScrapped;
+		this.isScraped = isScraped;
 	}
 
 }
