@@ -111,7 +111,7 @@ public class CurationService {
 		return new CurationResponseDto(
 			curation.getId(), authorName, image, curation.getTitle(),
 			curationSpaceRepository.countByCurationId(curation.getId()),
-			Arrays.asList(curation.getKeyword().split(",")), isScraped);
+			splitKeywordToList(curation), isScraped);
 	}
 
 	private List<String> getCurationImg(Long curationId) {
@@ -240,7 +240,7 @@ public class CurationService {
 				curationMap.put("image", getCurationImg(curation.getId()));
 				curationMap.put("title", curation.getTitle());
 				curationMap.put("spaceCount", curationSpaceRepository.countByCurationId(curation.getId()));
-				curationMap.put("keyword", curation.getKeyword());
+				curationMap.put("keyword", splitKeywordToList(curation));
 
 				boolean isScraped = memberOptional.map(member -> checkIfScrapped(curation.getId(), member.getId())).orElse(false);
 				curationMap.put("isScraped", isScraped);
@@ -285,6 +285,10 @@ public class CurationService {
 
 	// TODO
 	//    - 이후 공통으로 사용 될 경우, 클래스로 분리
+	private List<String> splitKeywordToList(Curation curation) {
+		return Arrays.asList(curation.getKeyword().split(","));
+	}
+
 	private SpaceInfo getSpaceInfo(Long spaceId) {
 		return findByIdOrNull(spaceInfoRepository, spaceId);
 	}
