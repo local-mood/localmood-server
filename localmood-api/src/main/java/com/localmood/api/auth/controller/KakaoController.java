@@ -47,6 +47,11 @@ public class KakaoController {
         // 인가 코드로 Access Token 받아오기
         KakaoTokenResponse kakaoTokenResponse = kakaoTokenJsonData.getToken(code);
 
+        // 카카오 서버 Access Token으로 유저 정보 받아오기
+        KakaoUserInfoDto userInfoDto = authService.parseUserInfo(kakaoTokenResponse.getAccess_token());
+        String email = userInfoDto.getEmail();
+        String nickname = userInfoDto.getNickname();
+
 
         return ResponseEntity
                 .ok()

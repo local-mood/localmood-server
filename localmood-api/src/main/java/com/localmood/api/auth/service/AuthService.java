@@ -1,7 +1,19 @@
 package com.localmood.api.auth.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.localmood.api.auth.dto.oauth2.user.KakaoUserInfoDto;
+import com.localmood.domain.member.entity.Role;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -60,6 +72,52 @@ public class AuthService {
         memberRepository.save(member);
 
         return member;
+    }
+
+    @Transactional
+    public KakaoUserInfoDto parseUserInfo(String accessToken) throws IOException {
+        String reqURL = "https://kapi.kakao.com/v2/user/me";
+        String email = null;
+        String nickname = null;
+        String line = "";
+        String result = "";
+
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            int responseCode = conn.getResponseCode();
+            System.out.println("responseCode : " + responseCode);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+            System.out.println("response body : " + result);
+            System.out.println("result type" + result.getClass().getName());
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, Object> jsonMap = objectMapper.readValue(result, new TypeReference<Map<String, Object>>() {});
+
+                System.out.println(jsonMap.get("properties"));
+
+                Map<String, Object> properties = (Map<String, Object>) jsonMap.get("properties");
+                Map<String, Object> kakao_account = (Map<String, Object>) jsonMap.get("kakao_account");
+
+                nickname = properties.get("nickname").toString();
+                email = kakao_account.get("email").toString();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new KakaoUserInfoDto(email, nickname);
     }
 
     // 로그인
