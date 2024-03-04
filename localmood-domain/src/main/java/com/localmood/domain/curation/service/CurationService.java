@@ -207,7 +207,7 @@ public class CurationService {
 
 		// 로그인한 경우, 스크랩 여부 확인
 		if (member != null) {
-			isScraped = checkIfSpaceScrapped(spaceId, member.getId());
+			isScraped = checkIfSpaceScraped(spaceId, member.getId());
 		}
 
 		return new SpaceResponseDto(
@@ -242,7 +242,7 @@ public class CurationService {
 				curationMap.put("spaceCount", curationSpaceRepository.countByCurationId(curation.getId()));
 				curationMap.put("keyword", splitKeywordToList(curation));
 
-				boolean isScraped = memberOptional.map(member -> checkIfScrapped(curation.getId(), member.getId())).orElse(false);
+				boolean isScraped = memberOptional.map(member -> checkIfScraped(curation.getId(), member.getId())).orElse(false);
 				curationMap.put("isScraped", isScraped);
 
 				return curationMap;
@@ -297,12 +297,12 @@ public class CurationService {
 		return findByIdOrNull(spaceMenuRepository, spaceId);
 	}
 
-	private boolean checkIfScrapped(Long curationId, Long memberId) {
+	private boolean checkIfScraped(Long curationId, Long memberId) {
 		boolean isScraped = scrapCurationRepository.existsByMemberIdAndCurationId(memberId, curationId);
 		return isScraped;
 	}
 
-	private boolean checkIfSpaceScrapped(Long spaceId, Long memberId) {
+	private boolean checkIfSpaceScraped(Long spaceId, Long memberId) {
 		boolean isScraped = scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
 		return isScraped;
 	}
