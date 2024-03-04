@@ -1,5 +1,6 @@
 package com.localmood.api.auth.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpCookie;
@@ -25,13 +26,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Auth", description = "인증/인가 API")
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    @Value("${domain}")
-    private String domain;
+    // @Value("${domain}")
+    // private String domain;
 
     private final long COOKIE_EXPIRATION = 7776000; // 90일
 
