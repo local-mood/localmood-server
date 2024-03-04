@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-  @Value("${domain}")
-  private String domainUrl;
+  // @Value("${domain}")
+  // private String domainUrl;
 
   @Bean
   public OpenAPI openAPI() {
