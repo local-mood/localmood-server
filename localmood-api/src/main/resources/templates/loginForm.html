@@ -1,0 +1,44 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 페이지</title>
+</head>
+<style>
+    .wrap {
+        width: 490px;
+        padding: 40px 20px 20px 20px;
+        background-color: #f5f6f7;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        border-radius: 30px;
+        box-sizing: border-box;
+    }
+
+    .title {
+        margin: 0 auto;
+        width: 240px;
+        height: 44px;
+        text-align: center;
+        font-size: 15px;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        background-size: 240px auto;
+        margin-bottom: 20px;
+    }
+
+
+</style>
+
+<body>
+<div class="wrap">
+    <div class="title">
+    <a href="https://kauth.kakao.com/oauth/authorize"
+       th:href="@{https://kauth.kakao.com/oauth/authorize(client_id=${client_id}, redirect_uri=${redirect_uri}, response_type='code')}">
+    <H2 align="center">카카오 로그인</H2>
+    </a>
+    </div>
+</div>
+</body>
+</html>
