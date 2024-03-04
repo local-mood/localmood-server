@@ -4,6 +4,7 @@ import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 
 import java.util.Optional;
 
+import com.localmood.domain.scrap.entity.QScrapSpace;
 import org.springframework.stereotype.Component;
 
 import com.localmood.domain.member.entity.Member;
@@ -21,8 +22,8 @@ public class ScrapUtil {
 		if (member.isPresent()) {
 			return isScraped.and(
 					new CaseBuilder()
-							.when(scrapSpace.member.id.eq(member.get().getId()))
-							.then((Predicate)Expressions.TRUE)
+							.when(QScrapSpace.scrapSpace.member.id.eq(member.get().getId()))
+							.then((Predicate) Expressions.TRUE)
 							.otherwise(Expressions.FALSE)
 			);
 		}
