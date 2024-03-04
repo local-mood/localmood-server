@@ -40,6 +40,13 @@ public class Member extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	public Member update(String nickname, String email){
+		this.nickname = nickname;
+		this.email = email;
+
+		return this;
+	}
+
 	@Builder
 	public Member (String nickname, String email, String password, String profileImgUrl, Role role) {
 		this.nickname = nickname;

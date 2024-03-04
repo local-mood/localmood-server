@@ -75,6 +75,37 @@ public class AuthService {
     }
 
     @Transactional
+    public LoginRequestDto joinKakaoMember(String email, String nickname) {
+        Optional<Member> userOptional = memberRepository.findByEmail(email);
+        Member member;
+        String password = email + "!";
+
+        // 기존 회원이라면 정보 업데이트
+        if (userOptional.isPresent()) {
+            member = userOptional.get();
+            member.update(nickname, email);
+        }
+        // 신규 회원이라면 회원가입
+        else {
+            member = Member.builder()
+                    .profileImgUrl("DEFAULT")
+                    .password(passwordEncoder.encode(password))
+                    .nickname(nickname)
+                    .email(email)
+                    .role(Role.ROLE_USER)
+                    .build();
+            memberRepository.save(member);
+        }
+
+        LoginRequestDto loginRequest = LoginRequestDto.builder()
+                .email(email)
+                .password(password)
+                .build();
+
+        return loginRequest;
+    }
+
+    @Transactional
     public KakaoUserInfoDto parseUserInfo(String accessToken) throws IOException {
         String reqURL = "https://kapi.kakao.com/v2/user/me";
         String email = null;

@@ -52,9 +52,14 @@ public class KakaoController {
         String email = userInfoDto.getEmail();
         String nickname = userInfoDto.getNickname();
 
+        // 회원가입
+        LoginRequestDto loginRequest = authService.joinKakaoMember(email, nickname);
+
+        // 웹 서버 Access Token 발급
+        TokenDto tokenDto = authService.login(loginRequest);
 
         return ResponseEntity
                 .ok()
-                .build();
+                .body(tokenDto);
     }
 }
