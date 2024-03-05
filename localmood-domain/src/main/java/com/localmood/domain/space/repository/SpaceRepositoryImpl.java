@@ -151,8 +151,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			Long scrapCount = tuple.get(count(scrapSpace.id));
 			LocalDateTime modifiedAt = tuple.get(spaceInfo.modifiedAt);
 
-			boolean isScraped = member.
-					map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
 
 			return new SpaceSearchDto(id, spaceName, type, address, purpose, interior, thumbnailImgUrl, isScraped, scrapCount, modifiedAt);
 		}).collect(Collectors.toList());
@@ -191,27 +190,24 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 		if (!dish.equals("ALL")){
 			builder.and(spaceMenu.dish.eq(SpaceDish.of(dish)));
 		}
-		if (!dishDesc.equals("ALL")){
+		if (!dishDesc.equals("ALL")) {
 			builder.and(spaceMenu.dishDesc.contains(dishDesc));
 		}
 
-		return queryFactory
+		List<Tuple> queryResult = queryFactory
 				.select(
-						new QSpaceSearchDto(
-								space.id,
-								space.name,
-								space.type,
-								space.address,
-								spaceInfo.purpose,
-								new CaseBuilder()
-										.when(space.type.eq(SpaceType.CAFE))
-										.then(spaceInfo.interior)
-										.otherwise(spaceMenu.dishDesc),
-								spaceInfo.thumbnailImgUrl,
-								scrapUtil.isScraped(member),
-								count(scrapSpace.id),
-								spaceInfo.modifiedAt
-						)
+						space.id,
+						space.name,
+						space.type,
+						space.address,
+						spaceInfo.purpose,
+						new CaseBuilder()
+								.when(space.type.eq(SpaceType.CAFE))
+								.then(spaceInfo.interior)
+								.otherwise(spaceMenu.dishDesc),
+						spaceInfo.thumbnailImgUrl,
+						count(scrapSpace.id),
+						spaceInfo.modifiedAt
 				)
 				.from(space)
 				.leftJoin(spaceInfo)
@@ -227,6 +223,27 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.orderBy(orderSpecifier)
 				.groupBy(space.id)
 				.fetch();
+
+		List<SpaceSearchDto> spaceList = queryResult.stream().map(tuple -> {
+			Long id = tuple.get(space.id);
+			String spaceName = tuple.get(space.name);
+			SpaceType spaceType = tuple.get(space.type);
+			String address = tuple.get(space.address);
+			String spacePurpose = tuple.get(spaceInfo.purpose);
+			String spaceInterior = tuple.get(new CaseBuilder()
+					.when(space.type.eq(SpaceType.CAFE))
+					.then(spaceInfo.interior)
+					.otherwise(spaceMenu.dishDesc));
+			String thumbnailImgUrl = tuple.get(spaceInfo.thumbnailImgUrl);
+			Long scrapCount = tuple.get(count(scrapSpace.id));
+			LocalDateTime modifiedAt = tuple.get(spaceInfo.modifiedAt);
+
+			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+
+			return new SpaceSearchDto(id, spaceName, spaceType, address, spacePurpose, spaceInterior, thumbnailImgUrl, isScraped, scrapCount, modifiedAt);
+		}).collect(Collectors.toList());
+
+		return spaceList;
 	}
 
 	@Override
