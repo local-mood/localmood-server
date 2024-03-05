@@ -25,4 +25,6 @@ public interface CurationRepository extends JpaRepository<Curation, Long>, Curat
 
 	// 키워드로 찾기
 	List<Curation> findByKeywordContainingOrKeywordContaining(String keyword1, String keyword2);
+
+	List<Curation> findByMemberId(Long memberId);
 }
