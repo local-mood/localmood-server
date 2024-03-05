@@ -6,9 +6,12 @@ import static com.localmood.domain.space.entity.QSpaceInfo.*;
 import static com.localmood.domain.space.entity.QSpaceMenu.*;
 import static com.querydsl.core.types.ExpressionUtils.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.localmood.common.util.CheckScrapUtil;
 import com.localmood.common.util.ScrapUtil;
 import com.localmood.domain.member.dto.MemberScrapSpaceDto;
 import com.localmood.domain.member.dto.QMemberScrapSpaceDto;
@@ -21,6 +24,7 @@ import com.localmood.domain.space.entity.SpaceDish;
 import com.localmood.domain.space.entity.SpaceSubType;
 import com.localmood.domain.space.entity.SpaceType;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -34,6 +38,7 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 
 	private final JPAQueryFactory queryFactory;
 	private final ScrapUtil scrapUtil;
+	private final CheckScrapUtil checkScrapUtil;
 
 	@Override
 	public List<SpaceRecommendDto> findRestaurantRecommendByKeyword(String keyword, Optional<Member> member){
@@ -102,27 +107,23 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<SpaceSearchDto> findSpaceByName(String name, String sort, Optional<Member> member){
-
+	public List<SpaceSearchDto> findSpaceByName(String name, String sort, Optional<Member> member) {
 		OrderSpecifier orderSpecifier = createOrderSpecifier(sort);
 
-		return queryFactory
+		List<Tuple> queryResult = queryFactory
 				.select(
-						new QSpaceSearchDto(
-								space.id,
-								space.name,
-								space.type,
-								space.address,
-								spaceInfo.purpose,
-								new CaseBuilder()
-										.when(space.type.eq(SpaceType.CAFE))
-										.then(spaceInfo.interior)
-										.otherwise(spaceMenu.dishDesc),
-								spaceInfo.thumbnailImgUrl,
-								scrapUtil.isScraped(member),
-								count(scrapSpace.id),
-								spaceInfo.modifiedAt
-						)
+						space.id,
+						space.name,
+						space.type,
+						space.address,
+						spaceInfo.purpose,
+						new CaseBuilder()
+								.when(space.type.eq(SpaceType.CAFE))
+								.then(spaceInfo.interior)
+								.otherwise(spaceMenu.dishDesc),
+						spaceInfo.thumbnailImgUrl,
+						count(scrapSpace.id),
+						spaceInfo.modifiedAt
 				)
 				.from(space)
 				.leftJoin(spaceInfo)
@@ -135,6 +136,28 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.orderBy(orderSpecifier)
 				.groupBy(space.id)
 				.fetch();
+
+		List<SpaceSearchDto> spaceList = queryResult.stream().map(tuple -> {
+			Long id = tuple.get(space.id);
+			String spaceName = tuple.get(space.name);
+			SpaceType type = tuple.get(space.type);
+			String address = tuple.get(space.address);
+			String purpose = tuple.get(spaceInfo.purpose);
+			String interior = tuple.get(new CaseBuilder()
+					.when(space.type.eq(SpaceType.CAFE))
+					.then(spaceInfo.interior)
+					.otherwise(spaceMenu.dishDesc));
+			String thumbnailImgUrl = tuple.get(spaceInfo.thumbnailImgUrl);
+			Long scrapCount = tuple.get(count(scrapSpace.id));
+			LocalDateTime modifiedAt = tuple.get(spaceInfo.modifiedAt);
+
+			boolean isScraped = member.
+					map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+
+			return new SpaceSearchDto(id, spaceName, type, address, purpose, interior, thumbnailImgUrl, isScraped, scrapCount, modifiedAt);
+		}).collect(Collectors.toList());
+
+		return spaceList;
 	}
 
 	@Override
