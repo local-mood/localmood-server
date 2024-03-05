@@ -247,17 +247,14 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	}
 
 	@Override
-	public List<MemberScrapSpaceDto> findSimilarSpace(String purpose, String mood, Optional<Member> member){
-		return queryFactory
+	public List<MemberScrapSpaceDto> findSimilarSpace(String purpose, String mood, Optional<Member> member) {
+		List<Tuple> queryResult = queryFactory
 				.select(
-						new QMemberScrapSpaceDto(
-								space.id,
-								space.name,
-								space.type,
-								space.address,
-								spaceInfo.thumbnailImgUrl,
-								scrapUtil.isScraped(member)
-						)
+						space.id,
+						space.name,
+						space.type,
+						space.address,
+						spaceInfo.thumbnailImgUrl
 				)
 				.from(space)
 				.leftJoin(spaceInfo)
@@ -267,6 +264,17 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.where(spaceInfo.purpose.eq(purpose).and(spaceInfo.mood.eq(mood)))
 				.distinct()
 				.fetch();
+
+		return queryResult.stream().map(tuple -> {
+			Long id = tuple.get(space.id);
+			String name = tuple.get(space.name);
+			SpaceType type = tuple.get(space.type);
+			String address = tuple.get(space.address);
+			String thumbnailImgUrl = tuple.get(spaceInfo.thumbnailImgUrl);
+			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+
+			return new MemberScrapSpaceDto(id, name, type, address, thumbnailImgUrl, isScraped);
+		}).collect(Collectors.toList());
 	}
 
 	private OrderSpecifier createOrderSpecifier(String sort) {
