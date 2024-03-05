@@ -11,10 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.localmood.domain.curation.entity.Curation;
-import com.localmood.domain.curation.entity.CurationSpace;
-import com.localmood.domain.curation.repository.CurationRepository;
-import com.localmood.domain.curation.repository.CurationSpaceRepository;
+import com.localmood.common.util.CheckScrapUtil;
 import org.springframework.stereotype.Service;
 
 import com.localmood.api.review.dto.request.ReviewCreateDto;
@@ -39,8 +36,8 @@ public class ReviewService {
 	private final SpaceRepository spaceRepository;
 	private final ReviewRepository reviewRepository;
 	private final ReviewImgRepository reviewImgRepository;
-	private final CurationRepository curationRepository;
-	private final CurationSpaceRepository curationSpaceRepository;
+	private final CheckScrapUtil checkScrapUtil;
+
 
 	public Long createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto, Member member) {
 		// 공간 조회
@@ -85,7 +82,7 @@ public class ReviewService {
 			review.getSpace().getType().toString(),
 			review.getSpace().getAddress(),
 			review.getMember().getNickname(),
-			checkIfSpaceScrapped(review.getSpace().getId(), member.getId())
+			checkScrapUtil.checkIfSpaceScraped(review.getSpace().getId(), member.getId())
 		);
 	}
 
@@ -152,7 +149,7 @@ public class ReviewService {
 
 		List<String> images = getReviewImageUrls(review.getId());
 		boolean isScraped = memberOptional.
-				map(member -> checkIfSpaceScrapped(review.getSpace().getId(), member.getId())).orElse(false);
+				map(member -> checkScrapUtil.checkIfSpaceScraped(review.getSpace().getId(), member.getId())).orElse(false);
 
 		Map<String, Object> reviewDetailResponseDto = new LinkedHashMap<>();
 		reviewDetailResponseDto.put("image", images);
@@ -169,20 +166,6 @@ public class ReviewService {
 		reviewDetailResponseDto.put("isScraped", isScraped);
 
 		return reviewDetailResponseDto;
-	}
-
-	private boolean checkIfSpaceScrapped(Long spaceId, Long memberId) {
-		List<Curation> curations = curationRepository.findByMemberId(memberId);
-
-		for (Curation curation : curations) {
-			List<CurationSpace> curationSpaces = curationSpaceRepository.findByCurationId(curation.getId());
-			for (CurationSpace curationSpace : curationSpaces) {
-				if (curationSpace.getSpace().getId().equals(spaceId)) {
-					return true; // 장소가 포함된 큐레이션이 있으면 스크랩 여부 true
-				}
-			}
-		}
-		return false;
 	}
 
 }
