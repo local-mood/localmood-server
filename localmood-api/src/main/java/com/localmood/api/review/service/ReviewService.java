@@ -11,20 +11,21 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.localmood.domain.curation.entity.Curation;
+import com.localmood.domain.curation.entity.CurationSpace;
+import com.localmood.domain.curation.repository.CurationRepository;
+import com.localmood.domain.curation.repository.CurationSpaceRepository;
 import org.springframework.stereotype.Service;
 
 import com.localmood.api.review.dto.request.ReviewCreateDto;
-import com.localmood.api.review.dto.response.ReviewDetailResponseDto;
 import com.localmood.api.review.dto.response.ReviewResponseDto;
 import com.localmood.common.exception.ErrorCode;
 import com.localmood.common.s3.service.AwsS3Service;
 import com.localmood.domain.member.entity.Member;
-import com.localmood.domain.member.repository.MemberRepository;
 import com.localmood.domain.review.entity.Review;
 import com.localmood.domain.review.entity.ReviewImg;
 import com.localmood.domain.review.repository.ReviewImgRepository;
 import com.localmood.domain.review.repository.ReviewRepository;
-import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.repository.SpaceRepository;
 
@@ -35,11 +36,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReviewService {
 	private final AwsS3Service awsS3Service;
-	private final MemberRepository memberRepository;
 	private final SpaceRepository spaceRepository;
 	private final ReviewRepository reviewRepository;
 	private final ReviewImgRepository reviewImgRepository;
-	private final ScrapSpaceRepository scrapSpaceRepository;
+	private final CurationRepository curationRepository;
+	private final CurationSpaceRepository curationSpaceRepository;
 
 	public Long createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto, Member member) {
 		// 공간 조회
@@ -171,8 +172,17 @@ public class ReviewService {
 	}
 
 	private boolean checkIfSpaceScrapped(Long spaceId, Long memberId) {
-		return scrapSpaceRepository.existsByMemberIdAndSpaceId(memberId, spaceId);
-	}
+		List<Curation> curations = curationRepository.findByMemberId(memberId);
 
+		for (Curation curation : curations) {
+			List<CurationSpace> curationSpaces = curationSpaceRepository.findByCurationId(curation.getId());
+			for (CurationSpace curationSpace : curationSpaces) {
+				if (curationSpace.getSpace().getId().equals(spaceId)) {
+					return true; // 장소가 포함된 큐레이션이 있으면 스크랩 여부 true
+				}
+			}
+		}
+		return false;
+	}
 
 }
