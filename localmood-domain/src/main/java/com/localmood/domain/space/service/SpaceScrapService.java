@@ -1,7 +1,7 @@
 package com.localmood.domain.space.service;
 
+import com.localmood.common.util.CheckScrapUtil;
 import com.localmood.domain.member.entity.Member;
-import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,18 +13,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SpaceScrapService {
 
-    private final ScrapSpaceRepository scrapSpaceRepository;
+    private final CheckScrapUtil checkScrapUtil;
 
-    public Map<String, Boolean> getSpaceScrap(Long spaceId, Optional<Member> memberOptional) {
+    public Map<String, Boolean> getSpaceScrap(Long spaceId, Optional<Member> member) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean isScraped = false;
 
-        if (memberOptional.isPresent()) {
-            Member member = memberOptional.get();
-            isScraped = scrapSpaceRepository.existsByMemberIdAndSpaceId(member.getId(), spaceId);
-        }
-
+        Boolean isScraped = member.isPresent() ? checkScrapUtil.checkIfSpaceScraped(spaceId, member.get().getId()) : false;
         response.put("isScraped", isScraped);
+
         return response;
     }
 
