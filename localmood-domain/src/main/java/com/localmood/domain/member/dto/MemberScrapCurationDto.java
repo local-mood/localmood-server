@@ -17,17 +17,17 @@ public class MemberScrapCurationDto{
 	private String author;
 	private List<String> keyword;
 	private Long spaceCount;
-	private String imgUrl;
+	private String image;
 	private Boolean isScraped;
 
 	@QueryProjection
-	public MemberScrapCurationDto(Long id, String title, String author, String keyword, Long spaceCount, String imgUrl, Boolean isScraped){
+	public MemberScrapCurationDto(Long id, String title, String author, String keyword, Long spaceCount, String image, Boolean isScraped){
 		this.id = id;
 		this.title = title;
 		this.author = author;
 		this.keyword = Arrays.asList(keyword.split(","));
 		this.spaceCount = spaceCount;
-		this.imgUrl = imgUrl;
+		this.image = image;
 		this.isScraped = isScraped;
 	}
 }
