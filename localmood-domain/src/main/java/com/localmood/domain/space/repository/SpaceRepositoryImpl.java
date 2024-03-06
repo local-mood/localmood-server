@@ -14,10 +14,7 @@ import java.util.stream.Collectors;
 import com.localmood.common.util.CheckScrapUtil;
 import com.localmood.common.util.ScrapUtil;
 import com.localmood.domain.member.dto.MemberScrapSpaceDto;
-import com.localmood.domain.member.dto.QMemberScrapSpaceDto;
 import com.localmood.domain.member.entity.Member;
-import com.localmood.domain.space.dto.QSpaceRecommendDto;
-import com.localmood.domain.space.dto.QSpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.entity.SpaceDish;
@@ -41,18 +38,15 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 	private final CheckScrapUtil checkScrapUtil;
 
 	@Override
-	public List<SpaceRecommendDto> findRestaurantRecommendByKeyword(String keyword, Optional<Member> member){
-		return queryFactory
+	public List<SpaceRecommendDto> findRestaurantRecommendByKeyword(String keyword, Optional<Member> member) {
+		List<Tuple> queryResult = queryFactory
 				.select(
-						new QSpaceRecommendDto(
-								space.id,
-								space.name,
-								space.type,
-								space.address,
-								spaceMenu.dishDesc,
-								spaceInfo.thumbnailImgUrl,
-								scrapUtil.isScraped(member)
-						)
+						space.id,
+						space.name,
+						space.type,
+						space.address,
+						spaceMenu.dishDesc,
+						spaceInfo.thumbnailImgUrl
 				)
 				.from(space)
 				.leftJoin(spaceInfo)
@@ -72,21 +66,34 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
 				.limit(3)
 				.fetch();
+
+		List<SpaceRecommendDto> spaceList = queryResult.stream().map(tuple -> {
+			Long id = tuple.get(space.id);
+			String name = tuple.get(space.name);
+			SpaceType type = tuple.get(space.type);
+			String address = tuple.get(space.address);
+			String dishDesc = tuple.get(spaceMenu.dishDesc);
+			String thumbnailImgUrl = tuple.get(spaceInfo.thumbnailImgUrl);
+
+			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+
+			return new SpaceRecommendDto(id, name, type, address, dishDesc, thumbnailImgUrl, isScraped);
+		}).collect(Collectors.toList());
+
+		return spaceList;
 	}
 
+
 	@Override
-	public List<SpaceRecommendDto> findCafeRecommendByKeyword(String keyword, Optional<Member> member){
-		return queryFactory
+	public List<SpaceRecommendDto> findCafeRecommendByKeyword(String keyword, Optional<Member> member) {
+		List<Tuple> queryResult = queryFactory
 				.select(
-						new QSpaceRecommendDto(
-								space.id,
-								space.name,
-								space.type,
-								space.address,
-								spaceInfo.interior,
-								spaceInfo.thumbnailImgUrl,
-								scrapUtil.isScraped(member)
-						)
+						space.id,
+						space.name,
+						space.type,
+						space.address,
+						spaceInfo.interior,
+						spaceInfo.thumbnailImgUrl
 				)
 				.from(space)
 				.leftJoin(spaceInfo)
@@ -104,6 +111,21 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 				.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
 				.limit(3)
 				.fetch();
+
+		List<SpaceRecommendDto> spaceList = queryResult.stream().map(tuple -> {
+			Long id = tuple.get(space.id);
+			String name = tuple.get(space.name);
+			SpaceType type = tuple.get(space.type);
+			String address = tuple.get(space.address);
+			String interior = tuple.get(spaceInfo.interior);
+			String thumbnailImgUrl = tuple.get(spaceInfo.thumbnailImgUrl);
+
+			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+
+			return new SpaceRecommendDto(id, name, type, address, interior, thumbnailImgUrl, isScraped);
+		}).collect(Collectors.toList());
+
+		return spaceList;
 	}
 
 	@Override
