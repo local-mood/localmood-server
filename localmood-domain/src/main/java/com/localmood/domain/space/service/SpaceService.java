@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.localmood.common.util.CheckScrapUtil;
 import com.localmood.domain.review.entity.Review;
 import com.localmood.domain.review.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,8 @@ public class SpaceService {
 	private final SpaceMenuRepository spaceMenuRepository;
 	private final ReviewRepository reviewRepository;
 	private final ReviewImgRepository reviewImgRepository;
-	private final ScrapSpaceRepository scrapSpaceRepository;
 	private final CurationRepository curationRepository;
+	private final CheckScrapUtil checkScrapUtil;
 
 	public Map<String, List<SpaceRecommendDto>> getSpaceRecommendList(Optional<Member> member) {
 		String[] keywordArr = {"연인과의 데이트", "친구와의 만남", "왁자지껄 떠들 수 있는", "대화에 집중할 수 있는"};
@@ -98,7 +99,7 @@ public class SpaceService {
 		SpaceInfo spaceInfo = spaceInfoRepository.findBySpaceId(spaceId).orElseThrow();
 		SpaceMenu spaceMenu = spaceMenuRepository.findBySpaceId(spaceId).orElseThrow();
 		List<String> imgUrlList = reviewImgRepository.findImageUrlsBySpaceId(spaceId);
-		Boolean isScraped = member.isPresent() ? scrapSpaceRepository.existsByMemberIdAndSpaceId(member.get().getId(), spaceId) : false;
+		Boolean isScraped = member.isPresent() ? checkScrapUtil.checkIfSpaceScraped(spaceId, member.get().getId()) : false;
 		List<Review> reviews = reviewRepository.findBySpaceId(spaceId);
 
 		List<String[][]> positiveEvalResult = new ArrayList<>();
