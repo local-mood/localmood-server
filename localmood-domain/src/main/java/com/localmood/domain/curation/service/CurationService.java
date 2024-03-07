@@ -50,7 +50,6 @@ public class CurationService {
 	private final SpaceRepository spaceRepository;
 	private final SpaceInfoRepository spaceInfoRepository;
 	private final SpaceMenuRepository spaceMenuRepository;
-	private final ScrapCurationRepository scrapCurationRepository;
 	private final CheckScrapUtil checkScrapUtil;
 
 	@Transactional
