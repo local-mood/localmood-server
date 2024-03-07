@@ -41,7 +41,7 @@ public class KakaoController {
     }
 
     @Description("카카오 로그인을 마치면 자동으로 실행됩니다. 인가 코드를 이용해 토큰을 받고, 해당 토큰으로 사용자 정보를 조회합니다.")
-    @GetMapping("")
+    @GetMapping("/login")
     @ResponseBody
     public ResponseEntity<?> kakaoOauth(@RequestParam("code") String code) throws IOException {
         // 인가 코드로 Access Token 받아오기
