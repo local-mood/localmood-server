@@ -11,3 +11,6 @@ spring:
         - prod
         - core
         - secret
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
