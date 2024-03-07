@@ -18,7 +18,7 @@ public class KakaoTokenJsonData {
     @Value("${oauth.client-id}") String CLIENT_ID;
 
     public KakaoTokenResponse getToken(String code) {
-        String uri = TOKEN_URI + "?grant_type=" + GRANT_TYPE + "&client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI + "&code=" + code;
+        String uri = TOKEN_URI + "?grant_type=" + GRANT_TYPE + "&client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI + "?code=" + code;
         System.out.println(uri);
 
         Flux<KakaoTokenResponse> response = webClient.post()
