@@ -79,7 +79,7 @@ public class AuthService {
     public LoginRequestDto joinKakaoMember(String email, String nickname) {
         Optional<Member> userOptional = memberRepository.findByEmail(email);
         Member member;
-        String password = email + "!";
+        String password = "localmood123!";
 
         // 기존 회원이라면 정보 업데이트
         if (userOptional.isPresent()) {
@@ -161,7 +161,7 @@ public class AuthService {
 
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), "localmood123!");
             log.info("authenticationToken: {}", authenticationToken);
 
             Authentication authentication = authenticationManager.getObject()
