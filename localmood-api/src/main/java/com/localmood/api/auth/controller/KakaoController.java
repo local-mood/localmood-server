@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Description;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -41,20 +42,30 @@ public class KakaoController {
 
         // 인가 코드를 사용한 경우 Set에 추가
         usedAuthorizationCodes.add(code);
+        log.info(("code: {}"), code);
 
         // 인가 코드로 Access Token 받아오기
         KakaoTokenResponse kakaoTokenResponse = kakaoTokenJsonData.getToken(code);
+        log.info(("kakaoTokenResponse: {}"), kakaoTokenResponse);
+
+        // 오류가 발생한 경우
+        if (kakaoTokenResponse == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인가 코드로부터 액세스 토큰을 받아오는데 실패했습니다.");
+        }
 
         // 카카오 서버 Access Token으로 유저 정보 받아오기
         KakaoUserInfoDto userInfoDto = authService.parseUserInfo(kakaoTokenResponse.getAccess_token());
         String email = userInfoDto.getEmail();
         String nickname = userInfoDto.getNickname();
+        log.info(("userInfoDto: {}"), userInfoDto);
 
         // 회원가입
         LoginRequestDto loginRequest = authService.joinKakaoMember(email, nickname);
+        log.info(("loginRequest: {}"), loginRequest);
 
         // 웹 서버 Access Token 발급
         TokenDto tokenDto = authService.login(loginRequest);
+        log.info(("tokenDto: {}"), tokenDto);
 
         return ResponseEntity
                 .ok()
