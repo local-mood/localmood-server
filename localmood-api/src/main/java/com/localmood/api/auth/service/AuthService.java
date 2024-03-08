@@ -157,25 +157,14 @@ public class AuthService {
     // 로그인
     @Transactional
     public TokenDto login(LoginRequestDto loginRequestDto) {
-        String email = loginRequestDto.getEmail();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
 
-        try {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), "localmood123!");
-            log.info("authenticationToken: {}", authenticationToken);
+        Authentication authentication = authenticationManager.getObject()
+                .authenticate(authenticationToken);
 
-            Authentication authentication = authenticationManager.getObject()
-                    .authenticate(authenticationToken);
-            log.info("authentication: {}", authentication);
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String authorities = getAuthorities(authentication);
-            return generateToken(SERVER, email, authorities);
-
-        } catch (AuthenticationException e) {
-            log.error("Authentication failed for user: {}", email, e);
-            throw new RuntimeException("Authentication failed: ", e);
-        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
     }
 
     // Access Token가 만료만 된 (유효한) 토큰인지 검사
