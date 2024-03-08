@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.localmood.api.auth.dto.oauth2.user.KakaoUserInfoDto;
 import com.localmood.domain.member.entity.Role;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -35,10 +36,10 @@ import lombok.RequiredArgsConstructor;
 
 import jakarta.validation.Validator;
 
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class AuthService {
 
     private final AuthenticationManagerBuilder authenticationManager;
@@ -95,6 +96,8 @@ public class AuthService {
                     .build();
             memberRepository.save(member);
         }
+
+        log.info("member: {}", member);
 
         LoginRequestDto loginRequest = LoginRequestDto.builder()
                 .email(email)
@@ -156,8 +159,12 @@ public class AuthService {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
 
+        log.info("authenticationToken: {}", authenticationToken);
+
         Authentication authentication = authenticationManager.getObject()
                 .authenticate(authenticationToken);
+
+        log.info("authentication: {}", authentication);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
@@ -208,6 +215,8 @@ public class AuthService {
     // 토큰 발급
     @Transactional
     public TokenDto generateToken(String provider, String email, String authorities) {
+        log.info("provider, email, authorities: {}", provider, email, authorities);
+
         //refresh 이미 있을 경우 삭제
         if (redisService.getValues("refresh-token:" + provider + ":" + email) != null) {
             redisService.deleteValues("refresh-token:" + provider + ":" + email);
@@ -216,6 +225,8 @@ public class AuthService {
         // 토큰 재발급 후 저장
         TokenDto authToken = jwtTokenProvider.createToken(email, authorities);
         saveRefreshToken(provider, email, authToken.getRefreshToken());
+
+        log.info("authToken: {}", authToken);
 
         return authToken;
     }
