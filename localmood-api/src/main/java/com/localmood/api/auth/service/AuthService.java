@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -156,20 +157,26 @@ public class AuthService {
     // 로그인
     @Transactional
     public TokenDto login(LoginRequestDto loginRequestDto) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+        String email = loginRequestDto.getEmail();
 
-        log.info("authenticationToken: {}", authenticationToken);
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+            log.info("authenticationToken: {}", authenticationToken);
 
-        Authentication authentication = authenticationManager.getObject()
-                .authenticate(authenticationToken);
+            Authentication authentication = authenticationManager.getObject()
+                    .authenticate(authenticationToken);
+            log.info("authentication: {}", authentication);
 
-        log.info("authentication: {}", authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String authorities = getAuthorities(authentication);
+            return generateToken(SERVER, email, authorities);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
+        } catch (AuthenticationException e) {
+            log.error("Authentication failed for user: {}", email, e);
+            throw new RuntimeException("Authentication failed: ", e);
+        }
     }
-
 
     // Access Token가 만료만 된 (유효한) 토큰인지 검사
     public boolean validate(String requestAccessTokenInHeader) {
