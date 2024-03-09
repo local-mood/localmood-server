@@ -67,7 +67,7 @@ public class KakaoController {
 
         // 웹 서버 Access Token 발급
         LoginRequestDto loginRequest = new LoginRequestDto(email, password);
-        TokenDto tokenDto = authService.kakaoLogin(loginRequest);
+        TokenDto tokenDto = authService.login(loginRequest);
         log.info(("tokenDto: {}"), tokenDto);
 
         return ResponseEntity

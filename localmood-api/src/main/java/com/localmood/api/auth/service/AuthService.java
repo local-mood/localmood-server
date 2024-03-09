@@ -144,7 +144,7 @@ public class AuthService {
         return new KakaoUserInfoDto(email, nickname);
     }
 
-    // 로그인
+    /*
     @Transactional
     public TokenDto login(LoginRequestDto loginRequestDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -156,10 +156,11 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
     }
+     */
 
     // 로그인
     @Transactional
-    public TokenDto kakaoLogin(LoginRequestDto loginRequestDto) {
+    public TokenDto login(LoginRequestDto loginRequestDto) {
         log.debug("LoginRequestDto: {}", loginRequestDto);
 
         try {
