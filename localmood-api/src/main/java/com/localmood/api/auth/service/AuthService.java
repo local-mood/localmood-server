@@ -76,19 +76,18 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginRequestDto joinKakaoMember(String email, String nickname) {
+    public void joinKakaoMember(String email, String nickname) {
         Optional<Member> userOptional = memberRepository.findByEmail(email);
-        Member member;
         String password = "localmood123!";
 
         // 기존 회원이라면 정보 업데이트
         if (userOptional.isPresent()) {
-            member = userOptional.get();
+            Member member = userOptional.get();
             member.update(nickname, email);
         }
         // 신규 회원이라면 회원가입
         else {
-            member = Member.builder()
+            Member member = Member.builder()
                     .profileImgUrl("DEFAULT")
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
@@ -97,15 +96,6 @@ public class AuthService {
                     .build();
             memberRepository.save(member);
         }
-
-        log.info("member: {}", member);
-
-        LoginRequestDto loginRequest = LoginRequestDto.builder()
-                .email(email)
-                .password(password)
-                .build();
-
-        return loginRequest;
     }
 
     @Transactional
@@ -154,7 +144,7 @@ public class AuthService {
         return new KakaoUserInfoDto(email, nickname);
     }
 
-    // 로그인
+    /*
     @Transactional
     public TokenDto login(LoginRequestDto loginRequestDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -165,6 +155,33 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
+    }
+     */
+
+    // 로그인
+    @Transactional
+    public TokenDto login(LoginRequestDto loginRequestDto) {
+        log.debug("LoginRequestDto: {}", loginRequestDto);
+
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+
+            Authentication authentication = authenticationManager.getObject()
+                    .authenticate(authenticationToken);
+
+            log.debug("Authentication: {}", authentication);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            TokenDto tokenDto = generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
+
+            log.debug("Token: {}", tokenDto);
+
+            return tokenDto;
+        } catch (AuthenticationException e) {
+            log.error("Authentication failed: {}", e.getMessage());
+            throw new RuntimeException("Authentication failed", e);
+        }
     }
 
     // Access Token가 만료만 된 (유효한) 토큰인지 검사

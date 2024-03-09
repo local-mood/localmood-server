@@ -9,6 +9,7 @@ import com.localmood.api.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class KakaoController {
     private final AuthService authService;
     private final Set<String> usedAuthorizationCodes = new HashSet<>();
 
+    @Value("${oauth.password}") String password;
 
     @Description("카카오 로그인을 마치면 자동으로 실행됩니다. 인가 코드를 이용해 토큰을 받고, 해당 토큰으로 사용자 정보를 조회합니다.")
     @GetMapping("/login")
@@ -60,10 +62,11 @@ public class KakaoController {
         log.info(("userInfoDto: {}"), userInfoDto);
 
         // 회원가입
-        LoginRequestDto loginRequest = authService.joinKakaoMember(email, nickname);
-        log.info(("loginRequest: {}"), loginRequest);
+        authService.joinKakaoMember(email, nickname);
+        log.info(("joinKakaoMember success"));
 
         // 웹 서버 Access Token 발급
+        LoginRequestDto loginRequest = new LoginRequestDto(email, password);
         TokenDto tokenDto = authService.login(loginRequest);
         log.info(("tokenDto: {}"), tokenDto);
 
