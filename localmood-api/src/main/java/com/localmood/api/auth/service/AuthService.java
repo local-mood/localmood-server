@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.localmood.api.auth.dto.oauth2.user.KakaoUserInfoDto;
 import com.localmood.domain.member.entity.Role;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -51,6 +52,8 @@ public class AuthService {
     private final Validator validator;
     private final String SERVER = "Server";
 
+    @Value("${oauth.password}") String password;
+
     // 회원가입
     @Transactional
     public Member joinMember(SignupRequestDto requestDto) {
@@ -78,7 +81,6 @@ public class AuthService {
     @Transactional
     public void joinKakaoMember(String email, String nickname) {
         Optional<Member> userOptional = memberRepository.findByEmail(email);
-        String password = "localmood123!";
 
         // 기존 회원이라면 정보 업데이트
         if (userOptional.isPresent()) {
