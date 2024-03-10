@@ -80,6 +80,7 @@ public class AuthService {
 
     public void joinKakaoMember(String email, String nickname) {
         Optional<Member> userOptional = memberRepository.findByEmail(email);
+        log.info("email, nickname, password: {}", email, nickname, password);
 
         // 기존 회원이라면 정보 업데이트
         if (userOptional.isPresent()) {
