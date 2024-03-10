@@ -59,7 +59,8 @@ public class KakaoController {
         KakaoUserInfoDto userInfoDto = authService.parseUserInfo(kakaoTokenResponse.getAccess_token());
         String email = userInfoDto.getEmail();
         String nickname = userInfoDto.getNickname();
-        log.info(("userInfoDto: {}"), userInfoDto);
+        log.info(("email: {}"), email);
+        log.info(("nickname: {}"), nickname);
 
         // 회원가입
         authService.joinKakaoMember(email, nickname);

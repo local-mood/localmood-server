@@ -78,9 +78,12 @@ public class AuthService {
         return member;
     }
 
+    @Transactional
     public void joinKakaoMember(String email, String nickname) {
         Optional<Member> userOptional = memberRepository.findByEmail(email);
-        log.info("email, nickname, password: {}", email, nickname, password);
+        log.info(("email of joinKakaoMember: {}"), email);
+        log.info(("nickname of joinKakaoMember: {}"),nickname);
+        log.info(("password of joinKakaoMember: {}"), password);
 
         // 기존 회원이라면 정보 업데이트
         if (userOptional.isPresent()) {
@@ -97,8 +100,9 @@ public class AuthService {
                     .role(Role.ROLE_USER)
                     .build();
             memberRepository.save(member);
-            log.info("saved in memberRepository");
         }
+        log.info("saved in memberRepository");
+
     }
 
     @Transactional
@@ -231,7 +235,7 @@ public class AuthService {
     // 토큰 발급
     @Transactional
     public TokenDto generateToken(String provider, String email, String authorities) {
-        log.info("provider, email, authorities: {}", provider, email, authorities);
+        log.info(("provider, email, authorities: {}"), provider, email, authorities);
 
         //refresh 이미 있을 경우 삭제
         if (redisService.getValues("refresh-token:" + provider + ":" + email) != null) {
