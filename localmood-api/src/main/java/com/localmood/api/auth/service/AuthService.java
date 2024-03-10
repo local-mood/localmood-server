@@ -78,7 +78,6 @@ public class AuthService {
         return member;
     }
 
-    @Transactional
     public void joinKakaoMember(String email, String nickname) {
         Optional<Member> userOptional = memberRepository.findByEmail(email);
 
@@ -97,6 +96,7 @@ public class AuthService {
                     .role(Role.ROLE_USER)
                     .build();
             memberRepository.save(member);
+            log.info("saved in memberRepository");
         }
     }
 
