@@ -4,7 +4,6 @@ import static com.localmood.domain.curation.entity.QCuration.*;
 import static com.localmood.domain.curation.entity.QCurationSpace.*;
 import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 import static com.localmood.domain.space.entity.QSpaceInfo.*;
-import static com.querydsl.core.types.ExpressionUtils.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +12,8 @@ import com.localmood.common.util.ScrapUtil;
 import com.localmood.domain.member.dto.MemberScrapCurationDto;
 import com.localmood.domain.member.dto.QMemberScrapCurationDto;
 import com.localmood.domain.member.entity.Member;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,10 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 								curation.title,
 								curation.member.nickname,
 								curation.keyword,
-								count(curationSpace.id),
+								ExpressionUtils.as
+										(JPAExpressions.select(curationSpace.space.id.countDistinct())
+										.from(curationSpace)
+										.where(curationSpace.curation.id.eq(curation.id)), "spaceCount"),
 								spaceInfo.thumbnailImgUrl,
 								scrapUtil.isScraped(member)
 						)
