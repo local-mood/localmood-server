@@ -101,7 +101,6 @@ public class AuthService {
                     .build();
             memberRepository.save(member);
         }
-        log.info("saved in memberRepository");
 
     }
 
@@ -151,25 +150,9 @@ public class AuthService {
         return new KakaoUserInfoDto(email, nickname);
     }
 
-    /*
-    @Transactional
-    public TokenDto login(LoginRequestDto loginRequestDto) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
-
-        Authentication authentication = authenticationManager.getObject()
-                .authenticate(authenticationToken);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
-    }
-     */
-
     // 로그인
     @Transactional
     public TokenDto login(LoginRequestDto loginRequestDto) {
-        log.debug("LoginRequestDto: {}", loginRequestDto);
-
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
@@ -177,12 +160,8 @@ public class AuthService {
             Authentication authentication = authenticationManager.getObject()
                     .authenticate(authenticationToken);
 
-            log.debug("Authentication: {}", authentication);
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
             TokenDto tokenDto = generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
-
-            log.debug("Token: {}", tokenDto);
 
             return tokenDto;
         } catch (AuthenticationException e) {

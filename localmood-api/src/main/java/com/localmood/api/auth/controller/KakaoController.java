@@ -44,11 +44,9 @@ public class KakaoController {
 
         // 인가 코드를 사용한 경우 Set에 추가
         usedAuthorizationCodes.add(code);
-        log.info(("code: {}"), code);
 
         // 인가 코드로 Access Token 받아오기
         KakaoTokenResponse kakaoTokenResponse = kakaoTokenJsonData.getToken(code);
-        log.info(("kakaoTokenResponse: {}"), kakaoTokenResponse);
 
         // 오류가 발생한 경우
         if (kakaoTokenResponse == null) {
@@ -59,17 +57,13 @@ public class KakaoController {
         KakaoUserInfoDto userInfoDto = authService.parseUserInfo(kakaoTokenResponse.getAccess_token());
         String email = userInfoDto.getEmail();
         String nickname = userInfoDto.getNickname();
-        log.info(("email: {}"), email);
-        log.info(("nickname: {}"), nickname);
 
         // 회원가입
         authService.joinKakaoMember(email, nickname);
-        log.info(("joinKakaoMember success"));
 
         // 웹 서버 Access Token 발급
         LoginRequestDto loginRequest = new LoginRequestDto(email, password);
         TokenDto tokenDto = authService.login(loginRequest);
-        log.info(("tokenDto: {}"), tokenDto);
 
         return ResponseEntity
                 .ok()
