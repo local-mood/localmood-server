@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.localmood.common.exception.LocalmoodException;
 import com.localmood.common.util.CheckScrapUtil;
+import com.localmood.common.util.PurposeUtil;
 import com.localmood.domain.space.entity.SpaceType;
 import org.springframework.stereotype.Service;
 
@@ -124,9 +125,9 @@ public class ReviewService {
 		// Space type에 따라 방문 목적 구분
 		List<String> purposes;
 		if (space.getType() == SpaceType.CAFE) {
-			purposes = Arrays.asList("연인과의 데이트", "친구/가족과의 만남", "작업/공부/책", "비즈니스");
+			purposes = PurposeUtil.CAFE_PURPOSES;
 		} else if (space.getType() == SpaceType.RESTAURANT) {
-			purposes = Arrays.asList("연인과의 데이트", "가족모임", "친구와의 만남", "비즈니스");
+			purposes = PurposeUtil.RESTAURANT_PURPOSES;
 		} else {
 			throw new LocalmoodException(ErrorCode.SPACE_TYPE_NOT_FOUND);
 		}
