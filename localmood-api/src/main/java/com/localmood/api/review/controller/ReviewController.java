@@ -3,13 +3,9 @@ package com.localmood.api.review.controller;
 import java.util.Map;
 import java.util.Optional;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.localmood.api.auth.CurrentUser;
 import com.localmood.api.review.dto.request.ReviewCreateDto;
@@ -20,6 +16,7 @@ import com.localmood.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Review", description = "공간 기록 API")
 @RestController
@@ -33,10 +30,11 @@ public class ReviewController {
 	@PostMapping("/{id}")
 	public ResponseEntity<?> createReview(
 		@PathVariable("id") String spaceId,
-		@RequestBody ReviewCreateDto reviewCreateDto,
+		@RequestPart(name = "request") @Valid ReviewCreateDto reviewCreateDto,
+		@RequestPart(required = false, name = "image") MultipartFile[] multipartFiles,
 		@CurrentUser Member member
 	) {
-		var res = reviewService.createReview(spaceId, reviewCreateDto, member);
+		var res = reviewService.createReview(spaceId, reviewCreateDto, member, multipartFiles);
 
 		return SuccessResponse.ok(res);
 	}
