@@ -3,15 +3,12 @@ package com.localmood.api.review.service;
 import static com.localmood.common.utils.RepositoryUtil.*;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.localmood.common.exception.LocalmoodException;
 import com.localmood.common.util.CheckScrapUtil;
+import com.localmood.domain.space.entity.SpaceType;
 import org.springframework.stereotype.Service;
 
 import com.localmood.api.review.dto.request.ReviewCreateDto;
@@ -122,22 +119,53 @@ public class ReviewService {
 
 		// 해당 공간의 리뷰만 필터링
 		List<Review> spaceReviews = reviewRepository.findBySpaceId(spaceId);
+		Space space = spaceRepository.findById(spaceId).orElseThrow(() -> new LocalmoodException(ErrorCode.SPACE_NOT_FOUND));
 
-		// 방문 목적별로 그룹화하여 dto 생성
-		Map<String, List<Map<String, Object>>> reviewMap = new HashMap<>();
+		// Space type에 따라 방문 목적 구분
+		List<String> purposes;
+		if (space.getType() == SpaceType.CAFE) {
+			purposes = Arrays.asList("연인과의 데이트", "친구/가족과의 만남", "작업/공부/책", "비즈니스");
+		} else if (space.getType() == SpaceType.RESTAURANT) {
+			purposes = Arrays.asList("연인과의 데이트", "가족모임", "친구와의 만남", "비즈니스");
+		} else {
+			throw new LocalmoodException(ErrorCode.SPACE_TYPE_NOT_FOUND);
+		}
 
+		// 방문 목적 전체 개수 계산
+		Map<String, Integer> purposeCounts = new HashMap<>();
 		for (Review review : spaceReviews) {
-			String[] purposes = review.getPurpose().split(",");
-
-			for (String purpose : purposes) {
-				// 방문 목적 콤마로 분할
-				List<Map<String, Object>> reviewList = reviewMap.getOrDefault(purpose.trim(), new ArrayList<>());
-
-				reviewList.add(mapToReviewDetailResponseDto(review, memberOptional));
-				reviewMap.put(purpose.trim(), reviewList);
+			String[] reviewPurposes = review.getPurpose().split(",");
+			for (String reviewPurpose : reviewPurposes) {
+				if (purposes.contains(reviewPurpose.trim())) {
+					purposeCounts.put(reviewPurpose.trim(), purposeCounts.getOrDefault(reviewPurpose.trim(), 0) + 1);
+				}
 			}
 		}
 
+		// 방문 목적별 리뷰 개수로부터 퍼센티지 계산
+		Map<String, Integer> purposePercentages = new HashMap<>();
+		int totalPurposeCount = purposeCounts.values().stream().mapToInt(Integer::intValue).sum();
+
+		for (String purpose : purposes) {
+			int purposeCount = purposeCounts.getOrDefault(purpose, 0);
+			int percentage = totalPurposeCount == 0 ? 0 : (purposeCount * 100) / totalPurposeCount;
+			purposePercentages.put(purpose, percentage);
+		}
+
+		// 방문 목적별로 그룹화하여 dto 생성
+		Map<String, List<Map<String, Object>>> reviewMap = new HashMap<>();
+		for (Review review : spaceReviews) {
+			String[] reviewPurposes = review.getPurpose().split(",");
+
+			for (String reviewPurpose : reviewPurposes) {
+				if (purposes.contains(reviewPurpose.trim())) {
+					List<Map<String, Object>> reviewList = reviewMap.getOrDefault(reviewPurpose.trim(), new ArrayList<>());
+					reviewList.add(mapToReviewDetailResponseDto(review, memberOptional));
+					reviewMap.put(reviewPurpose.trim(), reviewList);
+				}
+			}
+		}
+		response.put("purposeEval", purposePercentages);
 		response.put("reviewCount", spaceReviews.size());
 		response.put("reviews", reviewMap);
 
