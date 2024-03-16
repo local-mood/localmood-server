@@ -38,7 +38,7 @@ public class ReviewService {
 	private final CheckScrapUtil checkScrapUtil;
 
 
-	public Long createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto,
+	public Map<String, Long> createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto,
 							 Member member, MultipartFile[] multipartFiles) {
 		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
 
@@ -51,8 +51,12 @@ public class ReviewService {
 				saveReviewImage(review, space, member, imageUrl);
 			}
 		}
-		return review.getId();
 
+		Map<String, Long> response = new HashMap<>();
+		response.put("reviewId", review.getId());
+		response.put("spaceId", space.getId());
+
+		return response;
 	}
 
 	// 사용자별 공간 기록 조회
