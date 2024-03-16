@@ -40,22 +40,17 @@ public class ReviewService {
 
 	public Long createReview(String spaceId, @Valid ReviewCreateDto reviewCreateDto,
 							 Member member, MultipartFile[] multipartFiles) {
-		// 공간 조회
 		Space space = findByIdOrThrow(spaceRepository, Long.parseLong(spaceId), ErrorCode.SPACE_NOT_FOUND);
 
-		// 리뷰 생성 및 저장
 		Review review = reviewCreateDto.toEntity(space, member);
 		reviewRepository.save(review);
 
-		// 이미지 업로드 및 URL 저장
 		if (multipartFiles != null && multipartFiles.length > 0) {
 			for (MultipartFile multipartFile : multipartFiles) {
 				String imageUrl = awsS3Service.uploadFile(multipartFile);
-				// 리뷰 이미지 DB에 저장
 				saveReviewImage(review, space, member, imageUrl);
 			}
 		}
-
 		return review.getId();
 
 	}
@@ -74,7 +69,6 @@ public class ReviewService {
 				.map(r -> mapToReviewResponseDto(r, member))
 				.collect(Collectors.toList());
 		}
-
 		response.put("reviewCount", reviews.size());
 		response.put("reviews", reviews);
 
