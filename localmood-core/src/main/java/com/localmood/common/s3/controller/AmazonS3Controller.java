@@ -1,21 +1,14 @@
 package com.localmood.common.s3.controller;
 
-import java.util.List;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import com.localmood.common.s3.dto.ImageRequestDto;
 import com.localmood.common.s3.service.AwsS3Service;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -35,27 +28,6 @@ public class AmazonS3Controller {
 		String fileUrl = awsS3Service.uploadFile(multipartFile);
 
 		return ResponseEntity.ok(fileUrl);
-	}
-
-	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile/temp",
-		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> uploadFileTemp(
-		@RequestParam(value = "file", required = true) MultipartFile multipartFile) {
-
-		String fileUrl = awsS3Service.uploadFile(multipartFile);
-
-		return ResponseEntity.ok(fileUrl);
-	}
-
-	@RequestMapping(method = RequestMethod.POST, value = "/uploadFile/temp/2")
-	public ResponseEntity<List<String>> uploadFileTemp2(
-		@Parameter ImageRequestDto imageRequestDto){
-
-		List<MultipartFile> multipartFiles = imageRequestDto.getMultipartFiles();
-
-		List<String> fileUrls = awsS3Service.uploadFileDto(multipartFiles);
-
-		return ResponseEntity.ok(fileUrls);
 	}
 
 }
