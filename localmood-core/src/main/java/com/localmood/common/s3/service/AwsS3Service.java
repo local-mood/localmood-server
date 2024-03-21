@@ -78,7 +78,7 @@ public class AwsS3Service {
 
 	// 파일 url 생성
 	private String generateFileUrl(String fileName) {
-		return bucket + ".s3.amazonaws.com/" + fileName;
+		return "https://" + bucket + ".s3.amazonaws.com/" + fileName;
 	}
 }
 
