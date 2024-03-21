@@ -26,7 +26,7 @@ public class ScrapCurationRepositoryImpl implements ScrapCurationRepositoryCusto
 						new QMemberScrapCurationDto(
 								scrapCuration.curation.id,
 								scrapCuration.curation.title,
-								scrapCuration.member.nickname,
+								scrapCuration.curation.member.nickname,
 								scrapCuration.curation.keyword,
 								count(curationSpace.space.id),
 								spaceInfo.thumbnailImgUrl,
