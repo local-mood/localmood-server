@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class CurationDetailResponseDto {
+
+	private Long id;
 	private String title;
 	private String keyword;
 	private Boolean privacy;
@@ -20,8 +22,9 @@ public class CurationDetailResponseDto {
 	private List<SpaceResponseDto> spaceDetails;
 
 
-	public CurationDetailResponseDto(String title, String keyword, Boolean privacy, String author, String createdDate,
+	public CurationDetailResponseDto(Long id, String title, String keyword, Boolean privacy, String author, String createdDate,
 		List<SpaceResponseDto> spaceDetails, String variant, Boolean isScraped) {
+		this.id = id; 
 		this.title = title;
 		this.keyword = keyword;
 		this.privacy = privacy;

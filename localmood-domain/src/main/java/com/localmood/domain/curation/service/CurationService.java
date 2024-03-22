@@ -187,7 +187,7 @@ public class CurationService {
 		}
 
 		return new CurationDetailResponseDto(
-			curation.getTitle(), curation.getKeyword(), curation.getPrivacy(),
+			Long.parseLong(curationId), curation.getTitle(), curation.getKeyword(), curation.getPrivacy(),
 			author, createdDate, curationSpaceInfo, variant, isScraped);
 	}
 
