@@ -180,9 +180,15 @@ public class CurationService {
 
 		String variant = (member != null && member.getId().equals(curation.getMember().getId())) ? "my" : "others";
 
+		boolean isScraped = false;
+
+		if ("others".equals(variant) && member != null) {
+			isScraped = checkScrapUtil.checkIfCurationScraped(curation.getId(), member.getId());
+		}
+
 		return new CurationDetailResponseDto(
 			curation.getTitle(), curation.getKeyword(), curation.getPrivacy(),
-			author, createdDate, curationSpaceInfo, variant);
+			author, createdDate, curationSpaceInfo, variant, isScraped);
 	}
 
 	private List<SpaceResponseDto> getCurationSpaceInfo(Long curationId, Member member) {
