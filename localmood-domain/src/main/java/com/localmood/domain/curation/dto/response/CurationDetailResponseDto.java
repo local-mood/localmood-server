@@ -12,18 +12,20 @@ import lombok.RequiredArgsConstructor;
 public class CurationDetailResponseDto {
 	private String title;
 	private String keyword;
-	private boolean privacy;
+	private Boolean privacy;
+	private Boolean isScraped;
 	private String author;
 	private final String variant;
 	private String createdDate;
 	private List<SpaceResponseDto> spaceDetails;
 
 
-	public CurationDetailResponseDto(String title, String keyword, boolean privacy, String author, String createdDate,
-		List<SpaceResponseDto> spaceDetails, String variant) {
+	public CurationDetailResponseDto(String title, String keyword, Boolean privacy, String author, String createdDate,
+		List<SpaceResponseDto> spaceDetails, String variant, Boolean isScraped) {
 		this.title = title;
 		this.keyword = keyword;
 		this.privacy = privacy;
+		this.isScraped = isScraped;
 		this.author = author;
 		this.variant = variant;
 		this.createdDate = createdDate;
