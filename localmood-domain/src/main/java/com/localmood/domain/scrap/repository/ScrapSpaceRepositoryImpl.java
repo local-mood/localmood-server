@@ -33,7 +33,7 @@ public class ScrapSpaceRepositoryImpl implements ScrapSpaceRepositoryCustom{
 		}
 
 		return queryFactory
-				.select(
+				.selectDistinct(
 						new QMemberScrapSpaceDto(
 								space.id,
 								space.name,
