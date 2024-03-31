@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.localmood.domain.curation.dto.response.CurationPrivacyResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -134,6 +135,16 @@ public class CurationController {
 		@CurrentUser Member member
 	) {
 		var res = curationService.getCurationFilterList(request, Optional.ofNullable(member));
+		return SuccessResponse.ok(res);
+	}
+
+	@Operation(summary = "큐레이션 공개 상태 변경 API", description = "사용자의 큐레이션 공개 상태를 변경합니다.")
+	@GetMapping("/{curationId}/privacy")
+	public ResponseEntity<CurationPrivacyResponseDto> updateCurationPrivacy(
+			@PathVariable("curationId") String curationId,
+			@CurrentUser Member member
+	) {
+		var res = curationService.updateCurationPrivacy(curationId, member.getId());
 		return SuccessResponse.ok(res);
 	}
 

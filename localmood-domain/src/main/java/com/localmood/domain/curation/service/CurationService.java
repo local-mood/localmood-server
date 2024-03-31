@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.localmood.common.util.CheckScrapUtil;
+import com.localmood.domain.curation.dto.response.CurationPrivacyResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +28,6 @@ import com.localmood.domain.curation.repository.CurationSpaceRepository;
 import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.member.repository.MemberRepository;
 import com.localmood.domain.review.repository.ReviewImgRepository;
-import com.localmood.domain.scrap.repository.ScrapCurationRepository;
-import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.entity.Space;
 import com.localmood.domain.space.entity.SpaceInfo;
 import com.localmood.domain.space.entity.SpaceMenu;
@@ -280,6 +279,19 @@ public class CurationService {
 
 		return response;
 	}
+
+	// 큐레이션 공개 상태 변경
+	public CurationPrivacyResponseDto updateCurationPrivacy(String curationId, Long memberId) {
+		Curation curation = curationRepository.findById(Long.parseLong(curationId))
+				.orElseThrow(() -> new LocalmoodException(ErrorCode.CURATION_NOT_FOUND));
+
+		boolean newPrivacy = curation.getPrivacy() == null || !curation.getPrivacy();
+		curation.setPrivacy(newPrivacy);
+		curationRepository.save(curation);
+
+		return new CurationPrivacyResponseDto(curation.getId(), newPrivacy, memberId);
+	}
+
 
 	private List<String> getImageUrls(Long spaceId) {
 		return reviewImgRepository.findImageUrlsBySpaceId(spaceId);

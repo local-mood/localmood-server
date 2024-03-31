@@ -40,6 +40,10 @@ public class Curation extends BaseTimeEntity {
 	@Column
 	private Boolean privacy;
 
+	public void setPrivacy(boolean privacy) {
+		this.privacy = privacy;
+	}
+
 	@Builder
 	public Curation (Member member, String title, String keyword, Boolean privacy) {
 		this.member = member;
