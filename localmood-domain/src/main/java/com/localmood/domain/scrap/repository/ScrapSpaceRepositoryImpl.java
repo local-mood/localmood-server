@@ -49,6 +49,7 @@ public class ScrapSpaceRepositoryImpl implements ScrapSpaceRepositoryCustom{
 				.leftJoin(curationSpace)
 				.on(space.id.eq(curationSpace.space.id))
 				.where(curationSpace.curation.id.in(curationIds))
+				.orderBy(curationSpace.modifiedAt.desc())
 				.fetch();
 	}
 
