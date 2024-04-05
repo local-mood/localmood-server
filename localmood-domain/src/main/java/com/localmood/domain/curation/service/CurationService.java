@@ -112,7 +112,7 @@ public class CurationService {
 	}
 
 	private List<String> getCurationImg(Long curationId) {
-		List<Long> spaceIds = curationSpaceRepository.findSpaceIdsByCurationId(curationId);
+		List<Long> spaceIds = findSpaceIdsByCurationId(curationId);
 
 		// 공간 이미지 최대 5개 가져오기
 		return reviewImgRepository.findTop5ImageUrlsBySpaceIds(spaceIds)
@@ -155,7 +155,7 @@ public class CurationService {
 			.stream()
 			.map(curation -> {
 				boolean isScraped = checkScrapUtil.checkIfCurationScraped(curation.getId(), memberId);
-				List<Long> spaceIds = curationSpaceRepository.findSpaceIdsByCurationId(curation.getId());
+				List<Long> spaceIds = findSpaceIdsByCurationId(curation.getId());
 				Map<String, Object> curationMap = mapToCurationResponseDto(curation, isScraped).toMap();
 				curationMap.put("privacy", curation.getPrivacy());
 				curationMap.put("spaceIds", spaceIds);
@@ -301,6 +301,16 @@ public class CurationService {
 
 	// TODO
 	//    - 이후 공통으로 사용 될 경우, 클래스로 분리
+
+	private List<Long> findSpaceIdsByCurationId(Long curationId) {
+		List<Long> spaceIds = new ArrayList<>();
+		List<Long> spaceIdsByCuration = curationSpaceRepository.findSpaceIdsByCurationId(curationId);
+
+		spaceIds.addAll(spaceIdsByCuration);
+
+		return spaceIds;
+	}
+
 	private List<String> splitKeywordToList(Curation curation) {
 		return Arrays.asList(curation.getKeyword().split(","));
 	}
