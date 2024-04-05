@@ -155,8 +155,10 @@ public class CurationService {
 			.stream()
 			.map(curation -> {
 				boolean isScraped = checkScrapUtil.checkIfCurationScraped(curation.getId(), memberId);
+				List<Long> spaceIds = curationSpaceRepository.findSpaceIdsByCurationId(curation.getId());
 				Map<String, Object> curationMap = mapToCurationResponseDto(curation, isScraped).toMap();
 				curationMap.put("privacy", curation.getPrivacy());
+				curationMap.put("spaceIds", spaceIds);
 				return curationMap;
 			})
 			.collect(Collectors.toList());
