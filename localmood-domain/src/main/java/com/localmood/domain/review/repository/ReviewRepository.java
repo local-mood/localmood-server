@@ -14,4 +14,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	List<Review> findBySpaceId(Long spaceId);
 
+    boolean existsByMemberIdAndSpaceId(Long memberId, Long spaceId);
 }
