@@ -15,6 +15,7 @@ import com.localmood.common.util.CheckScrapUtil;
 import com.localmood.common.util.ScrapUtil;
 import com.localmood.domain.member.dto.MemberScrapSpaceDto;
 import com.localmood.domain.member.entity.Member;
+import com.localmood.domain.review.repository.ReviewRepository;
 import com.localmood.domain.space.dto.SpaceSearchDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.entity.SpaceDish;
@@ -34,8 +35,8 @@ import lombok.RequiredArgsConstructor;
 public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 
 	private final JPAQueryFactory queryFactory;
-	private final ScrapUtil scrapUtil;
 	private final CheckScrapUtil checkScrapUtil;
+	private final ReviewRepository reviewRepository;
 
 	@Override
 	public List<SpaceRecommendDto> findRestaurantRecommendByKeyword(String keyword, Optional<Member> member) {
@@ -294,8 +295,9 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			String address = tuple.get(space.address);
 			String thumbnailImgUrl = tuple.get(spaceInfo.thumbnailImgUrl);
 			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+			boolean isReviewed = reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id);
 
-			return new MemberScrapSpaceDto(id, name, type, address, thumbnailImgUrl, isScraped);
+			return new MemberScrapSpaceDto(id, name, type, address, thumbnailImgUrl, isScraped, isReviewed);
 		}).collect(Collectors.toList());
 	}
 
