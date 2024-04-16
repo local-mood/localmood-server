@@ -22,11 +22,12 @@ public class SpaceSearchDto {
 	private List<String> keyword;
 	private String imgUrl;
 	private Boolean isScraped;
+	private Boolean isReviewed;
 	private Long scrapCount;
 	private LocalDateTime modifiedAt;
 
 	@QueryProjection
-	public SpaceSearchDto(Long id, String name, SpaceType type, String address, String purpose, String keyword, String imgUrl, Boolean isScraped, Long scrapCount, LocalDateTime modifiedAt){
+	public SpaceSearchDto(Long id, String name, SpaceType type, String address, String purpose, String keyword, String imgUrl, Boolean isScraped, Boolean isReviewed, Long scrapCount, LocalDateTime modifiedAt){
 		this.id = id;
 		this.name = name;
 		this.type = type;
@@ -35,6 +36,7 @@ public class SpaceSearchDto {
 		this.keyword = ArrayUtil.toArr(keyword);
 		this.imgUrl = imgUrl;
 		this.isScraped = isScraped;
+		this.isReviewed = isReviewed;
 		this.scrapCount = scrapCount;
 		this.modifiedAt = modifiedAt;
 	}

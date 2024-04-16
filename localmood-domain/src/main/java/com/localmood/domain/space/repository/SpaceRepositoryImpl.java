@@ -175,8 +175,9 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			LocalDateTime modifiedAt = tuple.get(spaceInfo.modifiedAt);
 
 			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+			boolean isReviewed = reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id);
 
-			return new SpaceSearchDto(id, spaceName, type, address, purpose, interior, thumbnailImgUrl, isScraped, scrapCount, modifiedAt);
+			return new SpaceSearchDto(id, spaceName, type, address, purpose, interior, thumbnailImgUrl, isScraped, isReviewed, scrapCount, modifiedAt);
 		}).collect(Collectors.toList());
 
 		return spaceList;
@@ -262,8 +263,9 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			LocalDateTime modifiedAt = tuple.get(spaceInfo.modifiedAt);
 
 			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
+			boolean isReviewed = reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id);
 
-			return new SpaceSearchDto(id, spaceName, spaceType, address, spacePurpose, spaceInterior, thumbnailImgUrl, isScraped, scrapCount, modifiedAt);
+			return new SpaceSearchDto(id, spaceName, spaceType, address, spacePurpose, spaceInterior, thumbnailImgUrl, isScraped, isReviewed, scrapCount, modifiedAt);
 		}).collect(Collectors.toList());
 
 		return spaceList;
