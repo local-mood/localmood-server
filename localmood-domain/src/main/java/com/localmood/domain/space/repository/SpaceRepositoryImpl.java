@@ -175,7 +175,8 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			LocalDateTime modifiedAt = tuple.get(spaceInfo.modifiedAt);
 
 			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
-			boolean isReviewed = reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id);
+			boolean isReviewed = member.isPresent() ?
+					reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id) : false;
 
 			return new SpaceSearchDto(id, spaceName, type, address, purpose, interior, thumbnailImgUrl, isScraped, isReviewed, scrapCount, modifiedAt);
 		}).collect(Collectors.toList());
@@ -263,7 +264,8 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			LocalDateTime modifiedAt = tuple.get(spaceInfo.modifiedAt);
 
 			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
-			boolean isReviewed = reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id);
+			boolean isReviewed = member.isPresent() ?
+					reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id) : false;
 
 			return new SpaceSearchDto(id, spaceName, spaceType, address, spacePurpose, spaceInterior, thumbnailImgUrl, isScraped, isReviewed, scrapCount, modifiedAt);
 		}).collect(Collectors.toList());
@@ -297,7 +299,8 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			String address = tuple.get(space.address);
 			String thumbnailImgUrl = tuple.get(spaceInfo.thumbnailImgUrl);
 			boolean isScraped = member.map(currMember -> checkScrapUtil.checkIfSpaceScraped(id, currMember.getId())).orElse(false);
-			boolean isReviewed = reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id);
+			boolean isReviewed = member.isPresent() ?
+					reviewRepository.existsByMemberIdAndSpaceId(member.get().getId(), id) : false;
 
 			return new MemberScrapSpaceDto(id, name, type, address, thumbnailImgUrl, isScraped, isReviewed);
 		}).collect(Collectors.toList());
