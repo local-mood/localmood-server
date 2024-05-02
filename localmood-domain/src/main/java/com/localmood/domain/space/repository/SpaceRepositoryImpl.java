@@ -213,7 +213,11 @@ public class SpaceRepositoryImpl implements SpaceRepositoryCustom{
 			builder.and(spaceInfo.optServ.contains(optServ));
 		}
 		if (!dish.equals("ALL")){
-			builder.and(spaceMenu.dish.eq(SpaceDish.of(dish)));
+			if (dish.equals("한식 전체")) {
+				builder.and(space.subType.eq(SpaceSubType.KOREAN));
+			} else {
+				builder.and(spaceMenu.dish.eq(SpaceDish.of(dish)));
+			}
 		}
 		if (!dishDesc.equals("ALL")) {
 			builder.and(spaceMenu.dishDesc.contains(dishDesc));
