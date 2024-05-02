@@ -48,7 +48,8 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 				.on(curationSpace.space.id.eq(spaceInfo.space.id))
 				.leftJoin(scrapSpace)
 				.on(curationSpace.space.id.eq(scrapSpace.space.id))
-				.where(curationSpace.space.id.eq(spaceId))
+				.where(curationSpace.space.id.eq(spaceId)
+						.and(curation.privacy.isTrue().not()))
 				.groupBy(curation.id)
 				.distinct()
 				.fetch();
