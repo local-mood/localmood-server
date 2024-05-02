@@ -66,14 +66,17 @@ public class CurationService {
 		Curation curation = findByIdOrThrow(curationRepository, Long.parseLong(curationId),
 			ErrorCode.CURATION_NOT_FOUND);
 
-		Curation updatedCuration = new Curation(
-			curation.getMember(),
-			curationCreateDto.getTitle() != null ? curationCreateDto.getTitle() : curation.getTitle(),
-			curationCreateDto.getKeyword() != null ? curationCreateDto.getKeyword() : curation.getKeyword(),
-			curationCreateDto.isPrivacy() != curation.getPrivacy() ? curationCreateDto.isPrivacy() : curation.getPrivacy()
-		);
+		if (curationCreateDto.getTitle() != null) {
+			curation.setTitle(curationCreateDto.getTitle());
+		}
+		if (curationCreateDto.getKeyword() != null) {
+			curation.setKeyword(curationCreateDto.getKeyword());
+		}
+		if (curationCreateDto.isPrivacy() != curation.getPrivacy()) {
+			curation.setPrivacy(curationCreateDto.isPrivacy());
+		}
 
-		curationRepository.save(updatedCuration);
+		curationRepository.save(curation);
 	}
 
 	public void deleteCuration(String curationId) {
