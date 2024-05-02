@@ -40,6 +40,13 @@ public class Curation extends BaseTimeEntity {
 	@Column
 	private Boolean privacy;
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
 	public void setPrivacy(boolean privacy) {
 		this.privacy = privacy;
 	}
