@@ -104,8 +104,7 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 
 		return queryFactory
 				.selectFrom(curation)
-				.where(curation.member.id.eq(memberId)
-						.and(curation.privacy.eq(false)))
+				.where(curation.member.id.eq(memberId))
 				.orderBy(curation.createdAt.desc())
 				.fetch();
 	}
