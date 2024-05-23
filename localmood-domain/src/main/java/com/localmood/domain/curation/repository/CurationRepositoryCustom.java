@@ -13,4 +13,6 @@ public interface CurationRepositoryCustom {
 	List<Long> findCurationsByScrapCount();
 
 	List<Curation> findByTitleContaining(String title);
+
+	List<Curation> findByKeywordContainingOrKeywordContaining(String keyword1, String keyword2);
 }

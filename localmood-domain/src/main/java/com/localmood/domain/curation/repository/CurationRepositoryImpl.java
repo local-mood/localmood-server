@@ -81,4 +81,16 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 					.and(curation.privacy.eq(false)))
 				.fetch();
 	}
+
+	@Override
+	public List<Curation> findByKeywordContainingOrKeywordContaining(String keyword1, String keyword2) {
+		QCuration curation = QCuration.curation;
+
+		return queryFactory
+				.selectFrom(curation)
+				.where(curation.keyword.contains(keyword1)
+						.or(curation.keyword.contains(keyword2))
+						.and(curation.privacy.eq(false)))
+				.fetch();
+	}
 }
