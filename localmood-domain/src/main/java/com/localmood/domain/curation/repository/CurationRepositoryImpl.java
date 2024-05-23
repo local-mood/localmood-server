@@ -58,6 +58,7 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 				.fetch();
 	}
 
+	// 추천 큐레이션 조회
 	@Override
 	public List<Long> findCurationsByScrapCount() {
 		return queryFactory
@@ -71,6 +72,7 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 				.fetch();
 	}
 
+	// 제목으로 큐레이션 조회
 	@Override
 	public List<Curation> findByTitleContaining(String title) {
 		QCuration curation = QCuration.curation;
@@ -82,6 +84,7 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 				.fetch();
 	}
 
+	// 키워드로 큐레이션 조회
 	@Override
 	public List<Curation> findByKeywordContainingOrKeywordContaining(String keyword1, String keyword2) {
 		QCuration curation = QCuration.curation;
@@ -94,6 +97,7 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 				.fetch();
 	}
 
+	// 멤버별 큐레이션 조회
 	@Override
 	public List<Curation> findByMemberIdOrderByCreatedAtDesc(Long memberId) {
 		QCuration curation = QCuration.curation;
