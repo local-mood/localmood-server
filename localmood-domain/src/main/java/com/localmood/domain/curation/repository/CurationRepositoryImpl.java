@@ -93,4 +93,16 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 						.and(curation.privacy.eq(false)))
 				.fetch();
 	}
+
+	@Override
+	public List<Curation> findByMemberIdOrderByCreatedAtDesc(Long memberId) {
+		QCuration curation = QCuration.curation;
+
+		return queryFactory
+				.selectFrom(curation)
+				.where(curation.member.id.eq(memberId)
+						.and(curation.privacy.eq(false)))
+				.orderBy(curation.createdAt.desc())
+				.fetch();
+	}
 }

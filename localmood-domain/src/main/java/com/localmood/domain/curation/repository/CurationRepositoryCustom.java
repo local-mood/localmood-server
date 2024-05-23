@@ -15,4 +15,7 @@ public interface CurationRepositoryCustom {
 	List<Curation> findByTitleContaining(String title);
 
 	List<Curation> findByKeywordContainingOrKeywordContaining(String keyword1, String keyword2);
+
+	List<Curation> findByMemberIdOrderByCreatedAtDesc(Long memberId);
+
 }
