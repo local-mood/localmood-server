@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.localmood.common.util.ScrapUtil;
+import com.localmood.domain.curation.entity.Curation;
+import com.localmood.domain.curation.entity.QCuration;
 import com.localmood.domain.member.dto.MemberScrapCurationDto;
 import com.localmood.domain.member.dto.QMemberScrapCurationDto;
 import com.localmood.domain.member.entity.Member;
@@ -66,6 +68,16 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 				.groupBy(curation.id)
 				.orderBy(scrapCuration.id.count().desc())
 				.limit(5)
+				.fetch();
+	}
+
+	@Override
+	public List<Curation> findByTitleContaining(String title) {
+		QCuration curation = QCuration.curation;
+
+		return queryFactory
+				.selectFrom(curation)
+				.where(curation.title.contains(title))
 				.fetch();
 	}
 }
