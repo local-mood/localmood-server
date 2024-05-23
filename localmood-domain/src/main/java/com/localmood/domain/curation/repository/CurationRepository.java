@@ -11,12 +11,6 @@ import com.localmood.domain.curation.entity.Curation;
 @Repository
 public interface CurationRepository extends JpaRepository<Curation, Long>, CurationRepositoryCustom {
 
-	// 스크랩 수 내림차순으로 큐레이션 ID 리스트 검색
-	@Query(value =
-			"SELECT c.id FROM curation c JOIN scrap_curation sc ON c.id = sc.curation_id " +
-			"GROUP BY c.id ORDER BY COUNT(sc.id) DESC LIMIT 5", nativeQuery = true)
-	List<Long> findCurationsByScrapCount();
-
 	// 멤버가 작성한 큐레이션을 작성일 기준으로 내림차순으로 정렬해 검색
 	List<Curation> findByMemberIdOrderByCreatedAtDesc(Long memberId);
 

@@ -8,4 +8,6 @@ import com.localmood.domain.member.entity.Member;
 
 public interface CurationRepositoryCustom {
 	List<MemberScrapCurationDto> findCurationBySpaceId(Long spaceId, Optional<Member> member);
+
+	List<Long> findCurationsByScrapCount();
 }

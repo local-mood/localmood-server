@@ -2,6 +2,7 @@ package com.localmood.domain.curation.repository;
 
 import static com.localmood.domain.curation.entity.QCuration.*;
 import static com.localmood.domain.curation.entity.QCurationSpace.*;
+import static com.localmood.domain.scrap.entity.QScrapCuration.scrapCuration;
 import static com.localmood.domain.scrap.entity.QScrapSpace.*;
 import static com.localmood.domain.space.entity.QSpaceInfo.*;
 
@@ -52,6 +53,19 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 						.and(curation.privacy.isTrue().not()))
 				.groupBy(curation.id)
 				.distinct()
+				.fetch();
+	}
+
+	@Override
+	public List<Long> findCurationsByScrapCount() {
+		return queryFactory
+				.select(curation.id)
+				.from(curation)
+				.join(scrapCuration).on(curation.id.eq(scrapCuration.curation.id))
+				.where(curation.privacy.eq(false))
+				.groupBy(curation.id)
+				.orderBy(scrapCuration.id.count().desc())
+				.limit(5)
 				.fetch();
 	}
 }
