@@ -77,7 +77,8 @@ public class CurationRepositoryImpl implements CurationRepositoryCustom{
 
 		return queryFactory
 				.selectFrom(curation)
-				.where(curation.title.contains(title))
+				.where(curation.title.contains(title)
+					.and(curation.privacy.eq(false)))
 				.fetch();
 	}
 }
