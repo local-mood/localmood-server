@@ -83,7 +83,7 @@ public class ReviewService {
 		String image = getReviewImageUrl(review.getId());
 
 		return new ReviewResponseDto(
-			review.getId(),
+			review.getSpace().getId(),
 			getReviewImageUrl(review.getId()),
 			review.getSpace().getName(),
 			review.getSpace().getType().toString(),
