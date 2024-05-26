@@ -8,14 +8,14 @@ import static com.localmood.domain.space.entity.QSpaceInfo.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.localmood.common.util.ScrapUtil;
+import com.localmood.common.util.CheckScrapUtil;
 import com.localmood.domain.curation.entity.Curation;
 import com.localmood.domain.curation.entity.QCuration;
 import com.localmood.domain.member.dto.MemberScrapCurationDto;
-import com.localmood.domain.member.dto.QMemberScrapCurationDto;
 import com.localmood.domain.member.entity.Member;
-import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -25,37 +25,49 @@ import lombok.RequiredArgsConstructor;
 public class CurationRepositoryImpl implements CurationRepositoryCustom{
 
 	private final JPAQueryFactory queryFactory;
-	private final ScrapUtil scrapUtil;
+	private final CheckScrapUtil scrapUtil;
 
 	@Override
-	public List<MemberScrapCurationDto> findCurationBySpaceId(Long spaceId, Optional<Member> member){
-		return queryFactory
+	public List<MemberScrapCurationDto> findCurationBySpaceId(Long spaceId, Optional<Member> member) {
+		List<Tuple> results = queryFactory
 				.select(
-						new QMemberScrapCurationDto(
-								curation.id,
-								curation.title,
-								curation.member.nickname,
-								curation.keyword,
-								ExpressionUtils.as
-										(JPAExpressions.select(curationSpace.space.id.countDistinct())
-										.from(curationSpace)
-										.where(curationSpace.curation.id.eq(curation.id)), "spaceCount"),
-								spaceInfo.thumbnailImgUrl,
-								scrapUtil.isScraped(member)
-						)
+						curation.id,
+						curation.title,
+						curation.member.nickname,
+						curation.keyword,
+						JPAExpressions.select(curationSpace.space.id.countDistinct())
+								.from(curationSpace)
+								.where(curationSpace.curation.id.eq(curation.id)),
+						spaceInfo.thumbnailImgUrl
 				)
 				.from(curation)
-				.leftJoin(curationSpace)
-				.on(curation.id.eq(curationSpace.curation.id))
-				.leftJoin(spaceInfo)
-				.on(curationSpace.space.id.eq(spaceInfo.space.id))
-				.leftJoin(scrapSpace)
-				.on(curationSpace.space.id.eq(scrapSpace.space.id))
-				.where(curationSpace.space.id.eq(spaceId)
-						.and(curation.privacy.isTrue().not()))
+				.leftJoin(curationSpace).on(curation.id.eq(curationSpace.curation.id))
+				.leftJoin(spaceInfo).on(curationSpace.space.id.eq(spaceInfo.space.id))
+				.leftJoin(scrapSpace).on(curationSpace.space.id.eq(scrapSpace.space.id))
+				.where(curationSpace.space.id.eq(spaceId).and(curation.privacy.isTrue().not()))
 				.groupBy(curation.id)
 				.distinct()
 				.fetch();
+
+		return results.stream().map(tuple -> {
+			Long curationId = tuple.get(curation.id);
+			boolean isScraped = scrapUtil.checkIfCurationScraped(curationId, member.map(Member::getId).orElse(null));
+
+			Long spaceCount = tuple.get(JPAExpressions.select(curationSpace.space.id.countDistinct())
+					.from(curationSpace)
+					.where(curationSpace.curation.id.eq(curation.id)));
+
+			return new MemberScrapCurationDto(
+					curationId,
+					tuple.get(curation.title),
+					tuple.get(curation.member.nickname),
+					tuple.get(curation.keyword),
+					spaceCount,
+					tuple.get(spaceInfo.thumbnailImgUrl),
+					isScraped
+			);
+		}).collect(Collectors.toList());
+
 	}
 
 	// 추천 큐레이션 조회

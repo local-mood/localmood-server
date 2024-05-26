@@ -20,4 +20,7 @@ public interface CurationSpaceRepository extends JpaRepository<CurationSpace, Lo
 	List<Long> findSpaceIdsByCurationId(@Param("curationId") Long curationId);
 
 	CurationSpace findByCurationIdAndSpaceId(Long curationId, Long spaceId);
+
+	boolean existsBySpaceIdAndCurationMemberId(Long spaceId, Long memberId);
+
 }
