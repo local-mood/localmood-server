@@ -98,7 +98,10 @@ public class SpaceService {
 		Space space = spaceRepository.findById(spaceId).orElseThrow();
 		SpaceInfo spaceInfo = spaceInfoRepository.findBySpaceId(spaceId).orElseThrow();
 		SpaceMenu spaceMenu = spaceMenuRepository.findBySpaceId(spaceId).orElseThrow();
-		List<String> imgUrlList = reviewImgRepository.findImageUrlsBySpaceId(spaceId);
+		List<String> imgUrlList = reviewImgRepository.findImageUrlsBySpaceIdOrderByCreatedAtAsc(spaceId)
+				.stream()
+				.limit(2)
+				.collect(Collectors.toList());
 		Boolean isScraped = member.isPresent() ? checkScrapUtil.checkIfSpaceScraped(spaceId, member.get().getId()) : false;
 		List<Review> reviews = reviewRepository.findBySpaceId(spaceId);
 
