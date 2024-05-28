@@ -118,7 +118,7 @@ public class CurationService {
 		List<Long> spaceIds = findSpaceIdsByCurationId(curationId);
 
 		// 공간 이미지 최대 5개 가져오기
-		return reviewImgRepository.findTop5ImageUrlsBySpaceIds(spaceIds)
+		return reviewImgRepository.findImageUrlsBySpaceIdsOrderByCreatedAtAsc(spaceIds)
 			.stream()
 			.limit(5)
 			.collect(Collectors.toList());
@@ -299,7 +299,10 @@ public class CurationService {
 
 
 	private List<String> getImageUrls(Long spaceId) {
-		return reviewImgRepository.findImageUrlsBySpaceId(spaceId);
+		return reviewImgRepository.findImageUrlsBySpaceIdOrderByCreatedAtAsc(spaceId)
+				.stream()
+				.limit(2)
+				.collect(Collectors.toList());
 	}
 
 	// TODO
