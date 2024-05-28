@@ -12,11 +12,8 @@ import com.localmood.domain.review.entity.ReviewImg;
 
 @Repository
 public interface ReviewImgRepository extends JpaRepository<ReviewImg, Long> {
-	@Query("SELECT new java.lang.String(ri.imgUrl) FROM ReviewImg ri WHERE ri.space.id = :spaceId")
-	List<String> findImageUrlsBySpaceId(@Param("spaceId") Long spaceId);
-
-	@Query("SELECT ri.imgUrl FROM ReviewImg ri WHERE ri.space.id IN :spaceIds")
-	List<String> findTop5ImageUrlsBySpaceIds(@Param("spaceIds") List<Long> spaceIds);
+	@Query("SELECT ri.imgUrl FROM ReviewImg ri WHERE ri.space.id IN :spaceIds ORDER BY ri.createdAt ASC")
+	List<String> findImageUrlsBySpaceIdsOrderByCreatedAtAsc(@Param("spaceIds") List<Long> spaceIds);
 
 	@Query("SELECT ri.imgUrl FROM ReviewImg ri WHERE ri.space.id = :spaceId ORDER BY ri.createdAt ASC")
 	List<String> findImageUrlsBySpaceIdOrderByCreatedAtAsc(@Param("spaceId") Long spaceId);
