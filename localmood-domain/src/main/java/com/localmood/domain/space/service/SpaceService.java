@@ -177,21 +177,17 @@ public class SpaceService {
 
 	// 키워드 퍼센티지 계산 및 정렬
 	private String[][] calculateEvalPercent(Map<String, Integer> keywordCountMap, int totalReviews) {
-		String[][] keywordArray = new String[keywordCountMap.size()][2];
-		int totalKeywords = keywordCountMap.values().stream().mapToInt(Integer::intValue).sum();
+		String[][] keywordArray;
 
-		int i = 0;
-		if (totalReviews == 1) {
-			// 리뷰가 한 개일 경우 각 키워드 퍼센티지를 동등하게 나누기
-			int percentagePerKeyword = 100 / keywordCountMap.size();
-
-			for (Map.Entry<String, Integer> entry : keywordCountMap.entrySet()) {
-				keywordArray[i][0] = entry.getKey();
-				keywordArray[i][1] = String.valueOf(percentagePerKeyword);
-				i++;
-			}
+		if (totalReviews == 0) {
+			// 리뷰 없는 경우
+			keywordArray = new String[0][0];
 		} else {
-			// 리뷰가 여러 개일 경우 비율대로 퍼센티지 계산
+			keywordArray = new String[keywordCountMap.size()][2];
+			int totalKeywords = keywordCountMap.values().stream().mapToInt(Integer::intValue).sum();
+
+			int i = 0;
+			// 리뷰가 여러 개일 경우 퍼센티지 계산
 			for (Map.Entry<String, Integer> entry : keywordCountMap.entrySet()) {
 				String content = entry.getKey();
 				int count = entry.getValue();
@@ -204,10 +200,10 @@ public class SpaceService {
 				keywordArray[i][1] = String.valueOf(roundedPercentage);
 				i++;
 			}
-		}
 
-		// 퍼센티지 높은 순으로 정렬
-		Arrays.sort(keywordArray, (a, b) -> Integer.compare(Integer.parseInt(b[1]), Integer.parseInt(a[1])));
+			// 퍼센티지 높은 순으로 정렬
+			Arrays.sort(keywordArray, (a, b) -> Integer.compare(Integer.parseInt(b[1]), Integer.parseInt(a[1])));
+		}
 
 		return keywordArray;
 	}
