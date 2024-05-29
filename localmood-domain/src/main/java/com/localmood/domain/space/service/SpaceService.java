@@ -110,7 +110,7 @@ public class SpaceService {
 		int totalReviews = reviews.size();
 
 		for (Review review : reviews) {
-			// 긍정 평가 파싱
+			// 긍정적 평가 파싱
 			List<String[]> positiveEvalList = parseKeyword(review.getPositive_eval());
 			for (String[] eval : positiveEvalList) {
 				String keyword = eval[0];
@@ -174,48 +174,49 @@ public class SpaceService {
 		return parsedKeywords;
 	}
 
-	// 키워드 퍼센티지 계산
+	// 키워드 퍼센티지 계산 및 정렬
 	private String[][] calculateEvalPercent(Map<String, Integer> evalCount, int totalReviews) {
-		String[][] keywordArray = new String[evalCount.size()][2];
-		int index = 0;
 		int totalCount = evalCount.values().stream().mapToInt(Integer::intValue).sum();
 
 		// 각 키워드의 퍼센티지 계산
-		Map<String, Integer> percentageMap = new HashMap<>();
-		int totalPercentage = 0;
+		List<Map.Entry<String, Integer>> percentageList = new ArrayList<>();
+
 		for (Map.Entry<String, Integer> entry : evalCount.entrySet()) {
 			String keyword = entry.getKey();
 			int count = entry.getValue();
 			int percentage = (int) Math.round(((double) count / totalCount) * 100);
-			percentageMap.put(keyword, percentage);
-			totalPercentage += percentage;
+			percentageList.add(new AbstractMap.SimpleEntry<>(keyword, percentage));
 		}
 
 		// 퍼센티지 조정
+		int totalPercentage = percentageList.stream().mapToInt(Map.Entry::getValue).sum();
 		int difference = totalPercentage - 100;
 		while (difference != 0) {
-			for (Map.Entry<String, Integer> entry : percentageMap.entrySet()) {
+			for (int i = 0; i < percentageList.size(); i++) {
 				if (difference == 0) break;
-				String keyword = entry.getKey();
+				Map.Entry<String, Integer> entry = percentageList.get(i);
 				int percentage = entry.getValue();
 				if (difference > 0 && percentage > 1) {
-					percentageMap.put(keyword, percentage - 1);
+					percentageList.set(i, new AbstractMap.SimpleEntry<>(entry.getKey(), percentage - 1));
 					difference--;
 				} else if (difference < 0) {
-					percentageMap.put(keyword, percentage + 1);
+					percentageList.set(i, new AbstractMap.SimpleEntry<>(entry.getKey(), percentage + 1));
 					difference++;
 				}
 			}
 		}
 
-		// 결과 배열에 추가
-		for (Map.Entry<String, Integer> entry : percentageMap.entrySet()) {
-			keywordArray[index][0] = entry.getKey();
-			keywordArray[index][1] = String.valueOf(entry.getValue());
-			index++;
+		// 내림차순 정렬
+		percentageList.sort((e1, e2) -> e2.getValue() - e1.getValue());
+
+		// 결과 배열로 변환
+		String[][] keywordArray = new String[percentageList.size()][2];
+		for (int i = 0; i < percentageList.size(); i++) {
+			Map.Entry<String, Integer> entry = percentageList.get(i);
+			keywordArray[i][0] = entry.getKey();
+			keywordArray[i][1] = String.valueOf(entry.getValue());
 		}
 
 		return keywordArray;
 	}
-
 }
