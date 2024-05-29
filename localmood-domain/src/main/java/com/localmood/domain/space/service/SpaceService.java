@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Collections;
+import java.util.AbstractMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Service;
 import com.localmood.domain.curation.repository.CurationRepository;
 import com.localmood.domain.member.entity.Member;
 import com.localmood.domain.review.repository.ReviewImgRepository;
-import com.localmood.domain.scrap.repository.ScrapSpaceRepository;
 import com.localmood.domain.space.dto.SpaceDetailDto;
 import com.localmood.domain.space.dto.SpaceRecommendDto;
 import com.localmood.domain.space.dto.request.SpaceFilterRequest;
@@ -105,21 +106,31 @@ public class SpaceService {
 		Boolean isScraped = member.isPresent() ? checkScrapUtil.checkIfSpaceScraped(spaceId, member.get().getId()) : false;
 		List<Review> reviews = reviewRepository.findBySpaceId(spaceId);
 
-		List<String[][]> positiveEvalResult = new ArrayList<>();
-		List<String[][]> negativeEvalResult = new ArrayList<>();
+		Map<String, Integer> positiveEvalCount = new HashMap<>();
+		Map<String, Integer> negativeEvalCount = new HashMap<>();
+		int totalReviews = reviews.size();
 
 		for (Review review : reviews) {
-			// 키워드 파싱
+			// 긍정적 평가 파싱
 			List<String[]> positiveEvalList = parseKeyword(review.getPositive_eval());
+			for (String[] eval : positiveEvalList) {
+				String keyword = eval[0];
+				positiveEvalCount.put(keyword, positiveEvalCount.getOrDefault(keyword, 0) + 1);
+			}
+
+			// 부정 평가 파싱
 			List<String[]> negativeEvalList = parseKeyword(review.getNegative_eval());
-
-			// 퍼센티지 계산
-			String[][] positiveEval = calculateEvalPercent(positiveEvalList);
-			String[][] negativeEval = calculateEvalPercent(negativeEvalList);
-
-			positiveEvalResult.add(positiveEval);
-			negativeEvalResult.add(negativeEval);
+			for (String[] eval : negativeEvalList) {
+				String keyword = eval[0];
+				negativeEvalCount.put(keyword, negativeEvalCount.getOrDefault(keyword, 0) + 1);
+			}
 		}
+
+		// 긍정적 평가 퍼센티지 계산
+		List<String[][]> positiveEvalResult = Collections.singletonList(calculateEvalPercent(positiveEvalCount, totalReviews));
+
+		// 부정적 평가 퍼센티지 계산
+		List<String[][]> negativeEvalResult = Collections.singletonList(calculateEvalPercent(negativeEvalCount, totalReviews));
 
 		spaceDetailMap.put("info",
 				SpaceDetailDto.builder()
@@ -155,43 +166,58 @@ public class SpaceService {
 	// 키워드 파싱
 	private List<String[]> parseKeyword(String keywordList) {
 		List<String[]> parsedKeywords = new ArrayList<>();
-
 		if (keywordList != null && !keywordList.isEmpty()) {
-			// 쉼표로 구분된 키워드를 분할하여 배열로 변환
 			String[] keywords = keywordList.split(",");
 			for (String keyword : keywords) {
-				// 공백을 제거한 후 배열에 추가
-				String[] keywordArray = {keyword.trim()};
-				parsedKeywords.add(keywordArray);
+				parsedKeywords.add(new String[]{keyword.trim()});
 			}
 		}
 		return parsedKeywords;
 	}
 
-	// 키워드 퍼센티지 계산
-	private String[][] calculateEvalPercent(List<String[]> parsedKeywords) {
-		String[][] keywordArray = new String[parsedKeywords.size()][2];
-		int totalPercentage = 0;
+	// 키워드 퍼센티지 계산 및 정렬
+	private String[][] calculateEvalPercent(Map<String, Integer> evalCount, int totalReviews) {
+		int totalCount = evalCount.values().stream().mapToInt(Integer::intValue).sum();
 
-		// 각 키워드별로 퍼센티지 합산
-		for (String[] keyword : parsedKeywords) {
-			totalPercentage += keyword.length > 1 ? Integer.parseInt(keyword[1]) : 100;
+		// 각 키워드의 퍼센티지 계산
+		List<Map.Entry<String, Integer>> percentageList = new ArrayList<>();
+
+		for (Map.Entry<String, Integer> entry : evalCount.entrySet()) {
+			String keyword = entry.getKey();
+			int count = entry.getValue();
+			int percentage = (int) Math.round(((double) count / totalCount) * 100);
+			percentageList.add(new AbstractMap.SimpleEntry<>(keyword, percentage));
 		}
 
-		// 각 키워드별로 퍼센티지 계산하여 결과 배열에 추가
-		for (int i = 0; i < parsedKeywords.size(); i++) {
-			String[] eval = parsedKeywords.get(i);
-			String content = eval[0];
-			int percentage = eval.length > 1 ? Integer.parseInt(eval[1]) : 100;
+		// 퍼센티지 조정
+		int totalPercentage = percentageList.stream().mapToInt(Map.Entry::getValue).sum();
+		int difference = totalPercentage - 100;
+		while (difference != 0) {
+			for (int i = 0; i < percentageList.size(); i++) {
+				if (difference == 0) break;
+				Map.Entry<String, Integer> entry = percentageList.get(i);
+				int percentage = entry.getValue();
+				if (difference > 0 && percentage > 1) {
+					percentageList.set(i, new AbstractMap.SimpleEntry<>(entry.getKey(), percentage - 1));
+					difference--;
+				} else if (difference < 0) {
+					percentageList.set(i, new AbstractMap.SimpleEntry<>(entry.getKey(), percentage + 1));
+					difference++;
+				}
+			}
+		}
 
-			// 퍼센티지를 전체 퍼센티지에 대한 비율로 계산
-			int calculatedPercentage = (int) Math.round(((double) percentage / totalPercentage) * 100);
+		// 내림차순 정렬
+		percentageList.sort((e1, e2) -> e2.getValue() - e1.getValue());
 
-			keywordArray[i][0] = content;
-			keywordArray[i][1] = String.valueOf(calculatedPercentage);
+		// 결과 배열로 변환
+		String[][] keywordArray = new String[percentageList.size()][2];
+		for (int i = 0; i < percentageList.size(); i++) {
+			Map.Entry<String, Integer> entry = percentageList.get(i);
+			keywordArray[i][0] = entry.getKey();
+			keywordArray[i][1] = String.valueOf(entry.getValue());
 		}
 
 		return keywordArray;
 	}
-
 }
