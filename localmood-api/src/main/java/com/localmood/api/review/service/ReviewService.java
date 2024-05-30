@@ -175,6 +175,17 @@ public class ReviewService {
 				}
 			}
 		}
+
+		// 본인 리뷰 먼저 정렬
+		for (String purpose : reviewMap.keySet()) {
+			List<Map<String, Object>> reviews = reviewMap.get(purpose);
+			reviews.sort((r1, r2) -> {
+				boolean isAuthor1 = r1.get("author").equals(memberOptional.map(Member::getNickname).orElse(""));
+				boolean isAuthor2 = r2.get("author").equals(memberOptional.map(Member::getNickname).orElse(""));
+				return Boolean.compare(isAuthor2, isAuthor1);
+			});
+		}
+
 		response.put("purposeEval", purposePercentages);
 		response.put("reviewCount", spaceReviews.size());
 		response.put("reviews", reviewMap);
