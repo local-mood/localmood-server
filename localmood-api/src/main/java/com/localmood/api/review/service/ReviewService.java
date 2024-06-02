@@ -84,7 +84,7 @@ public class ReviewService {
 
 		return new ReviewResponseDto(
 			review.getSpace().getId(),
-			getReviewImageUrl(review.getId()),
+			image,
 			review.getSpace().getName(),
 			review.getSpace().getType().toString(),
 			review.getSpace().getAddress(),
@@ -105,9 +105,7 @@ public class ReviewService {
 	}
 
 	private String getReviewImageUrl(Long reviewId) {
-		return reviewImgRepository.findByReviewId(reviewId)
-			.map(ReviewImg::getImgUrl)
-			.orElse(null);
+		return getReviewImageUrls(reviewId).stream().findFirst().orElse(null);
 	}
 
 	private List<String> getReviewImageUrls(Long reviewId) {
