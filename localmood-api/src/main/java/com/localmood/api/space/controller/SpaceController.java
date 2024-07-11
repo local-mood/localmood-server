@@ -70,4 +70,13 @@ public class SpaceController {
 		return SuccessResponse.ok(res);
 	}
 
+	@GetMapping("/{spaceId}/curation")
+	public ResponseEntity<HashMap<String, Object>> getSpaceCuration(
+			@PathVariable(value = "spaceId") Long spaceId,
+			@CurrentUser Member member
+	){
+		var res = spaceService.getSpaceCuration(spaceId, Optional.ofNullable(member));
+		return SuccessResponse.ok(res);
+	}
+
 }

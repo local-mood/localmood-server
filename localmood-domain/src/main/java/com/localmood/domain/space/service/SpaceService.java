@@ -157,10 +157,15 @@ public class SpaceService {
 		// 공간과 비슷한 장소
 		spaceDetailMap.put("similarSpaceList", spaceRepository.findSimilarSpace(spaceInfo.getPurpose(), spaceInfo.getMood(), member));
 
-		// 공간이 담긴 큐레이션
-		spaceDetailMap.put("relatedCurationList", curationRepository.findCurationBySpaceId(spaceId, member));
-
 		return spaceDetailMap;
+	}
+
+	public HashMap<String,Object> getSpaceCuration(Long spaceId, Optional<Member> member) {
+		HashMap<String, Object> spaceCurationlMap = new HashMap<>();
+
+		spaceCurationlMap.put("relatedCurationList", curationRepository.findCurationBySpaceId(spaceId, member));
+
+		return spaceCurationlMap;
 	}
 
 	// 키워드 파싱
