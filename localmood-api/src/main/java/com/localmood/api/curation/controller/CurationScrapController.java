@@ -3,7 +3,7 @@ package com.localmood.api.curation.controller;
 import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
 import com.localmood.domain.member.entity.Member;
-import com.localmood.domain.space.service.CurationScrapService;
+import com.localmood.domain.scrap.service.ScrapService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequestMapping("/api/v1/curations/scraps")
 public class CurationScrapController {
 
-    private final CurationScrapService curationScrapService;
+    private final ScrapService scrapService;
 
     @Operation(summary = "큐레이션별 스크랩 상태 조회 API", description = "큐레이션 스크랩 상태를 조회합니다.")
     @GetMapping("/{curationId}")
@@ -27,7 +27,7 @@ public class CurationScrapController {
             @PathVariable("curationId") String curationId,
             @CurrentUser Member member
     ) {
-        var res = curationScrapService.getCurationScrap(Long.valueOf(curationId), Optional.ofNullable(member));
+        var res = scrapService.getCurationScrap(Long.valueOf(curationId), Optional.ofNullable(member));
         return SuccessResponse.ok(res);
     }
 
