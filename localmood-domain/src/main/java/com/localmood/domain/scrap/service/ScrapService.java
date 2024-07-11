@@ -2,6 +2,7 @@ package com.localmood.domain.scrap.service;
 
 import static com.localmood.common.exception.ErrorCode.*;
 
+import com.localmood.common.util.CheckScrapUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,10 @@ import com.localmood.domain.space.repository.SpaceRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ScrapService {
@@ -30,6 +35,8 @@ public class ScrapService {
 	private final CurationRepository curationRepository;
 
 	private final MemberRepository memberRepository;
+
+	private final CheckScrapUtil checkScrapUtil;
 
 	@Transactional
 	public ScrapSpace scrapSpace(Long spaceId, Long memberId){
@@ -80,6 +87,24 @@ public class ScrapService {
 		ScrapCuration scrapCuration = scrapCurationRepository.findByMemberIdAndCurationId(memberId, spaceId).orElseThrow();
 
 		scrapCurationRepository.delete(scrapCuration);
+	}
+
+	public Map<String, Boolean> getSpaceScrap(Long spaceId, Optional<Member> member) {
+		Map<String, Boolean> response = new HashMap<>();
+
+		Boolean isScraped = member.isPresent() ? checkScrapUtil.checkIfSpaceScraped(spaceId, member.get().getId()) : false;
+		response.put("isScraped", isScraped);
+
+		return response;
+	}
+
+	public Map<String, Boolean> getCurationScrap(Long curationId, Optional<Member> member) {
+		Map<String, Boolean> response = new HashMap<>();
+
+		Boolean isScraped = member.isPresent() ? checkScrapUtil.checkIfCurationScraped(curationId, member.get().getId()) : false;
+		response.put("isScraped", isScraped);
+
+		return response;
 	}
 
 }

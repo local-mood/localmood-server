@@ -1,4 +1,4 @@
-package com.localmood.api.space.controller;
+package com.localmood.api.curation.controller;
 
 import com.localmood.api.auth.CurrentUser;
 import com.localmood.common.dto.SuccessResponse;
@@ -16,18 +16,18 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/spaces/scraps")
-public class SpaceScrapController {
+@RequestMapping("/api/v1/curations/scraps")
+public class CurationScrapController {
 
     private final ScrapService scrapService;
 
-    @Operation(summary = "공간별 스크랩 상태 조회 API", description = "공간별 스크랩 상태를 조회합니다.")
-    @GetMapping("/{spaceId}")
-    public ResponseEntity<?> getSpaceScrap(
-            @PathVariable("spaceId") String spaceId,
+    @Operation(summary = "큐레이션별 스크랩 상태 조회 API", description = "큐레이션 스크랩 상태를 조회합니다.")
+    @GetMapping("/{curationId}")
+    public ResponseEntity<?> getCurationScrap(
+            @PathVariable("curationId") String curationId,
             @CurrentUser Member member
     ) {
-        var res = scrapService.getSpaceScrap(Long.valueOf(spaceId), Optional.ofNullable(member));
+        var res = scrapService.getCurationScrap(Long.valueOf(curationId), Optional.ofNullable(member));
         return SuccessResponse.ok(res);
     }
 
