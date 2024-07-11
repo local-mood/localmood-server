@@ -154,15 +154,15 @@ public class SpaceService {
 						.build()
 		);
 
-		// 공간과 비슷한 장소
-		spaceDetailMap.put("similarSpaceList", spaceRepository.findSimilarSpace(spaceInfo.getPurpose(), spaceInfo.getMood(), member));
-
 		return spaceDetailMap;
 	}
 
-	public HashMap<String,Object> getSpaceCuration(Long spaceId, Optional<Member> member) {
+	public HashMap<String,Object> getSpaceRelatedInfo(Long spaceId, Optional<Member> member) {
 		HashMap<String, Object> spaceCurationlMap = new HashMap<>();
 
+		SpaceInfo spaceInfo = spaceInfoRepository.findBySpaceId(spaceId).orElseThrow();
+
+		spaceCurationlMap.put("similarSpaceList", spaceRepository.findSimilarSpace(spaceInfo.getPurpose(), spaceInfo.getMood(), member));
 		spaceCurationlMap.put("relatedCurationList", curationRepository.findCurationBySpaceId(spaceId, member));
 
 		return spaceCurationlMap;
