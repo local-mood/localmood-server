@@ -162,6 +162,7 @@ public class SpaceService {
 
 		SpaceInfo spaceInfo = spaceInfoRepository.findBySpaceId(spaceId).orElseThrow();
 
+		spaceCurationlMap.put("name", spaceRepository.findById(spaceId).orElseThrow().getName());
 		spaceCurationlMap.put("similarSpaceList", spaceRepository.findSimilarSpace(spaceInfo.getPurpose(), spaceInfo.getMood(), member));
 		spaceCurationlMap.put("relatedCurationList", curationRepository.findCurationBySpaceId(spaceId, member));
 
