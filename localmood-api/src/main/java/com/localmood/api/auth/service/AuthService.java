@@ -286,4 +286,21 @@ public class AuthService {
 
     public boolean findUserByEmail(String email) { return memberRepository.existsByEmail(email);}
 
+    // 닉네임 변경
+    @Transactional
+    public void updateNickname(String email, String newNickname) {
+        Optional<Member> userOptional = memberRepository.findByEmail(email);
+        log.info("email: {}", email);
+        log.info("new nickname: {}", newNickname);
+
+        // 회원이 존재하는지 확인
+        if (userOptional.isPresent()) {
+            Member member = userOptional.get();
+            member.updateNickname(newNickname);
+            memberRepository.save(member);
+        } else {
+            throw new LocalmoodException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
 }

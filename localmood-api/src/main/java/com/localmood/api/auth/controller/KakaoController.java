@@ -1,11 +1,14 @@
 package com.localmood.api.auth.controller;
 
+import com.localmood.api.auth.CurrentUser;
 import com.localmood.api.auth.dto.LoginRequestDto;
 import com.localmood.api.auth.dto.oauth2.token.KakaoTokenJsonData;
 import com.localmood.api.auth.dto.oauth2.token.KakaoTokenResponse;
 import com.localmood.api.auth.dto.oauth2.user.KakaoUserInfoDto;
+import com.localmood.common.exception.ErrorCode;
 import com.localmood.api.auth.jwt.entity.TokenDto;
 import com.localmood.api.auth.service.AuthService;
+import com.localmood.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,4 +72,22 @@ public class KakaoController {
                 .ok()
                 .body(tokenDto);
     }
+
+    @Description("사용자 닉네임을 변경합니다.")
+    @PutMapping("/nickname")
+    @ResponseBody
+    public ResponseEntity<?> updateNickname(
+            @CurrentUser Member member,
+            @RequestParam("newNickname") String newNickname) {
+        try {
+            authService.updateNickname(member.getEmail(), newNickname);
+            return ResponseEntity
+                    .ok()
+                    .body("닉네임이 성공적으로 업데이트되었습니다.");
+        } catch (Exception e) {
+            log.error("닉네임 업데이트 실패: {}", e.getMessage());
+            return ResponseEntity.status(ErrorCode.NICKNAME_UPDATE_FAILED.getHttpStatus())
+                    .body(ErrorCode.NICKNAME_UPDATE_FAILED.getMessage() + ": " + ErrorCode.NICKNAME_UPDATE_FAILED.getSolution());
+        }
+        }
 }

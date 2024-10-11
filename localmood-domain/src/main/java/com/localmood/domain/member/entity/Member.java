@@ -47,6 +47,11 @@ public class Member extends BaseTimeEntity {
 		return this;
 	}
 
+	public Member updateNickname(String newNickname) {
+		this.nickname = newNickname;
+		return this;
+	}
+
 	@Builder
 	public Member (String nickname, String email, String password, String profileImgUrl, Role role) {
 		this.nickname = nickname;
